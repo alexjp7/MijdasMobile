@@ -14,6 +14,7 @@ Brief & very rough file explanation:
 
 Notes: 
 
+- all .dart files are inside the 'lib' folder.
 - main.dart atm has basic text field for testing back end rather than complete login form.
 - lots of random commented out stuff for use later
 - look at the random classes in main.dart to see how the navigator works, pagetwo is an example page, 
