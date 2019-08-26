@@ -1,17 +1,26 @@
 # mijdas_app
 
-A new Flutter project.
 
-## Getting Started
+Brief & very rough file explanation:
 
-This project is a starting point for a Flutter application.
+- main.dart                 :: this is the heart, first page loaded from here and navigator to the 'home_manager.dart' page.
+- home_manager.dart         :: this is basic 'home' page, the AppBar atm is used to go back or to go to next page, BottomAppBar used for testing functions.
+    + home.dart                 :: planned to be used as object class for reference by the manager, might be refactored.
+- assessment_manager.dart   :: basic 'assessment' list beginning structure, has been scrapped for accordion menu within 'home_manager.dart' page.
+    + assessments.dart          :: same as home.dart, should probs be refactored later.
+- criteria_manager.dart     :: empty template for Joel to paste in his current criteria page or change as he sees fit.
+- signup_manager.dart       :: empty template page for creation of a signup form page.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Notes: 
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-"# MijdasMobile" 
+- main.dart atm has basic text field for testing back end rather than complete login form.
+- lots of random commented out stuff for use later
+- look at the random classes in main.dart to see how the navigator works, pagetwo is an example page, 
+and pagethree shows how to use the popUntil to reach a previous point in the stack
+
+TODO:
+
+- Fill in barebones basic outline of each page
+- populate pages from backend
+- finish up overall look & feel
