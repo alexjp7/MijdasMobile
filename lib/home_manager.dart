@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-// import 'dart:async';
-// import 'dart:convert';
-// import 'package:http/http.dart' as http;
+ import 'dart:async';
+ import 'dart:convert';
+
+ import 'package:http/http.dart' as http;
 
 import './home.dart';
 import './main.dart';
@@ -67,13 +68,37 @@ class HomeManager extends StatelessWidget {
           )
         ],
       ),
+      body: FutureBuilder<List<Universities>>(
+        future:fetchUniversities(),
+        builder: (context, snapshot) {
+          if(snapshot.hasData){
+            return Text('${snapshot.data[0].institution}');
+            //MITCH LOOK HERE I DONT KNOW HOW TO FORMAT IT SORRY. i didnt delete your old stuff but my brain is in post mode
+            //snapshot.data[].institution = uni name,
+            //snapshot.data[].subjects[].subjectCode=subjectCode
+            //snapshot.data[].subjects[].id=subject id
+
+
+
+
+          } else if (snapshot.hasError) {
+             return Text("${snapshot.error}");
+          }
+          return CircularProgressIndicator();//LOADING CIRCLE
+        },
+
+      ),
+      /*
+
+      LEGACY CODE WITH LISTVIEWBUILDER
       body: ListView.builder(
         itemBuilder: (BuildContext context, int index) {
           return new PopulateTiles(_resultsList[index]);
         },
         itemCount: _resultsList.length,
       ),
-      
+      */
+
       // ListView(
       //     physics: const AlwaysScrollableScrollPhysics(),
       //     padding: const EdgeInsets.all(8.0),
@@ -172,3 +197,66 @@ List<TileObj> _resultsList = <TileObj>[
   )
 ];
 
+
+
+Future<List<Universities>> fetchUniversities() async{
+  print('test');
+  var response = await http.post('https://markit.mijdas.com/api/requests/subject/',
+      body: jsonEncode({ "request": "POPULATE_SUBJECTS", "username": "st111"})// change this to logged in username when time comes
+      );
+
+  if(response.statusCode == 200) {
+    print('response code:  200\n');
+    print('response body: '+response.body);
+    return universitiesFromJson(response.body);
+  }
+  else{
+    print('response code: '+response.statusCode.toString());
+    print('response body: '+response.body);
+    throw Exception('Failed to load post, error code: '+response.statusCode.toString());
+  }
+}
+
+List<Universities> universitiesFromJson(String str) => new List<Universities>.from(json.decode(str).map((x) => Universities.fromJson(x)));
+
+String universitiesToJson(List<Universities> data) => json.encode(new List<dynamic>.from(data.map((x) => x.toJson())));
+
+class Universities {
+  String institution;
+  List<Subject> subjects;
+
+  Universities({
+    this.institution,
+    this.subjects,
+  });
+
+  factory Universities.fromJson(Map<String, dynamic> json) => new Universities(
+    institution: json["institution"],
+    subjects: new List<Subject>.from(json["subjects"].map((x) => Subject.fromJson(x))),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "institution": institution,
+    "subjects": new List<dynamic>.from(subjects.map((x) => x.toJson())),
+  };
+}
+
+class Subject {
+  String subjectCode;
+  String id;
+
+  Subject({
+    this.subjectCode,
+    this.id,
+  });
+
+  factory Subject.fromJson(Map<String, dynamic> json) => new Subject(
+    subjectCode: json["subject_code"],
+    id: json["id"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "subject_code": subjectCode,
+    "id": id,
+  };
+}
