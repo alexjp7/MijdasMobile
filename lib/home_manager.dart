@@ -88,7 +88,17 @@ class HomeManager extends StatelessWidget {
         },
 
       ),
-      
+      /*
+
+      LEGACY CODE WITH LISTVIEWBUILDER
+      body: ListView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          return new PopulateTiles(_resultsList[index]);
+        },
+        itemCount: _resultsList.length,
+      ),
+      */
+
       // ListView(
       //     physics: const AlwaysScrollableScrollPhysics(),
       //     padding: const EdgeInsets.all(8.0),
