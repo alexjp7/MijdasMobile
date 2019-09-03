@@ -103,6 +103,8 @@ class HomeManager extends StatelessWidget {
             ),
       /*
 
+        Maybe leave this here too for reference, we can clean it all up at the end?
+
       LEGACY CODE WITH LISTVIEWBUILDER
       body: ListView.builder(
         itemBuilder: (BuildContext context, int index) {
