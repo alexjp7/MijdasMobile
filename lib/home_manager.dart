@@ -98,7 +98,7 @@ class HomeManager extends StatelessWidget {
                 } else if (snapshot.hasError) {
                   return Text("${snapshot.error}");
                 }
-                return CircularProgressIndicator(); //LOADING CIRCLE
+                return Center(child: CircularProgressIndicator()); //LOADING CIRCLE
               },
             ),
       /*
