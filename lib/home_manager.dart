@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
- import 'dart:async';
- import 'dart:convert';
+import 'dart:async';
+import 'dart:convert';
 
- import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http;
 
 import './home.dart';
 import './main.dart';
@@ -27,7 +27,6 @@ Route homeRoute() {
 // Map<String, dynamic> fetchedData;
 
 class HomeManager extends StatelessWidget {
-  
   // Future<String> getData(String s) async {
   //   var response = await http.get(
   //     Uri.encodeFull(jsonURL+s),
@@ -40,7 +39,7 @@ class HomeManager extends StatelessWidget {
   //   fetchedData = json.decode(response.body);
   //   print(fetchedData);
   // }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,26 +68,42 @@ class HomeManager extends StatelessWidget {
         ],
       ),
       body: FutureBuilder<List<Universities>>(
-        future:fetchUniversities(searchedUser),
-        builder: (context, snapshot) {
-          if(snapshot.hasData){
-            return Text('${snapshot.data[0].institution}');
-            //MITCH LOOK HERE I DONT KNOW HOW TO FORMAT IT SORRY. i didnt delete your old stuff but my brain is in post mode
-            //snapshot.data[].institution = uni name,
-            //snapshot.data[].subjects[].subjectCode=subjectCode
-            //snapshot.data[].subjects[].id=subject id
+              future: fetchUniversities(searchedUser),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  List<TileObj> _parentListItems = new List<TileObj>();
 
+                  for(int i = 0; i < snapshot.data.length; i++){
+                    List<TileObj> _childrenListItems = new List<TileObj>();
+                    for(int i2 = 0; i2 < snapshot.data[i].subjects.length; i2++){
+                      _childrenListItems.add(new TileObj(snapshot.data[i].subjects[i2].subjectCode));
+                    }
+                    _parentListItems.add(new TileObj(snapshot.data[i].institution, _childrenListItems));
+                  }
+                  return ListView.builder(
+                        itemBuilder: (BuildContext context, int index) {
+                          return new PopulateTiles(_parentListItems[index]);
+                        },
+                        itemCount: _parentListItems.length,
+                      );
 
+                  //Maybe leave this here for future reference(-Mitch):
 
+                  //Text('${snapshot.data[0].institution}');
+                  //MITCH LOOK HERE I DONT KNOW HOW TO FORMAT IT SORRY. i didnt delete your old stuff but my brain is in post mode
+                  //snapshot.data[].institution = uni name,
+                  //snapshot.data[].subjects[].subjectCode=subjectCode
+                  //snapshot.data[].subjects[].id=subject id
 
-          } else if (snapshot.hasError) {
-             return Text("${snapshot.error}");
-          }
-          return CircularProgressIndicator();//LOADING CIRCLE
-        },
-
-      ),
+                } else if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                }
+                return CircularProgressIndicator(); //LOADING CIRCLE
+              },
+            ),
       /*
+
+        Maybe leave this here too for reference, we can clean it all up at the end?
 
       LEGACY CODE WITH LISTVIEWBUILDER
       body: ListView.builder(
@@ -103,7 +118,7 @@ class HomeManager extends StatelessWidget {
       //     physics: const AlwaysScrollableScrollPhysics(),
       //     padding: const EdgeInsets.all(8.0),
       //     children: <Widget>[
-            
+
       //     ]),
       bottomNavigationBar: BottomAppBar(
         child: Container(
@@ -142,8 +157,8 @@ class PopulateTiles extends StatelessWidget {
           dense: true,
           enabled: true,
           isThreeLine: false,
-          onLongPress: () => print("Long Press"),
-          onTap: () => print("Tap"),
+          onLongPress: () => print("Long Press: ["+t.title+"]."),
+          onTap: () => print("Tap: ["+t.title+"]."),
           // subtitle: new Text("Subtitle"),
           // leading: new Text("Leading"),
           selected: true,
@@ -160,7 +175,7 @@ class PopulateTiles extends StatelessWidget {
               ],
             ),
           ));
-          // title: new Text(t.title));
+    // title: new Text(t.title));
 
     return new ExpansionTile(
       key: new PageStorageKey<int>(3),
@@ -177,8 +192,7 @@ class TileObj {
   List<TileObj> children;
   TileObj(this.title, [this.children = const <TileObj>[]]);
 }
-
-
+/*
 //List to hold results
 List<TileObj> _resultsList = <TileObj>[
   new TileObj(
@@ -196,30 +210,35 @@ List<TileObj> _resultsList = <TileObj>[
     ],
   )
 ];
-
-
-
-Future<List<Universities>> fetchUniversities(String s) async{
+*/
+Future<List<Universities>> fetchUniversities(String s) async {
   print('test');
-  var response = await http.post('https://markit.mijdas.com/api/requests/subject/',
-      body: jsonEncode({ "request": "POPULATE_SUBJECTS", "username": s})// change this to logged in username when time comes
+  var response = await http.post(
+      'https://markit.mijdas.com/api/requests/subject/',
+      body: jsonEncode({
+        "request": "POPULATE_SUBJECTS",
+        "username": s
+      }) // change this to logged in username when time comes
       );
 
-  if(response.statusCode == 200) {
+  if (response.statusCode == 200) {
     print('response code:  200\n');
-    print('response body: '+response.body);
+    print('response body: ' + response.body);
     return universitiesFromJson(response.body);
-  }
-  else{
-    print('response code: '+response.statusCode.toString());
-    print('response body: '+response.body);
-    throw Exception('Failed to load post, error code: '+response.statusCode.toString());
+  } else {
+    print('response code: ' + response.statusCode.toString());
+    print('response body: ' + response.body);
+    throw Exception(
+        'Failed to load post, error code: ' + response.statusCode.toString());
   }
 }
 
-List<Universities> universitiesFromJson(String str) => new List<Universities>.from(json.decode(str).map((x) => Universities.fromJson(x)));
+List<Universities> universitiesFromJson(String str) =>
+    new List<Universities>.from(
+        json.decode(str).map((x) => Universities.fromJson(x)));
 
-String universitiesToJson(List<Universities> data) => json.encode(new List<dynamic>.from(data.map((x) => x.toJson())));
+String universitiesToJson(List<Universities> data) =>
+    json.encode(new List<dynamic>.from(data.map((x) => x.toJson())));
 
 class Universities {
   String institution;
@@ -231,14 +250,15 @@ class Universities {
   });
 
   factory Universities.fromJson(Map<String, dynamic> json) => new Universities(
-    institution: json["institution"],
-    subjects: new List<Subject>.from(json["subjects"].map((x) => Subject.fromJson(x))),
-  );
+        institution: json["institution"],
+        subjects: new List<Subject>.from(
+            json["subjects"].map((x) => Subject.fromJson(x))),
+      );
 
   Map<String, dynamic> toJson() => {
-    "institution": institution,
-    "subjects": new List<dynamic>.from(subjects.map((x) => x.toJson())),
-  };
+        "institution": institution,
+        "subjects": new List<dynamic>.from(subjects.map((x) => x.toJson())),
+      };
 }
 
 class Subject {
@@ -251,12 +271,12 @@ class Subject {
   });
 
   factory Subject.fromJson(Map<String, dynamic> json) => new Subject(
-    subjectCode: json["subject_code"],
-    id: json["id"],
-  );
+        subjectCode: json["subject_code"],
+        id: json["id"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "subject_code": subjectCode,
-    "id": id,
-  };
+        "subject_code": subjectCode,
+        "id": id,
+      };
 }
