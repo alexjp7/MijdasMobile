@@ -69,7 +69,7 @@ class HomeManager extends StatelessWidget {
         ],
       ),
       body: FutureBuilder<List<Universities>>(
-        future:fetchUniversities(),
+        future:fetchUniversities(searchedUser),
         builder: (context, snapshot) {
           if(snapshot.hasData){
             return Text('${snapshot.data[0].institution}');
@@ -199,10 +199,10 @@ List<TileObj> _resultsList = <TileObj>[
 
 
 
-Future<List<Universities>> fetchUniversities() async{
+Future<List<Universities>> fetchUniversities(String s) async{
   print('test');
   var response = await http.post('https://markit.mijdas.com/api/requests/subject/',
-      body: jsonEncode({ "request": "POPULATE_SUBJECTS", "username": "st111"})// change this to logged in username when time comes
+      body: jsonEncode({ "request": "POPULATE_SUBJECTS", "username": s})// change this to logged in username when time comes
       );
 
   if(response.statusCode == 200) {
