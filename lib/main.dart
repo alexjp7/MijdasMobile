@@ -24,7 +24,7 @@ final ThemeData themeData = ThemeData(
   secondaryHeaderColor: Color(0xffBFD4DF),
 );
 
-String searchedUser = "";
+String searchedUser;
 
 //base url as string
 final String jsonURL =

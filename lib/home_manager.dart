@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 
+//local imports
+import './home.dart';
+import './main.dart';
+import './criteria_manager.dart';
+import './assessment_manager.dart';
+
+//data handling/processing imports
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import './home.dart';
-import './main.dart';
-import './criteria_manager.dart';
+
 
 Route homeRoute() {
   return PageRouteBuilder(
@@ -26,6 +31,10 @@ Route homeRoute() {
 // //for storing json results globally
 // Map<String, dynamic> fetchedData;
 
+//uninitiated global context variable for use later
+// BuildContext homepageContext;
+// String chosenAssessmentID;
+
 class HomeManager extends StatelessWidget {
   // Future<String> getData(String s) async {
   //   var response = await http.get(
@@ -39,6 +48,8 @@ class HomeManager extends StatelessWidget {
   //   fetchedData = json.decode(response.body);
   //   print(fetchedData);
   // }
+
+  List<Universities> universitiesList;
 
   @override
   Widget build(BuildContext context) {
@@ -71,18 +82,20 @@ class HomeManager extends StatelessWidget {
               future: fetchUniversities(searchedUser),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
+                  universitiesList = snapshot.data;
                   List<TileObj> _parentListItems = new List<TileObj>();
 
                   for(int i = 0; i < snapshot.data.length; i++){
                     List<TileObj> _childrenListItems = new List<TileObj>();
                     for(int i2 = 0; i2 < snapshot.data[i].subjects.length; i2++){
-                      _childrenListItems.add(new TileObj(snapshot.data[i].subjects[i2].subjectCode));
+                      _childrenListItems.add(new TileObj.subject(snapshot.data[i].subjects[i2].subjectCode, universitiesList[i].subjects[i2].id));
                     }
                     _parentListItems.add(new TileObj(snapshot.data[i].institution, _childrenListItems));
                   }
                   return ListView.builder(
                         itemBuilder: (BuildContext context, int index) {
-                          return new PopulateTiles(_parentListItems[index]);
+                          // homepageContext = context; //pass and store the page context globally instead of carrying it with each tile.
+                          return new PopulateTiles(_parentListItems[index], context);
                         },
                         itemCount: _parentListItems.length,
                       );
@@ -143,7 +156,8 @@ class PopulateTiles extends StatelessWidget {
   Color _accentColour = Color(0xffBFD4DF);
 
   final TileObj fTile;
-  PopulateTiles(this.fTile);
+  BuildContext contextT;
+  PopulateTiles(this.fTile, [this.contextT]);
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +172,9 @@ class PopulateTiles extends StatelessWidget {
           enabled: true,
           isThreeLine: false,
           onLongPress: () => print("Long Press: ["+t.title+"]."),
-          onTap: () => print("Tap: ["+t.title+"]."),
+          onTap: () {
+            Navigator.push(contextT, assessmentRoute(t.tileID));
+          },
           // subtitle: new Text("Subtitle"),
           // leading: new Text("Leading"),
           selected: true,
@@ -189,8 +205,10 @@ class PopulateTiles extends StatelessWidget {
 //class structure for each tile object
 class TileObj {
   String title;
+  String tileID;
   List<TileObj> children;
   TileObj(this.title, [this.children = const <TileObj>[]]);
+  TileObj.subject(this.title, this.tileID, [this.children = const <TileObj>[]]);
 }
 /*
 //List to hold results
