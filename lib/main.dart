@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
-import './assessment_manager.dart';
-import './home_manager.dart';
-import './signup_manager.dart';
+import './assessment.dart';
+import './home.dart';
+import './signup.dart';
 
 import 'dart:async';
 import 'dart:convert';
@@ -24,7 +24,7 @@ final ThemeData themeData = ThemeData(
   secondaryHeaderColor: Color(0xffBFD4DF),
 );
 
-String searchedUser = "";
+String searchedUser;
 
 //base url as string
 final String jsonURL =
@@ -84,7 +84,7 @@ class MyApp extends StatelessWidget {
                         },
                         child: Text("Search"),
                       ),
-                    ), 
+                    ),
                     Container(
                       child: RaisedButton(
                         onPressed: () {
