@@ -18,10 +18,11 @@ void main() {
 }
 
 final ThemeData themeData = ThemeData(
-  canvasColor: Color(0xffE1E2E1),
-  accentColor: Color(0xff61747E),
-  primaryColor: Color(0xff0069C0),
-  secondaryHeaderColor: Color(0xffBFD4DF),
+  // brightness: Brightness.dark,
+  canvasColor: Color(0xffE1E2E1),//White Background
+  accentColor: Color(0xff61747E),//dark grey
+  primaryColor: Color(0xff0069C0),//darker blue
+  secondaryHeaderColor: Color(0xffBFD4DF),//light grey
 );
 
 String searchedUser;

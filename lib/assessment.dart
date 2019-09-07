@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 
 //local imports
-import './main.dart';
-import './criteria_manager.dart';
 import './home.dart';
 import './students.dart';
-import './signup.dart';
 
 //data handling/processing imports
 import 'dart:async';
@@ -119,7 +115,7 @@ class PopulateTiles extends StatelessWidget {
         isThreeLine: false,
         onLongPress: () => print("Long Press: [" + t.title + "]."),
         onTap: () {
-          print("Tap: [" + t.title + "].");
+          Navigator.push(contextT, studentsRoute(t.tileID));
         },
         // subtitle: new Text("Subtitle"),
         // leading: new Text("Leading"),
