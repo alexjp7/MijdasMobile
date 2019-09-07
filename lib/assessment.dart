@@ -5,6 +5,7 @@ import 'package:flutter/semantics.dart';
 import './main.dart';
 import './criteria_manager.dart';
 import './home.dart';
+import './students.dart';
 import './signup.dart';
 
 //data handling/processing imports
@@ -17,8 +18,7 @@ String assessmentID;
 
 Route assessmentRoute(String s) {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) =>
-        AssessmentManager(),
+    pageBuilder: (context, animation, secondaryAnimation) => Assessments(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       assessmentID = s; //assigning page ID
       return FadeTransition(
@@ -29,7 +29,7 @@ Route assessmentRoute(String s) {
   );
 }
 
-class AssessmentManager extends StatelessWidget {
+class Assessments extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -13,7 +13,7 @@ import 'package:http/http.dart' as http;
 
 Route homeRoute() {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => HomeManager(),
+    pageBuilder: (context, animation, secondaryAnimation) => Home(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(
         opacity: animation,
@@ -32,7 +32,7 @@ Route homeRoute() {
 // BuildContext homepageContext;
 // String chosenAssessmentID;
 
-class HomeManager extends StatelessWidget {
+class Home extends StatelessWidget {
   // Future<String> getData(String s) async {
   //   var response = await http.get(
   //     Uri.encodeFull(jsonURL+s),

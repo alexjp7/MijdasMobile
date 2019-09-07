@@ -8,7 +8,7 @@ import './main.dart';
 
 Route signUpRoute() {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => SignUpManager(),
+    pageBuilder: (context, animation, secondaryAnimation) => SignUp(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(
         opacity: animation,
@@ -23,7 +23,7 @@ Route signUpRoute() {
 // //for storing json results globally
 // Map<String, dynamic> fetchedData;
 
-class SignUpManager extends StatelessWidget {
+class SignUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
