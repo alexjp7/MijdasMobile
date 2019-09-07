@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
-import './assessment_manager.dart';
-import './home_manager.dart';
-import './signup_manager.dart';
+import './assessment.dart';
+import './home.dart';
+import './signup.dart';
 
 import 'dart:async';
 import 'dart:convert';
@@ -84,7 +84,7 @@ class MyApp extends StatelessWidget {
                         },
                         child: Text("Search"),
                       ),
-                    ), 
+                    ),
                     Container(
                       child: RaisedButton(
                         onPressed: () {

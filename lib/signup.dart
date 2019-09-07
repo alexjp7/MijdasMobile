@@ -24,7 +24,6 @@ Route signUpRoute() {
 // Map<String, dynamic> fetchedData;
 
 class SignUpManager extends StatelessWidget {
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,13 +52,13 @@ class SignUpManager extends StatelessWidget {
         ],
       ),
       body: Center(
-              child: RaisedButton(
-                onPressed: () {
-                  Navigator.push(context, PageThree());
-                },
-                child: Text("Template Page, Click To Go To Final Page."),
-              ),
-            ),
+        child: RaisedButton(
+          onPressed: () {
+            Navigator.push(context, PageThree());
+          },
+          child: Text("Template Page, Click To Go To Final Page."),
+        ),
+      ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
             height: 70.0,
@@ -78,4 +77,3 @@ class SignUpManager extends StatelessWidget {
     );
   }
 }
-
