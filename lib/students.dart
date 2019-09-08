@@ -462,7 +462,7 @@ class StudentSearch extends SearchDelegate<String> {
           text: TextSpan(
               text: _getStudent(suggestedItems[index].toString()).result,
               style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                  TextStyle(color: Colors.grey[700], fontWeight: FontWeight.bold),
               children: [
                 TextSpan(
                     text: (" /" + getAssessmentMaxMark()),
