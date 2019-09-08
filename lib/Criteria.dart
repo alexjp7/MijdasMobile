@@ -1,105 +1,93 @@
 //Got lost trying to figure multi pages out - will need it explained after/before meeting pls xoxo - this code is ready for posts - joel
+import 'package:flutter/material.dart';
+
+//local imports
+import './home.dart';
+import './students.dart';
+import './assessment.dart';
+
+//data handling/processing imports
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 
 
 import 'package:flutter/material.dart';
 
-void main(){
-  runApp(CriteriaPage(
-      items: List<Criteria>.generate(10, (i) => new Criteria("Criterea $i",i,i%3,(((i%3)*5)+5),1.0)
-      )));
+Student selectedStudent;
+String assId;
+
+
+Route CriteriaRoute(Student s,String assID) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => Criteria(),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      selectedStudent = s; //assigning page ID
+      assId = assID;
+      return FadeTransition(
+        opacity: animation,
+        child: child,
+      );
+    },
+  );
 }
 
 
-
-class CriteriaPage extends StatefulWidget{
-  final List<Criteria> items;
-  CriteriaPage({Key key, @required this.items}) : super(key:key);
-
+class Criteria extends StatelessWidget{
   @override
-  _CriteriaPageState createState() => _CriteriaPageState(this.items);
-}
-
-
-class _CriteriaPageState extends State<CriteriaPage>{
-  final List<Criteria> items;
-  _CriteriaPageState(this.items);
-
-  Widget _buildSliders(int index){
-    if(items[index].elementType==0){
-      return Flexible(
-          flex:1,
-          child: Slider(
-
-            min: 0.0,
-            max:items[index].maxMark.toDouble(),
-            onChanged: (newSliderValue) {
-              setState(() => items[index].value = newSliderValue.roundToDouble());
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        leading: Padding(
+          padding: EdgeInsets.only(left: 12),
+          child: IconButton(
+            icon: Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Navigator.pop(context);
+              print("Back Arrow Clicked");
             },
-            value: items[index].value,
-          )
-      );
-    }
-    else if(items[index].elementType==1){
-      return Flexible(
-          flex:1,
-          child: Checkbox(
-              value: true,
-              onChanged: (newCheckBoxValue) {
-                setState(()=> items[index].value = 10.0);
-              }
-          )
-      );
-    }
-    else{
-      return Flexible(
-          flex:1,
-          child: TextField(
-            // Text:items[index].value,
-
-          )
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context){
-    final title = 'criteria prototype';
-
-
-    return MaterialApp(
-      title: title,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(title),
+          ),
         ),
-        body: ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-                title: Column(
-                    children:
-                    <Widget>[Text('${items[index].name}'),
-                      Text('${items[index].value}'+'/'),
-                      Text('${items[index].maxMark}'),]
-                ),
+        title: Text('Assessments'),
+        centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.dehaze),
+            onPressed: () {
+              Navigator.push(context, homeRoute());
+              print("Hamburger Menu Clicked");
+            },
+          )
+        ],
+      ),
+      body: FutureBuilder(
 
-                subtitle: Row(
-                    children:
-                    <Widget>[_buildSliders(index),
-
-                    ])
-
-            );
-          },
-        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Container(
+            height: 70.0,
+            child: IconButton(
+              icon: Icon(Icons.more_horiz),
+              onPressed: () {
+                print("Bottom AppBar Pressed");
+                // fetchedData.forEach((key, val) => print('Key: $key, Value: $val'));
+                // print(searchedUser);
+                // getData(searchedUser);
+                // getData();
+              },
+            )),
+        color: Theme.of(context).primaryColor,
       ),
     );
   }
 }
 
-class Criteria{
+
+class CriteriaObj{
   String name;
   int iD,elementType,maxMark;
   double value;
-  Criteria(this.name, this.iD, this.elementType, this.maxMark,this.value);
+  CriteriaObj(this.name, this.iD, this.elementType, this.maxMark,this.value);
 }
