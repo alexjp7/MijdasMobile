@@ -93,12 +93,12 @@ class Students extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   print(snapshot.data[0].records[0].studentId);
-                  List<Record> studentList = snapshot.data[0].records;//studentList is the list of students
+                  List<Student> studentList = snapshot.data[0].records;//studentList is the list of students
 
 
                   List<TileObj> _parentListItems = new List<TileObj>();
 
-                  for (Record record in studentList) {
+                  for (Student record in studentList) {
                     print(record.studentId);
                     if(record.studentId == null){
                       if(record.result == null)
@@ -422,14 +422,14 @@ List<StudentDecode> studentDecodeFromJson(String str) => new List<StudentDecode>
 
 
 class StudentDecode {
-  List<Record> records;
+  List<Student> records;
 
   StudentDecode({
     this.records,
   });
 
   factory StudentDecode.fromJson(Map<String, dynamic> json) => new StudentDecode(
-    records: new List<Record>.from(json["records"].map((x) => Record.fromJson(x))),
+    records: new List<Student>.from(json["records"].map((x) => Student.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -437,16 +437,16 @@ class StudentDecode {
   };
 }
 
-class Record {
+class Student {
   String studentId;
   String result;
 
-  Record({
+  Student({
     this.studentId,
     this.result,
   });
 
-  factory Record.fromJson(Map<String, dynamic> json) => new Record(
+  factory Student.fromJson(Map<String, dynamic> json) => new Student(
     studentId: json["student_id"],
     result: json["result"] == null ? null : json["result"],
   );
