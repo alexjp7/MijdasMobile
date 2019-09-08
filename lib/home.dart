@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 //local imports
 import './main.dart';
-import './criteria_manager.dart';
 import './assessment.dart';
+// import './criteria_manager.dart';
 
 //data handling/processing imports
 import 'dart:async';
@@ -69,7 +69,7 @@ class Home extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.dehaze),
             onPressed: () {
-              Navigator.push(context, criteriaRoute());
+              // Navigator.push(context, criteriaRoute());
               print("Hamburger Menu Clicked");
             },
           )
