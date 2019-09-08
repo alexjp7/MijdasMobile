@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 //local imports
 import './main.dart';
 import './assessment.dart';
+import './global_widgets.dart';
 // import './criteria_manager.dart';
 
 //data handling/processing imports
@@ -11,10 +12,14 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+String _subjectName;
+BuildContext _homeContext;
+
 Route homeRoute() {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) => Home(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      _homeContext = context;//assigning buildcontext
       return FadeTransition(
         opacity: animation,
         child: child,
@@ -95,7 +100,7 @@ class Home extends StatelessWidget {
             return ListView.builder(
               itemBuilder: (BuildContext context, int index) {
                 // homepageContext = context; //pass and store the page context globally instead of carrying it with each tile.
-                return new PopulateTiles(_parentListItems[index], context);
+                return new PopulateTiles(_parentListItems[index]);
               },
               itemCount: _parentListItems.length,
             );
@@ -133,7 +138,7 @@ class Home extends StatelessWidget {
       //     children: <Widget>[
 
       //     ]),
-      bottomNavigationBar: BottomAppBar(
+      /*bottomNavigationBar: BottomAppBar(
         child: Container(
             height: 70.0,
             child: IconButton(
@@ -147,7 +152,7 @@ class Home extends StatelessWidget {
               },
             )),
         color: Theme.of(context).primaryColor,
-      ),
+      ),*/
     );
   }
 }
@@ -156,8 +161,8 @@ class PopulateTiles extends StatelessWidget {
   Color _accentColour = Color(0xffBFD4DF);
 
   final TileObj fTile;
-  BuildContext contextT;
-  PopulateTiles(this.fTile, [this.contextT]);
+  // BuildContext contextT;
+  PopulateTiles(this.fTile);
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +178,8 @@ class PopulateTiles extends StatelessWidget {
           isThreeLine: false,
           onLongPress: () => print("Long Press: [" + t.title + "]."),
           onTap: () {
-            Navigator.push(contextT, assessmentRoute(t.tileID));
+            _subjectName = t.title;
+            Navigator.push(_homeContext, assessmentRoute(t.tileID));
           },
           // subtitle: new Text("Subtitle"),
           // leading: new Text("Leading"),
@@ -230,6 +236,7 @@ List<TileObj> _resultsList = <TileObj>[
   )
 ];
 */
+
 Future<List<Universities>> fetchUniversities(String s) async {
   print('test');
   var response = await http.post(
@@ -244,6 +251,9 @@ Future<List<Universities>> fetchUniversities(String s) async {
     print('response code:  200\n');
     print('response body: ' + response.body);
     return universitiesFromJson(response.body);
+  } else if (response.statusCode == 404) {
+    print('response code:  404\n');
+    showDialog_1(_homeContext, "Error!", "Response Code: 404.\n\n\t\t\tNo Subjects Found.", "Close & Return");
   } else {
     print('response code: ' + response.statusCode.toString());
     print('response body: ' + response.body);
@@ -298,4 +308,8 @@ class Subject {
         "subject_code": subjectCode,
         "id": id,
       };
+}
+
+String getSubjecttName(){
+  return _subjectName;
 }

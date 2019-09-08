@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 //local imports
 import './home.dart';
 import './students.dart';
+import './global_widgets.dart';
 
 //data handling/processing imports
 import 'dart:async';
@@ -10,13 +11,17 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-String assessmentID;
+BuildContext _assessmentContext;
+String _assessmentID;
+String _assessmentName;
+String _assessmentMaxMark;
 
 Route assessmentRoute(String s) {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) => Assessments(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      assessmentID = s; //assigning page ID
+      _assessmentContext = context;//assigning page buildcontext
+      _assessmentID = s; //assigning page ID
       return FadeTransition(
         opacity: animation,
         child: child,
@@ -54,14 +59,14 @@ class Assessments extends StatelessWidget {
         ],
       ),
       body: FutureBuilder<List<Assessment>>(
-        future: fetchAssessments(assessmentID),
+        future: fetchAssessments(_assessmentID),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<TileObj> _parentListItems = new List<TileObj>();
 
             for (int i = 0; i < snapshot.data.length; i++) {
               _parentListItems.add(new TileObj(snapshot.data[i].name,
-                  snapshot.data[i].id, snapshot.data[i].a_number));
+                  snapshot.data[i].id, snapshot.data[i].a_number, snapshot.data[i].maxMark));
             }
             return ListView.builder(
               itemBuilder: (BuildContext context, int index) {
@@ -75,7 +80,7 @@ class Assessments extends StatelessWidget {
           return Center(child: CircularProgressIndicator()); //LOADING CIRCLE
         },
       ),
-      bottomNavigationBar: BottomAppBar(
+      /*bottomNavigationBar: BottomAppBar(
         child: Container(
             height: 70.0,
             child: IconButton(
@@ -89,7 +94,7 @@ class Assessments extends StatelessWidget {
               },
             )),
         color: Theme.of(context).primaryColor,
-      ),
+      ),*/
     );
   }
 }
@@ -115,6 +120,8 @@ class PopulateTiles extends StatelessWidget {
         isThreeLine: false,
         onLongPress: () => print("Long Press: [" + t.title + "]."),
         onTap: () {
+          _assessmentName = t.title;
+          _assessmentMaxMark = t.tileMaxMark;
           Navigator.push(contextT, studentsRoute(t.tileID));
         },
         // subtitle: new Text("Subtitle"),
@@ -149,7 +156,8 @@ class TileObj {
   String title;
   String tileID;
   String tileANum;
-  TileObj(this.title, this.tileID, this.tileANum);
+  String tileMaxMark;
+  TileObj(this.title, this.tileID, this.tileANum, this.tileMaxMark);
 }
 
 Future<List<Assessment>> fetchAssessments(String s) async {
@@ -162,8 +170,9 @@ Future<List<Assessment>> fetchAssessments(String s) async {
     return assessmentsFromJson(response.body);
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
+    showDialog_1(_assessmentContext, "Error!", "Response Code: 404.\n\n\t\t\tNo Assessments Found.", "Close & Return");
     //navigate to an error page displaying lack of assessment error
-    return assessmentsFromJson(response.body);
+    // return assessmentsFromJson(response.body);
   } else {
     print('response code: ' + response.statusCode.toString());
     print('response body: ' + response.body);
@@ -179,22 +188,33 @@ class Assessment {
   String id;
   String a_number;
   String name;
+  String maxMark;
 
   Assessment({
     this.id,
     this.a_number,
     this.name,
+    this.maxMark,
   });
 
   factory Assessment.fromJson(Map<String, dynamic> json) => new Assessment(
         id: json["id"],
         a_number: json["a_number"],
         name: json["name"],
+        maxMark: json["max_mark"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "a_number": a_number,
         "name": name,
+        "max_mark": maxMark,
       };
+}
+
+String getAssessmentName(){
+  return _assessmentName;
+}
+String getAssessmentMaxMark(){
+  return _assessmentMaxMark;
 }
