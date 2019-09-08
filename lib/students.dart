@@ -88,26 +88,30 @@ class Students extends StatelessWidget {
           Container(
             width: 500,
             height: 100,
-            child: FutureBuilder<List<Student>>(
+            child: FutureBuilder<List<StudentDecode>>(
               future: fetchStudents(assessmentID),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
+                  print(snapshot.data[0].records[0].studentId);
+                  List<Record> studentList = snapshot.data[0].records;//studentList is the list of students
+
+
                   List<TileObj> _parentListItems = new List<TileObj>();
 
-                  for (int i = 0; i < snapshot.data.length; i++) {
-                    print(snapshot.data[i].id);
-                    if(snapshot.data[i].id == null){
-                      if(snapshot.data[i].result == null)
+                  for (Record record in studentList) {
+                    print(record.studentId);
+                    if(record.studentId == null){
+                      if(record.result == null)
                         _parentListItems.add(new TileObj("NULL BOTH", "NULL BOTH"));
                       else 
-                        _parentListItems.add(new TileObj("NULL ID", snapshot.data[i].result));
-                    } else if(snapshot.data[i].result == null){
-                      if(snapshot.data[i].id == null)
+                        _parentListItems.add(new TileObj("NULL ID", record.result));
+                    } else if(record.result == null){
+                      if(record.studentId == null)
                         _parentListItems.add(new TileObj("NULL BOTH", "NULL BOTH"));
                       else 
-                        _parentListItems.add(new TileObj(snapshot.data[i].id, "NULL RESULT"));
-                    } else if (snapshot.data[i].id == null && snapshot.data[i].result == null){
-                      _parentListItems.add(new TileObj(snapshot.data[i].id, snapshot.data[i].result));
+                        _parentListItems.add(new TileObj(record.studentId, "NULL RESULT"));
+                    } else if (record.studentId == null && record.result == null){
+                      _parentListItems.add(new TileObj(record.studentId, record.result));
                     }
                   }
                   return ListView.builder(
@@ -393,7 +397,7 @@ class TileObj {
   TileObj(this.title, this.tileResult);
 }
 
-Future<List<Student>> fetchStudents(String s) async {
+Future<List<StudentDecode>> fetchStudents(String s) async {
   var response = await http.post('https://markit.mijdas.com/api/assessment/',
       body: jsonEncode(
           {"request": "POPULATE_STUDENTS", "assessment_id": s}));
@@ -401,11 +405,11 @@ Future<List<Student>> fetchStudents(String s) async {
   if (response.statusCode == 200) {
     print('response code:  200\n');
     print('response body: ' + response.body);
-    return studentsFromJson(response.body);
+    return studentDecodeFromJson(response.body);
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
     //navigate to an error page displaying lack of assessment error
-    return studentsFromJson(response.body);
+    return studentDecodeFromJson(response.body);
   } else {
     print('response code: ' + response.statusCode.toString());
     print('response body: ' + response.body);
@@ -414,26 +418,41 @@ Future<List<Student>> fetchStudents(String s) async {
   }
 }
 
-List<Student> studentsFromJson(String str) => new List<Student>.from(
-    json.decode(str).map((x) => Student.fromJson(x)));
-//error with json, returns null, or _typeError with ["records"]
+List<StudentDecode> studentDecodeFromJson(String str) => new List<StudentDecode>.from(json.decode(str).map((x) => StudentDecode.fromJson(x)));
 
-class Student {
-  String id;
+
+class StudentDecode {
+  List<Record> records;
+
+  StudentDecode({
+    this.records,
+  });
+
+  factory StudentDecode.fromJson(Map<String, dynamic> json) => new StudentDecode(
+    records: new List<Record>.from(json["records"].map((x) => Record.fromJson(x))),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "records": new List<dynamic>.from(records.map((x) => x.toJson())),
+  };
+}
+
+class Record {
+  String studentId;
   String result;
 
-  Student({
-    this.id,
+  Record({
+    this.studentId,
     this.result,
   });
 
-  factory Student.fromJson(Map<String, dynamic> json) => new Student(
-        id: json["student_id"],
-        result: json["result"],
-      );
+  factory Record.fromJson(Map<String, dynamic> json) => new Record(
+    studentId: json["student_id"],
+    result: json["result"] == null ? null : json["result"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "student_id": id,
-        "result": result,
-      };
+    "student_id": studentId,
+    "result": result == null ? null : result,
+  };
 }
