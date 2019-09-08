@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 //local imports
 import './criteria_manager.dart';
@@ -115,13 +116,21 @@ class Students extends StatelessWidget {
                         _studentList[i].studentId, _studentList[i].result));
                   }
 
-                  return ListView.builder(
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text("Marking Progress"),
+                      _studentsMarkedChart(),
+                    ],
+                  );
+                  /*ListView.builder(
                     itemBuilder: (BuildContext context, int index) {
                       return new PopulateTiles(
                           _parentListItems[index], context);
                     },
                     itemCount: _parentListItems.length,
-                  );
+                  );*/
                 } else if (snapshot.hasError) {
                   return Text("${snapshot.error}");
                 }
@@ -158,6 +167,7 @@ class Students extends StatelessWidget {
     );
   }
 }
+
 
 Icon _getMarkedState(String s) {
   try{
@@ -319,12 +329,32 @@ Widget _searchArea(BuildContext context) {
   );
 }
 
-// IconButton(
-//           icon: Icon(Icons.search),
-//           onPressed: () {
-//             showSearch(context: context, delegate: StudentSearch());
-//           },
-//         ),
+Widget _studentsMarkedChart(){
+
+  double markedCount = _getMarkedCount().toDouble();
+  Map<String, double> dataMap = new Map();
+  dataMap.putIfAbsent("Unmarked", () => (_studentIDList.length-markedCount));
+  dataMap.putIfAbsent("Marked", () => markedCount);
+
+  return Padding(
+    padding: EdgeInsets.all(32.0),
+    child: SizedBox(
+      height: 200,
+      child: PieChart(
+        dataMap: dataMap,
+        legendFontColor: Colors.blueGrey[900],
+        legendFontSize: 14.0,
+        legendFontWeight: FontWeight.w500,
+        animationDuration: Duration(milliseconds: 800),
+        chartLegendSpacing: 32.0,
+        chartRadius: MediaQuery.of(_studentContext).size.width/2.7,
+        showChartValuesInPercentage: true,
+        showChartValues: true,
+        chartValuesColor: Colors.blueGrey[900].withOpacity(0.9),
+      )
+    ),
+  );
+}
 
 class StudentSearch extends SearchDelegate<String> {
   //hardcoded searched items
