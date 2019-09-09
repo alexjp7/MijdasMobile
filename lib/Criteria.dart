@@ -56,12 +56,12 @@ class CriteriaPage extends State<CriteriaPageState> {
   CriteriaPage();
 
   Widget _buildTiles(int index) {
-    if (items[index].element == 0) {
+    if (items[index].element == "0") {
       return Flexible(
           flex: 1,
           child: Slider(
             min: 0.0,
-            max: double.parse(items[index].maxMark),
+            max: items[index].maxMarkI.toDouble(),
             onChanged: (newSliderValue) {
               setState(() {
                 items[index].value = newSliderValue.roundToDouble();
@@ -69,7 +69,7 @@ class CriteriaPage extends State<CriteriaPageState> {
             },
             value: items[index].value,
           ));
-    } else if (items[index].element == 1) {
+    } else if (items[index].element == "1") {
       items[index].value = 0;
       return Flexible(
           flex: 1,
@@ -81,7 +81,7 @@ class CriteriaPage extends State<CriteriaPageState> {
                       items[index]._isChecked = val;
                       items[index]._isChecked
                           ? items[index].value =
-                              double.parse(items[index].maxMark)
+                            items[index].maxMarkI.toDouble()
                           : items[index].value = 0;
                     });
                   })));
@@ -133,10 +133,17 @@ class CriteriaPage extends State<CriteriaPageState> {
       body: FutureBuilder<List<CriteriaDecode>>(
           future: fetchCriteria(),
           builder: (context, snapshot) {
-            print('ffffffffffff');
-            if(snapshot.hasData){
-              print(snapshot.data[0].criteria[0].criteria);
-              items = snapshot.data[0].criteria;
+
+            if(true){
+              print('ffffffffffff');
+             // print(snapshot.data[0].criteria[0].criteria);
+
+              items = List<Criterion>.generate(7, (i) {
+                int j=i%3;
+                int k = (((j)*5)+5);
+                return new Criterion(criteria: "$i", maxMark: "$k",element: "$j" ,displayText: "Test" );
+
+              });
 
               return ListView.builder(
                 itemCount: items.length,
@@ -177,7 +184,10 @@ Future<List<CriteriaDecode>> fetchCriteria() async {
   if (response.statusCode == 200) {
     print('response code:  200\n');
     print('response body: ' + response.body);
-    return criteriaDecodeFromJson(response.body);
+    List<CriteriaDecode> rValue = criteriaDecodeFromJson(response.body);
+    print("FUCKFACE: "+rValue[0].criteria[0].criteria);
+    return rValue;
+
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
     // showDialog_1(_assessmentContext, "Error!", "Response Code: 404.\n\n\t\t\tNo Assessments Found.", "Close & Return");
@@ -228,6 +238,8 @@ class Criterion {
   String maxMark;
   String displayText;
   bool _isChecked;
+  int iD,elementType,maxMarkI;
+
   TextEditingController tControl;
   double value = 0;
 
@@ -237,11 +249,14 @@ class Criterion {
     this.maxMark,
     this.displayText,
   }) {
-    if (element == 1) {
+    if (element == "1") {
       _isChecked = false;
-    } else if (element == 2) {
+    } else if (element == "2") {
       tControl = TextEditingController();
     }
+    this.iD = int.parse(criteria);
+    this.elementType=int.parse(element);
+    this.maxMarkI=int.parse(maxMark);
   }
 
   factory Criterion.fromJson(Map<String, dynamic> json) => Criterion(
