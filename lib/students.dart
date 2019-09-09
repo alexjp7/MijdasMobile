@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mijdas_app/Criteria.dart';
 
 //local imports
-import './criteria_manager.dart';
+//import './criteria_manager.dart';
 import './assessment.dart';
 import './main.dart';
 import './home.dart';
@@ -398,7 +399,7 @@ class StudentSearch extends SearchDelegate<String> {
           print(suggestedItems[index].toString());
           print(_getIndexForStudent(suggestedItems[index].toString()));
           Navigator.push(context,
-              PageThree()); //JOEL USE THIS TO NAVIGATE TO SELECTED STUDENTS CRITERIA!
+              CriteriaRoute(_studentList[index], _assessmentID)); //JOEL USE THIS TO NAVIGATE TO SELECTED STUDENTS CRITERIA!
           // close(context, route);
         },
         leading: _getMarkedState(_getStudent(suggestedItems[index].toString()).result),

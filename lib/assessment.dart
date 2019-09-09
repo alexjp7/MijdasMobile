@@ -165,8 +165,8 @@ Future<List<Assessment>> fetchAssessments(String s) async {
       body: jsonEncode({"request": "VIEW_ASSESSMENT", "subject_id": s}));
 
   if (response.statusCode == 200) {
-    print('response code:  200\n');
-    print('response body: ' + response.body);
+//    print('response code:  200\n');
+//    print('response body: ' + response.body);
     return assessmentsFromJson(response.body);
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
