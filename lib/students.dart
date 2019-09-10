@@ -20,6 +20,7 @@ String _assessmentID;
 List<Student> _studentList;
 List<String> _studentIDList;
 List<String> _recentSearchesList;
+bool _isFetchDone;
 Icon _isMarked = new Icon(
   Icons.check_box,
   color: Colors.green,
@@ -120,6 +121,7 @@ class Students extends StatelessWidget {
                     _parentListItems.add(new TileObj(
                         _studentList[i].studentId, _studentList[i].result));
                   }
+                  _isFetchDone = true; //able to click button now
 
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -133,12 +135,14 @@ class Students extends StatelessWidget {
                                 fontWeight: FontWeight.bold),
                             children: [
                               TextSpan(
-                                  text: ("("+_getMarkedCount().toString()),
-                                  style: TextStyle(color: Colors.grey, fontSize: 14.0),
+                                  text: ("(" + _getMarkedCount().toString()),
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 14.0),
                                   children: [
                                     TextSpan(
                                       text: (" / " +
-                                          _studentIDList.length.toString()+")"),
+                                          _studentIDList.length.toString() +
+                                          ")"),
                                       style: TextStyle(color: Colors.grey),
                                     ),
                                   ]),
@@ -161,6 +165,7 @@ class Students extends StatelessWidget {
                     itemCount: _parentListItems.length,
                   );*/
                 } else if (snapshot.hasError) {
+                  _isFetchDone = false;
                   return Text("${snapshot.error}");
                 }
                 return Center(
@@ -208,6 +213,17 @@ Icon _getMarkedState(String s) {
   }
 }
 
+Color _getMarkedStateBar(String s) {
+  try {
+    if (double.parse(s) >= 0)
+      return Colors.black12;
+    else
+      return Colors.red;
+  } catch (e) {
+    return Colors.transparent; //trying to mark null produces error
+  }
+}
+
 Student _getStudent(String s) {
   return _studentList.firstWhere((x) => x.studentId.startsWith(s));
 }
@@ -244,6 +260,7 @@ Widget _searchArea(BuildContext context) {
   Color _mainBackdrop = new Color(0xff54b3ff); //lighter blue
   // Color _mainBackdrop = new Color(0xff2196F3); //light blue
   final studentSearchController = TextEditingController();
+  _isFetchDone = false;
 
   return Stack(
     fit: StackFit.expand,
@@ -259,7 +276,7 @@ Widget _searchArea(BuildContext context) {
             Material(color: _mainBackdrop),
             Positioned(
               top: 65,
-              left: 50,
+              left: 70,
               width: 330,
               height: 40,
               child: RichText(
@@ -276,7 +293,8 @@ Widget _searchArea(BuildContext context) {
               height: 40,
               child: RichText(
                 text: TextSpan(
-                  text: (""),/*_getMarkedCount().toString() +
+                  text: (""),
+                  /*_getMarkedCount().toString() +
                       "/" +
                       _getTotalCount().toString()),*/
                   style: TextStyle(color: Colors.black, fontSize: 16),
@@ -290,11 +308,17 @@ Widget _searchArea(BuildContext context) {
               height: 45,
               child: RaisedButton(
                 onPressed: () {
-                  print("Filter Search Button Pressed");
-                  String searchResults =
-                      showSearch(context: context, delegate: StudentSearch())
-                          .toString();
-                  print(searchResults);
+                  if (_isFetchDone) {
+                    //check if api fetch is done
+                    print("Filter Search Button Pressed");
+                    String searchResults =
+                        showSearch(context: context, delegate: StudentSearch())
+                            .toString();
+                    print(searchResults);
+                  } else {
+                    print(
+                        "API Fetch Incomplete. Please Wait."); //simple print msg, no prompt cuz annoying for user
+                  }
                 },
                 textColor: Colors.black,
                 padding: const EdgeInsets.all(0.0),
@@ -448,37 +472,40 @@ class StudentSearch extends SearchDelegate<String> {
         : studentsList.where((x) => x.startsWith(query)).toList();
 
     return ListView.builder(
-      itemBuilder: (context, index) => ListTile(
-        onTap: () {
-          print(suggestedItems[index].toString());
-          print(_getIndexForStudent(suggestedItems[index].toString()));
-          Navigator.push(context,
-              PageThree()); //JOEL USE THIS TO NAVIGATE TO SELECTED STUDENTS CRITERIA!
-          // close(context, route);
-        },
-        leading: _getMarkedState(
-            _getStudent(suggestedItems[index].toString()).result),
-        trailing: RichText(
-          text: TextSpan(
-              text: _getStudent(suggestedItems[index].toString()).result,
-              style:
-                  TextStyle(color: Colors.grey[700], fontWeight: FontWeight.bold),
-              children: [
-                TextSpan(
-                    text: (" /" + getAssessmentMaxMark()),
-                    style: TextStyle(color: Colors.grey))
-              ]),
-        ),
-        title: RichText(
-          text: TextSpan(
-              text: suggestedItems[index].substring(0, query.length),
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              children: [
-                TextSpan(
-                    text: suggestedItems[index].substring(query.length),
-                    style: TextStyle(color: Colors.grey))
-              ]),
+      itemBuilder: (context, index) => Container(
+        decoration: BoxDecoration(color: _getMarkedStateBar(_getStudent(suggestedItems[index].toString()).result)),
+        child: ListTile(
+          onTap: () {
+            print(suggestedItems[index].toString());
+            print(_getIndexForStudent(suggestedItems[index].toString()));
+            Navigator.push(context,
+                PageThree()); //JOEL USE THIS TO NAVIGATE TO SELECTED STUDENTS CRITERIA!
+            // close(context, route);
+          },
+          leading: _getMarkedState(
+              _getStudent(suggestedItems[index].toString()).result),
+          trailing: RichText(
+            text: TextSpan(
+                text: _getStudent(suggestedItems[index].toString()).result,
+                style: TextStyle(
+                    color: Colors.grey[700], fontWeight: FontWeight.bold),
+                children: [
+                  TextSpan(
+                      text: (" /" + getAssessmentMaxMark()),
+                      style: TextStyle(color: Colors.grey))
+                ]),
+          ),
+          title: RichText(
+            text: TextSpan(
+                text: suggestedItems[index].substring(0, query.length),
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                children: [
+                  TextSpan(
+                      text: suggestedItems[index].substring(query.length),
+                      style: TextStyle(color: Colors.grey))
+                ]),
+          ),
         ),
       ),
       itemCount: suggestedItems.length,
