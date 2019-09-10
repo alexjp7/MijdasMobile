@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 //local imports
 import './criteria_manager.dart';
@@ -19,8 +20,13 @@ String _assessmentID;
 List<Student> _studentList;
 List<String> _studentIDList;
 List<String> _recentSearchesList;
-Icon _isMarked = new Icon(Icons.check_box, color: Colors.green,);
-Icon _isNotMarked = new Icon(Icons.check_box_outline_blank,);
+Icon _isMarked = new Icon(
+  Icons.check_box,
+  color: Colors.green,
+);
+Icon _isNotMarked = new Icon(
+  Icons.check_box_outline_blank,
+);
 
 Route studentsRoute(String id) {
   return PageRouteBuilder(
@@ -115,13 +121,45 @@ class Students extends StatelessWidget {
                         _studentList[i].studentId, _studentList[i].result));
                   }
 
-                  return ListView.builder(
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text.rich(
+                        TextSpan(
+                            text: "Marking Progress:\n",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                            children: [
+                              TextSpan(
+                                  text: ("("+_getMarkedCount().toString()),
+                                  style: TextStyle(color: Colors.grey, fontSize: 14.0),
+                                  children: [
+                                    TextSpan(
+                                      text: (" / " +
+                                          _studentIDList.length.toString()+")"),
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  ]),
+                            ]),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          // fontFamily: 'Karla',
+                        ),
+                      ),
+                      // Text("Marking Progress"),
+                      _studentsMarkedChart(),
+                    ],
+                  );
+                  /*ListView.builder(
                     itemBuilder: (BuildContext context, int index) {
                       return new PopulateTiles(
                           _parentListItems[index], context);
                     },
                     itemCount: _parentListItems.length,
-                  );
+                  );*/
                 } else if (snapshot.hasError) {
                   return Text("${snapshot.error}");
                 }
@@ -160,20 +198,19 @@ class Students extends StatelessWidget {
 }
 
 Icon _getMarkedState(String s) {
-  try{
+  try {
     if (double.parse(s) >= 0)
       return _isMarked;
     else
       return Icon(Icons.error_outline);
-  }catch(e){
+  } catch (e) {
     return _isNotMarked; //trying to mark null produces error
   }
 }
 
 Student _getStudent(String s) {
-    return _studentList.firstWhere((x) => x.studentId.startsWith(s));
+  return _studentList.firstWhere((x) => x.studentId.startsWith(s));
 }
-
 
 int _getIndexForStudent(String s) {
   return _studentIDList.indexWhere((x) => x.startsWith(s));
@@ -223,7 +260,7 @@ Widget _searchArea(BuildContext context) {
             Positioned(
               top: 65,
               left: 50,
-              width: 275,
+              width: 330,
               height: 40,
               child: RichText(
                 text: TextSpan(
@@ -239,9 +276,9 @@ Widget _searchArea(BuildContext context) {
               height: 40,
               child: RichText(
                 text: TextSpan(
-                  text: (_getMarkedCount().toString() +
+                  text: (""),/*_getMarkedCount().toString() +
                       "/" +
-                      _getTotalCount().toString()),
+                      _getTotalCount().toString()),*/
                   style: TextStyle(color: Colors.black, fontSize: 16),
                 ),
               ),
@@ -319,12 +356,30 @@ Widget _searchArea(BuildContext context) {
   );
 }
 
-// IconButton(
-//           icon: Icon(Icons.search),
-//           onPressed: () {
-//             showSearch(context: context, delegate: StudentSearch());
-//           },
-//         ),
+Widget _studentsMarkedChart() {
+  double markedCount = _getMarkedCount().toDouble();
+  Map<String, double> dataMap = new Map();
+  dataMap.putIfAbsent("Unmarked", () => (_studentIDList.length - markedCount));
+  dataMap.putIfAbsent("Marked", () => markedCount);
+
+  return Padding(
+    padding: EdgeInsets.all(32.0),
+    child: SizedBox(
+        height: 200,
+        child: PieChart(
+          dataMap: dataMap,
+          legendFontColor: Colors.blueGrey[900],
+          legendFontSize: 14.0,
+          legendFontWeight: FontWeight.w500,
+          animationDuration: Duration(milliseconds: 800),
+          chartLegendSpacing: 32.0,
+          chartRadius: MediaQuery.of(_studentContext).size.width / 2.7,
+          showChartValuesInPercentage: true,
+          showChartValues: true,
+          chartValuesColor: Colors.blueGrey[900].withOpacity(0.9),
+        )),
+  );
+}
 
 class StudentSearch extends SearchDelegate<String> {
   //hardcoded searched items
@@ -401,12 +456,13 @@ class StudentSearch extends SearchDelegate<String> {
               PageThree()); //JOEL USE THIS TO NAVIGATE TO SELECTED STUDENTS CRITERIA!
           // close(context, route);
         },
-        leading: _getMarkedState(_getStudent(suggestedItems[index].toString()).result),
+        leading: _getMarkedState(
+            _getStudent(suggestedItems[index].toString()).result),
         trailing: RichText(
           text: TextSpan(
               text: _getStudent(suggestedItems[index].toString()).result,
               style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                  TextStyle(color: Colors.grey[700], fontWeight: FontWeight.bold),
               children: [
                 TextSpan(
                     text: (" /" + getAssessmentMaxMark()),
