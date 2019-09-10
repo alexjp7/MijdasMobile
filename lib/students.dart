@@ -20,6 +20,7 @@ String _assessmentID;
 List<Student> _studentList;
 List<String> _studentIDList;
 List<String> _recentSearchesList;
+bool _isFetchDone;
 Icon _isMarked = new Icon(
   Icons.check_box,
   color: Colors.green,
@@ -120,6 +121,7 @@ class Students extends StatelessWidget {
                     _parentListItems.add(new TileObj(
                         _studentList[i].studentId, _studentList[i].result));
                   }
+                  _isFetchDone = true;//able to click button now
 
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -161,6 +163,7 @@ class Students extends StatelessWidget {
                     itemCount: _parentListItems.length,
                   );*/
                 } else if (snapshot.hasError) {
+                  _isFetchDone = false;
                   return Text("${snapshot.error}");
                 }
                 return Center(
@@ -244,6 +247,7 @@ Widget _searchArea(BuildContext context) {
   Color _mainBackdrop = new Color(0xff54b3ff); //lighter blue
   // Color _mainBackdrop = new Color(0xff2196F3); //light blue
   final studentSearchController = TextEditingController();
+  _isFetchDone = false;
 
   return Stack(
     fit: StackFit.expand,
@@ -290,11 +294,15 @@ Widget _searchArea(BuildContext context) {
               height: 45,
               child: RaisedButton(
                 onPressed: () {
-                  print("Filter Search Button Pressed");
-                  String searchResults =
-                      showSearch(context: context, delegate: StudentSearch())
-                          .toString();
-                  print(searchResults);
+                  if(_isFetchDone){//check if api fetch is done
+                    print("Filter Search Button Pressed");
+                    String searchResults =
+                        showSearch(context: context, delegate: StudentSearch())
+                            .toString();
+                    print(searchResults);
+                  } else{
+                    print("API Fetch Incomplete. Please Wait.");//simple print msg, no prompt cuz annoying for user
+                  }
                 },
                 textColor: Colors.black,
                 padding: const EdgeInsets.all(0.0),
