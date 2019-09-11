@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import './assessment.dart';
 import './home.dart';
 import './signup.dart';
+import './global_widgets.dart';
 import './main.dart';
 
 import 'dart:async';
@@ -77,9 +78,15 @@ class SignIn extends StatelessWidget {
                       // textAlign: TextAlign.center,//cant use this as it crashes flutter - known bug.
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person),
-                        hintText: "Username..",
+                        // hintText: "Username..",
                         labelText: "Username",
-                        border: OutlineInputBorder(),
+                        fillColor: Colors.white70,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7.0)),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7.0),
+                            borderSide: BorderSide(color: Colors.white70)),
                       ),
                       controller: usernameController,
                       onChanged: (v) {
@@ -95,9 +102,15 @@ class SignIn extends StatelessWidget {
                       // textAlign: TextAlign.center,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.lock_outline),
-                        hintText: "Password..",
+                        // hintText: "Password..",
                         labelText: "Password",
-                        border: OutlineInputBorder(),
+                        fillColor: Colors.white70,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7.0)),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7.0),
+                            borderSide: BorderSide(color: Colors.white70)),
                       ),
                       controller: passwordController,
                       obscureText: true,
@@ -112,22 +125,38 @@ class SignIn extends StatelessWidget {
                           height: 10,
                         ),
                         Container(
-                          child: RaisedButton(
-                            onPressed: () {
-                              print("Searching: [" +
-                                  usernameController.text +
-                                  "].");
-                              searchedUser = usernameController.text;
-                              // getData(searchedUser); //commented out while back end was down
-                              Navigator.push(context, homeRoute());
-                            },
-                            child: Text("Submit"),
-                            color: _buttonColour,
-                            textColor: Colors.white,
+                          child: ButtonTheme(
+                            minWidth: 130.0,
+                            height: 50.0,
+                            child: RaisedButton(
+                              onPressed: () {
+                                // if (passwordController.text == "") {
+                                  print("Searching: [" +
+                                      usernameController.text +
+                                      "].");
+                                  searchedUser = usernameController.text;
+                                  // getData(searchedUser); //commented out while back end was down
+                                  Navigator.push(context, homeRoute());
+                                // } else {
+                                //   showDialog_2(context, "Login Failed", "Login Details Incorrect.", "Close");
+                                // }
+                              },
+                              child: RichText(
+                                text: TextSpan(
+                                  text: ("Submit"),
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                ),
+                              ),
+                              color: _buttonColour,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: new BorderRadius.circular(7.0)),
+                              textColor: Colors.white,
+                            ),
                           ),
                         ),
                         SizedBox(
-                          height: 20,
+                          height: 30,
                         ),
                         Container(
                           child: InkWell(
