@@ -69,7 +69,7 @@ class MyApp extends StatelessWidget {
                             ),
                             color: _buttonColour,
                             shape: RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(8.0)),
+                                borderRadius: new BorderRadius.circular(7.0)),
                           ),
                         ),
                       ),
@@ -84,6 +84,8 @@ class MyApp extends StatelessWidget {
                           },
                           child: Text("Sign Up"),
                           color: _buttonColour,
+                          shape: RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(7.0)),
                           textColor: Colors.white,
                         ),
                       ),
@@ -95,15 +97,17 @@ class MyApp extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             IconButton(
-                              icon: Icon(Icons.looks_one),
+                              icon: Icon(Icons.language, size: 35.0),//or public
                               onPressed: () {},
                             ),
+                            SizedBox(width: 10),
                             IconButton(
-                              icon: Icon(Icons.looks_two),
+                              icon: Icon(Icons.home, size: 35.0),
                               onPressed: () {},
                             ),
+                            SizedBox(width: 10),
                             IconButton(
-                              icon: Icon(Icons.looks_3),
+                              icon: Icon(Icons.people, size: 35.0),
                               onPressed: () {},
                             ),
                           ],
