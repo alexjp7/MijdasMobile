@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 //local imports
 import './main.dart';
+import './signin.dart';
 import './assessment.dart';
 import './global_widgets.dart';
 // import './criteria_manager.dart';
@@ -19,7 +20,7 @@ Route homeRoute() {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) => Home(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      _homeContext = context;//assigning buildcontext
+      _homeContext = context; //assigning buildcontext
       return FadeTransition(
         opacity: animation,
         child: child,
@@ -201,8 +202,13 @@ class PopulateTiles extends StatelessWidget {
 
     return new ExpansionTile(
       key: new PageStorageKey<int>(3),
-      title: new Text(t.title),
-      // title: new Text(t.title, style: TextStyle(color: Colors.black),),
+      title: /*Container(
+        child: */Text(
+          t.title /*, style: TextStyle(color: Colors.green)*/,
+        ),
+        // alignment: Alignment.center,
+      // ),
+      // trailing: Text(""),
       children: t.children.map(_buildList).toList(),
     );
   }
@@ -253,7 +259,8 @@ Future<List<Universities>> fetchUniversities(String s) async {
     return universitiesFromJson(response.body);
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
-    showDialog_1(_homeContext, "Error!", "Response Code: 404.\n\n\t\t\tNo Subjects Found.", "Close & Return");
+    showDialog_1(_homeContext, "Error!",
+        "Response Code: 404.\n\n\t\t\tNo Subjects Found.", "Close & Return");
   } else {
     print('response code: ' + response.statusCode.toString());
     print('response body: ' + response.body);
@@ -310,6 +317,6 @@ class Subject {
       };
 }
 
-String getSubjecttName(){
+String getSubjecttName() {
   return _subjectName;
 }

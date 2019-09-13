@@ -4,6 +4,7 @@ import 'package:flutter/semantics.dart';
 import './assessment.dart';
 import './home.dart';
 import './signup.dart';
+import './signin.dart';
 
 import 'dart:async';
 import 'dart:convert';
@@ -19,141 +20,185 @@ void main() {
 
 final ThemeData themeData = ThemeData(
   // brightness: Brightness.dark,
-  canvasColor: Color(0xffE1E2E1),//White Background
-  accentColor: Color(0xff61747E),//dark grey
-  primaryColor: Color(0xff0069C0),//darker blue
-  secondaryHeaderColor: Color(0xffBFD4DF),//light grey
+  canvasColor: Color(0xffE1E2E1), //White Background
+  accentColor: Color(0xff61747E), //dark grey
+  primaryColor: Color(0xff0069C0), //darker blue
+  secondaryHeaderColor: Color(0xffBFD4DF), //light grey
 );
-
-String searchedUser;
-
-//base url as string
-final String jsonURL =
-    "https://markit.mijdas.com/api/requests/subject/read.php?username=";
-//for storing json results globally
-Map<String, dynamic> fetchedData;
 
 class MyApp extends StatelessWidget {
   // Color _primaryColour = Color(0xff0069C0);
   // Color _primaryColour2 = Color(0xff2196F3);
-  final searchController = TextEditingController();
-
-  Future<String> getData(String s) async {
-    var response = await http.get(Uri.encodeFull(jsonURL + s),
-        headers: {"Accept": "application/json"});
-
-    // Map<String, dynamic> fetchedData = json.decode(response.body);
-    fetchedData = json.decode(response.body);
-    print(fetchedData);
-  }
+  Color _buttonColour = new Color(0xff0069C0);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-            Container(
-              margin: EdgeInsets.all(10.0),
-              alignment: Alignment.center,
-              child: TextField(
-                // autofocus: false,
-                // textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  hintText: "Enter A Username To Query...",
-                  labelText: "Username",
-                  border: OutlineInputBorder(),
+      body: Column(
+        children: <Widget>[
+          Container(
+            width: 500,
+            height: 370,
+            child: _banner(context),
+          ),
+          Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                Container(
+                  margin: EdgeInsets.all(10.0),
+                  alignment: Alignment.center,
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        child: ButtonTheme(
+                          minWidth: 130.0,
+                          height: 50.0,
+                          child: RaisedButton(
+                            onPressed: () {
+                              print("Sign In Clicked.");
+                              Navigator.push(context, signInRoute());
+                            },
+                            child: RichText(
+                              text: TextSpan(
+                                text: ("Sign In"),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20),
+                              ),
+                            ),
+                            color: _buttonColour,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(7.0)),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        child: RaisedButton(
+                          onPressed: () {
+                            print("Sign Up Clicked.");
+                            Navigator.push(context, signUpRoute());
+                          },
+                          child: Text("Sign Up"),
+                          color: _buttonColour,
+                          shape: RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(7.0)),
+                          textColor: Colors.white,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 90,
+                      ),
+                      Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            IconButton(
+                              icon: Icon(Icons.language, size: 35.0),//or public
+                              onPressed: () {},
+                            ),
+                            SizedBox(width: 10),
+                            IconButton(
+                              icon: Icon(Icons.home, size: 35.0),
+                              onPressed: () {},
+                            ),
+                            SizedBox(width: 10),
+                            IconButton(
+                              icon: Icon(Icons.people, size: 35.0),
+                              onPressed: () {},
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text: ("Mijdas Tech"),
+                          style: TextStyle(color: Colors.black54, fontSize: 18),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                controller: searchController,
-              ),
-            ),
-            Container(
-                margin: EdgeInsets.all(10.0),
-                alignment: Alignment.center,
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      child: RaisedButton(
-                        onPressed: () {
-                          print("Searching: [" + searchController.text + "].");
-                          searchedUser = searchController.text;
-                          // getData(searchedUser); //commented out while back end was down
-                          Navigator.push(context, homeRoute());
-                        },
-                        child: Text("Search"),
-                      ),
-                    ),
-                    Container(
-                      child: RaisedButton(
-                        onPressed: () {
-                          print("Sign Up Clicked.");
-                          Navigator.push(context, signUpRoute());
-                        },
-                        child: Text("Sign Up"),
-                      ),
-                    )
-                  ],
-                )),
-          ])),
+              ])),
+        ],
+      ),
     );
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return MaterialApp(
-  //       theme: ThemeData(
-  //           brightness: Brightness.light,
-  //           primarySwatch: Colors.lightBlue,
-  //           accentColor: Colors.deepPurple),
-  //       home: Scaffold(
-  //         appBar: AppBar(
-  //           backgroundColor: _primaryColour,
-  //           leading: Padding(
-  //             padding: EdgeInsets.only(left: 12),
-  //             child: IconButton(
-  //               icon: Icon(Icons.arrow_back_ios),
-  //               onPressed: () {
-  //                 print("Back Arrow Clicked");
-  //               },
-  //             ),
-  //           ),
-  //           title: Text('Assessments'),
-  //           centerTitle: true,
-  //           actions: <Widget>[
-  //             IconButton(
-  //               icon: Icon(Icons.dehaze),
-  //               onPressed: () {
-  //                 print("Hamburger Menu Clicked");
-  //               },
-  //             )
-  //           ],
-  //         ),
-  //         body: ListView(
-  //             physics: const AlwaysScrollableScrollPhysics(),
-  //             padding: const EdgeInsets.all(8.0),
-  //             children: <Widget>[
-  //               AssessmentManager('Assignment 1'),
-  //             ]),
-  //         bottomNavigationBar: BottomAppBar(
-  //           child: Container(
-  //               height: 70.0,
-  //               child: IconButton(
-  //                 icon: Icon(Icons.more_horiz),
-  //                 onPressed: () {
-  //                   print("Bottom AppBar Pressed");
-  //                 },
-  //               )),
-  //           color: _primaryColour2,
-  //         ),
-  //       )
-  //       // AssessmentManager('Assignment 1'),),
-  //       );
-  // }
 }
 
+Widget _banner(BuildContext context) {
+  Color _mainBackdrop = new Color(0xff54b3ff); //lighter blue
+  // Color _mainBackdrop = new Color(0xff2196F3); //light blue
+
+  return Stack(
+    fit: StackFit.expand,
+    children: <Widget>[
+      Positioned(
+        top: 0,
+        left: 0,
+        width: 500, //415 for width of pixel
+        height: 250,
+        child: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: <Color>[
+                    Color(0xFF0069C0),
+                    Color(0xFF026AC1),
+                    Color(0xFF71ABDC),
+                    // Color(0xFF0D47A1),
+                    // Color(0xFF1976D2),
+                    // Color(0xFF42A5F5),
+                  ],
+                ),
+              ),
+              child: Material(color: Colors.transparent),
+            ),
+            Positioned(
+              top: 125,
+              left: 150,
+              width: 330,
+              height: 40,
+              child: RichText(
+                text: TextSpan(
+                  text: ("MarkIt"),
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 36,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 30,
+              left: 175,
+              width: 80,
+              height: 40,
+              child: RichText(
+                text: TextSpan(
+                  text: (""),
+                  style: TextStyle(color: Colors.black54, fontSize: 22),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+//following pages are test template pages.
 class PageTwo extends MaterialPageRoute<Null> {
   PageTwo()
       : super(builder: (BuildContext context) {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mijdas_app/global_widgets.dart';
 
 import './assessment.dart';
 import './home.dart';
 import './signup.dart';
+import './global_widgets.dart';
 import './main.dart';
 
 import 'dart:async';
@@ -11,13 +11,15 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Color _buttonColour = new Color(0xff0069C0);
-String _username;
-String _email;
-String _password;
+String searchedUser;
+final String jsonURL =
+    "https://markit.mijdas.com/api/requests/subject/read.php?username=";
+//for storing json results globally
+Map<String, dynamic> fetchedData;
 
-Route signUpRoute() {
+Route signInRoute() {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => SignUp(),
+    pageBuilder: (context, animation, secondaryAnimation) => SignIn(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(
         opacity: animation,
@@ -27,22 +29,26 @@ Route signUpRoute() {
   );
 }
 
-// //base url as string
-// final String jsonURL = "https://markit.mijdas.com/api/requests/subject/read.php?username=";
-// //for storing json results globally
-// Map<String, dynamic> fetchedData;
-
-class SignUp extends StatelessWidget {
+class SignIn extends StatelessWidget {
+  // Color _primaryColour = Color(0xff0069C0);
+  // Color _primaryColour2 = Color(0xff2196F3);
   final usernameController = TextEditingController();
-  final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final passwordController_2 = TextEditingController();
   ScrollController _scrollController = ScrollController();
+
+  Future<String> getData(String s) async {
+    var response = await http.get(Uri.encodeFull(jsonURL + s),
+        headers: {"Accept": "application/json"});
+
+    // Map<String, dynamic> fetchedData = json.decode(response.body);
+    fetchedData = json.decode(response.body);
+    print(fetchedData);
+  }
 
   //jump the screen down - the animation looked smoother but was buggy, decided to use Jump for prototype demo
   _scrollToFields() {
     // print("\n\n\nMETHOD CALLED\n\n\n");
-    _scrollController.jumpTo(_scrollController.position.maxScrollExtent - 20.0);
+    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     // _scrollController.animateTo(_scrollController.position.maxScrollExtent,
     //     duration: Duration(milliseconds: 250), curve: Curves.decelerate);
   }
@@ -56,7 +62,7 @@ class SignUp extends StatelessWidget {
           children: <Widget>[
             Container(
               width: 500,
-              height: 270,
+              height: 330,
               child: _banner(context),
             ),
             Center(
@@ -68,8 +74,11 @@ class SignUp extends StatelessWidget {
                     margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
                     alignment: Alignment.center,
                     child: TextField(
+                      // autofocus: false,
+                      // textAlign: TextAlign.center,//cant use this as it crashes flutter - known bug.
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person),
+                        // hintText: "Username..",
                         labelText: "Username",
                         fillColor: Colors.white70,
                         filled: true,
@@ -89,26 +98,11 @@ class SignUp extends StatelessWidget {
                     margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
                     alignment: Alignment.center,
                     child: TextField(
+                      // autofocus: false,
+                      // textAlign: TextAlign.center,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.mail),
-                        labelText: "Email",
-                        fillColor: Colors.white70,
-                        filled: true,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(7.0)),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(7.0),
-                            borderSide: BorderSide(color: Colors.white70)),
-                      ),
-                      controller: emailController,
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
-                    alignment: Alignment.center,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
+                        prefixIcon: Icon(Icons.lock_outline),
+                        // hintText: "Password..",
                         labelText: "Password",
                         fillColor: Colors.white70,
                         filled: true,
@@ -119,26 +113,6 @@ class SignUp extends StatelessWidget {
                             borderSide: BorderSide(color: Colors.white70)),
                       ),
                       controller: passwordController,
-                      obscureText: true,
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
-                    alignment: Alignment.center,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock_outline),
-                        labelText: "Confirm Password",
-                        labelStyle: TextStyle(fontSize: 12),
-                        fillColor: Colors.white70,
-                        filled: true,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(7.0)),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(7.0),
-                            borderSide: BorderSide(color: Colors.white70)),
-                      ),
-                      controller: passwordController_2,
                       obscureText: true,
                     ),
                   ),
@@ -156,16 +130,16 @@ class SignUp extends StatelessWidget {
                             height: 50.0,
                             child: RaisedButton(
                               onPressed: () {
-                                if (passwordController.text ==
-                                    passwordController_2.text) {
-                                  _username = usernameController.text;
-                                  _password = passwordController.text;
-                                  _email = emailController.text;
+                                // if (passwordController.text == "") {
+                                  print("Searching: [" +
+                                      usernameController.text +
+                                      "].");
+                                  searchedUser = usernameController.text;
                                   // getData(searchedUser); //commented out while back end was down
-                                  showDialog_1(context, "Success!", "Signup Was a success!\nHead back to the home screen and try signing in with your new details!", "Close and Return");
-                                } else {
-                                  showDialog_2(context, "Error", "There was a problem with the information entered, make sure all fields are correct.", "Close");
-                                }
+                                  Navigator.push(context, homeRoute());
+                                // } else {
+                                //   showDialog_2(context, "Login Failed", "Login Details Incorrect.", "Close");
+                                // }
                               },
                               child: RichText(
                                 text: TextSpan(
@@ -181,6 +155,21 @@ class SignUp extends StatelessWidget {
                             ),
                           ),
                         ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Container(
+                          child: InkWell(
+                            onTap: () {
+                              print("Forgotten Password Clicked.");
+                              Navigator.push(context, signUpRoute());
+                            },
+                            child: Text(
+                              "Forgot your password?",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -240,13 +229,13 @@ Widget _banner(BuildContext context) {
               ),
             ),
             Positioned(
-              top: 105,
-              left: 145,
+              top: 125,
+              left: 150,
               width: 330,
-              height: 85,
+              height: 40,
               child: RichText(
                 text: TextSpan(
-                  text: ("  Tutor\nSign Up"),
+                  text: ("Sign In"),
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 36,
