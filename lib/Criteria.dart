@@ -8,7 +8,6 @@ TODO----------
 
 //Got lost trying to figure multi pages out - will need it explained after/before meeting pls xoxo - this code is ready for posts - joel
 import 'package:flutter/material.dart';
-import 'package:mijdas_app/assessment.dart' as prefix0;
 
 //local imports
 import './home.dart';
@@ -23,14 +22,19 @@ import 'package:http/http.dart' as http;
 
 Student selectedStudent;
 String assId;
+Future<List<CriteriaDecode>> fDecode;
+List<Criterion> assCrit;
 
-Route CriteriaRoute(Student s, String assID) {
+Route CriteriaRoute(Student s, String assID, List<Criterion>  crit) {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) =>
         CriteriaPageState(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       selectedStudent = s; //assigning page ID
       assId = assID;
+
+      assCrit=crit;
+
       print(selectedStudent.studentId);
       print(assID);
       return FadeTransition(
@@ -40,6 +44,8 @@ Route CriteriaRoute(Student s, String assID) {
     },
   );
 }
+
+
 
 class CriteriaPageState extends StatefulWidget {
   //List<Criterion> items = List<Criterion>.generate(10, (i) => new Criterion("Criterea $i",i,i%3,(((i%3)*5)+5),1.0));
@@ -53,7 +59,10 @@ class CriteriaPage extends State<CriteriaPageState> {
 
   List<Criterion> items;
 
-  CriteriaPage();
+
+  CriteriaPage(){
+    items = assCrit;
+  }
 
   Widget _buildTiles(int index) {
     if (items[index].element == "0") {
@@ -80,8 +89,7 @@ class CriteriaPage extends State<CriteriaPageState> {
                     setState(() {
                       items[index]._isChecked = val;
                       items[index]._isChecked
-                          ? items[index].value =
-                            items[index].maxMarkI.toDouble()
+                          ? items[index].value = items[index].maxMarkI.toDouble()
                           : items[index].value = 0;
                     });
                   })));
@@ -130,22 +138,8 @@ class CriteriaPage extends State<CriteriaPageState> {
           )
         ],
       ),
-      body: FutureBuilder<List<CriteriaDecode>>(
-          future: fetchCriteria(),
-          builder: (context, snapshot) {
+      body:  ListView.builder(
 
-            if(true){
-              print('ffffffffffff');
-             // print(snapshot.data[0].criteria[0].criteria);
-
-              items = List<Criterion>.generate(7, (i) {
-                int j=i%3;
-                int k = (((j)*5)+5);
-                return new Criterion(criteria: "$i", maxMark: "$k",element: "$j" ,displayText: "Test" );
-
-              });
-
-              return ListView.builder(
                 itemCount: items.length,
                 itemBuilder: (context, index) {
                   return ListTile(
@@ -156,7 +150,7 @@ class CriteriaPage extends State<CriteriaPageState> {
                         color: _accentColour,
                         child: Center(
                             child: Column(children: <Widget>[
-                              Text('${items[index].criteria}'),
+                              Text('${items[index].displayText}'),
                               Text('${items[index].value}' +
                                   '/' +
                                   '${items[index].maxMark}'),
@@ -166,24 +160,21 @@ class CriteriaPage extends State<CriteriaPageState> {
                             ]))),
                   );
                 },
-              );
-            } else if(snapshot.hasError){
-              return Text("${snapshot.error}");
-            }
-            return Center(child: CircularProgressIndicator());
+              ),
 
 
-          }),
+
     );
   }
 }
 
-Future<List<CriteriaDecode>> fetchCriteria() async {
+Future<List<CriteriaDecode>> fetchCriteria(String i) async {
   var response = await http.post('https://markit.mijdas.com/api/criteria/',
-      body: jsonEncode({"request": "VIEW_CRITERIA", "assessment_id": "1"}));
+      body: jsonEncode({"request": "VIEW_CRITERIA", "assessment_id": i}));
   if (response.statusCode == 200) {
     print('response code:  200\n');
     print('response body: ' + response.body);
+
     List<CriteriaDecode> rValue = criteriaDecodeFromJson(response.body);
     print("FUCKFACE: "+rValue[0].criteria[0].criteria);
     return rValue;
@@ -224,7 +215,7 @@ class CriteriaDecode {
 
   factory CriteriaDecode.fromJson(Map<String, dynamic> json) => CriteriaDecode(
         criteria: List<Criterion>.from(
-            json["criteria"].map((x) => Criterion.fromJson(x))),
+            json["records"].map((x) => Criterion.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {

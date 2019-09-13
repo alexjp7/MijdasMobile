@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mijdas_app/Criteria.dart';
+import 'package:mijdas_app/Criteria.dart' as prefix0;
 
 //local imports
-//import './criteria_manager.dart';
+import './criteria.dart';
 import './assessment.dart';
 import './main.dart';
 import './home.dart';
@@ -22,6 +22,8 @@ List<String> _studentIDList;
 List<String> _recentSearchesList;
 Icon _isMarked = new Icon(Icons.check_box, color: Colors.green,);
 Icon _isNotMarked = new Icon(Icons.check_box_outline_blank,);
+var criteriaList;
+
 
 Route studentsRoute(String id) {
   return PageRouteBuilder(
@@ -104,6 +106,8 @@ class Students extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   // print(snapshot.data[0].records[0].studentId);
+
+
                   _studentList = snapshot
                       .data[0].records; //studentList is the list of students
                   List<TileObj> _parentListItems = new List<TileObj>();
@@ -327,7 +331,7 @@ Widget _searchArea(BuildContext context) {
 //           },
 //         ),
 
-class StudentSearch extends SearchDelegate<String> {
+class StudentSearch  extends SearchDelegate<String>  {
   //hardcoded searched items
   // final studentsList = [
   //   "this",
@@ -399,7 +403,7 @@ class StudentSearch extends SearchDelegate<String> {
           print(suggestedItems[index].toString());
           print(_getIndexForStudent(suggestedItems[index].toString()));
           Navigator.push(context,
-              CriteriaRoute(_studentList[index], _assessmentID)); //JOEL USE THIS TO NAVIGATE TO SELECTED STUDENTS CRITERIA!
+              CriteriaRoute(_studentList[index], _assessmentID,criteriaList[0].criteria)); //JOEL USE THIS TO NAVIGATE TO SELECTED STUDENTS CRITERIA!
           // close(context, route);
         },
         leading: _getMarkedState(_getStudent(suggestedItems[index].toString()).result),
@@ -487,6 +491,9 @@ Future<List<StudentDecode>> fetchStudents(String s) async {
   if (response.statusCode == 200) {
     print('response code:  200\n');
     print('response body: ' + response.body);
+
+    criteriaList = await fetchCriteria(_assessmentID);
+
     return studentDecodeFromJson(response.body);
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
