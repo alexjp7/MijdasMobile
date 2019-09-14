@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+
+import 'package:mijdas_app/Criteria.dart' as prefix0;
+
 import 'package:pie_chart/pie_chart.dart';
 
+
 //local imports
-import './criteria_manager.dart';
+import './criteria.dart';
 import './assessment.dart';
 import './main.dart';
 import './home.dart';
@@ -20,6 +24,9 @@ String _assessmentID;
 List<Student> _studentList;
 List<String> _studentIDList;
 List<String> _recentSearchesList;
+
+var criteriaList;
+
 bool _isFetchDone;
 Icon _isMarked = new Icon(
   Icons.check_box,
@@ -28,6 +35,7 @@ Icon _isMarked = new Icon(
 Icon _isNotMarked = new Icon(
   Icons.check_box_outline_blank,
 );
+
 
 Route studentsRoute(String id) {
   return PageRouteBuilder(
@@ -110,6 +118,8 @@ class Students extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   // print(snapshot.data[0].records[0].studentId);
+
+
                   _studentList = snapshot
                       .data[0].records; //studentList is the list of students
                   List<TileObj> _parentListItems = new List<TileObj>();
@@ -405,7 +415,7 @@ Widget _studentsMarkedChart() {
   );
 }
 
-class StudentSearch extends SearchDelegate<String> {
+class StudentSearch  extends SearchDelegate<String>  {
   //hardcoded searched items
   // final studentsList = [
   //   "this",
@@ -472,6 +482,7 @@ class StudentSearch extends SearchDelegate<String> {
         : studentsList.where((x) => x.startsWith(query)).toList();
 
     return ListView.builder(
+
       itemBuilder: (context, index) => Container(
         decoration: BoxDecoration(color: _getMarkedStateBar(_getStudent(suggestedItems[index].toString()).result)),
         child: ListTile(
@@ -479,7 +490,7 @@ class StudentSearch extends SearchDelegate<String> {
             print(suggestedItems[index].toString());
             print(_getIndexForStudent(suggestedItems[index].toString()));
             Navigator.push(context,
-                PageThree()); //JOEL USE THIS TO NAVIGATE TO SELECTED STUDENTS CRITERIA!
+                CriteriaRoute(_studentList[index], _assessmentID,criteriaList[0].criteria));//JOEL USE THIS TO NAVIGATE TO SELECTED STUDENTS CRITERIA!
             // close(context, route);
           },
           leading: _getMarkedState(
@@ -506,6 +517,7 @@ class StudentSearch extends SearchDelegate<String> {
                       style: TextStyle(color: Colors.grey))
                 ]),
           ),
+
         ),
       ),
       itemCount: suggestedItems.length,
@@ -569,6 +581,9 @@ Future<List<StudentDecode>> fetchStudents(String s) async {
   if (response.statusCode == 200) {
     print('response code:  200\n');
     print('response body: ' + response.body);
+
+    criteriaList = await fetchCriteria(_assessmentID);
+
     return studentDecodeFromJson(response.body);
   } else if (response.statusCode == 404) {
     print('response code:  404\n');

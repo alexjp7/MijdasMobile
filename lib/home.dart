@@ -254,8 +254,8 @@ Future<List<Universities>> fetchUniversities(String s) async {
       );
 
   if (response.statusCode == 200) {
-    print('response code:  200\n');
-    print('response body: ' + response.body);
+//    print('response code:  200\n');
+//    print('response body: ' + response.body);
     return universitiesFromJson(response.body);
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
