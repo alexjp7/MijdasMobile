@@ -176,7 +176,7 @@ Future<List<CriteriaDecode>> fetchCriteria(String i) async {
     print('response body: ' + response.body);
 
     List<CriteriaDecode> rValue = criteriaDecodeFromJson(response.body);
-    print("FUCKFACE: "+rValue[0].criteria[0].criteria);
+    
     return rValue;
 
   } else if (response.statusCode == 404) {
