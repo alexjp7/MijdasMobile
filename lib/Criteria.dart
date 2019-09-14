@@ -20,22 +20,19 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-Student selectedStudent;
-String assId;
-Future<List<CriteriaDecode>> fDecode;
-List<Criterion> assCrit;
+Student _selectedStudent;
+List<Criterion> _assCrit;
 
-Route CriteriaRoute(Student s, String assID, List<Criterion>  crit) {
+Route CriteriaRoute(Student s, String assID, List<Criterion> crit) {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) =>
         CriteriaPageState(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      selectedStudent = s; //assigning page ID
-      assId = assID;
+      _selectedStudent = s; //assigning page ID
 
-      assCrit=crit;
+      _assCrit = crit;
 
-      print(selectedStudent.studentId);
+      print(_selectedStudent.studentId);
       print(assID);
       return FadeTransition(
         opacity: animation,
@@ -44,8 +41,6 @@ Route CriteriaRoute(Student s, String assID, List<Criterion>  crit) {
     },
   );
 }
-
-
 
 class CriteriaPageState extends StatefulWidget {
   //List<Criterion> items = List<Criterion>.generate(10, (i) => new Criterion("Criterea $i",i,i%3,(((i%3)*5)+5),1.0));
@@ -59,9 +54,8 @@ class CriteriaPage extends State<CriteriaPageState> {
 
   List<Criterion> items;
 
-
-  CriteriaPage(){
-    items = assCrit;
+  CriteriaPage() {
+    items = _assCrit;
   }
 
   Widget _buildTiles(int index) {
@@ -79,7 +73,7 @@ class CriteriaPage extends State<CriteriaPageState> {
             value: items[index].value,
           ));
     } else if (items[index].element == "1") {
-      items[index].value = 0;
+      //items[index].value = 0;
       return Flexible(
           flex: 1,
           child: Center(
@@ -89,7 +83,8 @@ class CriteriaPage extends State<CriteriaPageState> {
                     setState(() {
                       items[index]._isChecked = val;
                       items[index]._isChecked
-                          ? items[index].value = items[index].maxMarkI.toDouble()
+                          ? items[index].value =
+                              items[index].maxMarkI.toDouble()
                           : items[index].value = 0;
                     });
                   })));
@@ -114,57 +109,85 @@ class CriteriaPage extends State<CriteriaPageState> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        leading: Padding(
-          padding: EdgeInsets.only(left: 12),
-          child: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              Navigator.pop(context);
-              print("Back Arrow Clicked");
-            },
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).primaryColor,
+          leading: Padding(
+            padding: EdgeInsets.only(left: 12),
+            child: IconButton(
+              icon: Icon(Icons.arrow_back_ios),
+              onPressed: () {
+                Navigator.pop(context);
+                print("Back Arrow Clicked");
+              },
+            ),
           ),
+          title: Text('Assessments'),
+          centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.dehaze),
+              onPressed: () {
+                Navigator.push(context, homeRoute());
+                print("Hamburger Menu Clicked");
+              },
+            )
+          ],
         ),
-        title: Text('Assessments'),
-        centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.dehaze),
-            onPressed: () {
-              Navigator.push(context, homeRoute());
-              print("Hamburger Menu Clicked");
-            },
-          )
-        ],
-      ),
-      body:  ListView.builder(
-
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    dense: true,
-                    enabled: true,
-                    isThreeLine: false,
-                    title: new Card(
-                        color: _accentColour,
-                        child: Center(
-                            child: Column(children: <Widget>[
-                              Text('${items[index].displayText}'),
-                              Text('${items[index].value}' +
-                                  '/' +
-                                  '${items[index].maxMark}'),
-                              Row(children: <Widget>[
-                                _buildTiles(index),
-                              ]),
-                            ]))),
-                  );
-                },
-              ),
-
-
-
-    );
+        body: Column(
+            verticalDirection: VerticalDirection.down,
+            children: <Widget>[
+              new Flexible(
+                  flex: 10,
+                  child: ListView.builder(
+                      itemCount: (items.length),
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          dense: true,
+                          enabled: true,
+                          isThreeLine: false,
+                          title: new Card(  //MAKE BUILD CARDS
+                              color: _accentColour,
+                              child: Center(
+                                  child: Column(children: <Widget>[
+                                Text(
+                                  '${items[index].displayText}',
+                                  style: TextStyle(fontSize: 18.0),
+                                ),
+                                Text(
+                                  '${items[index].value}' +
+                                      '/' +
+                                      '${items[index].maxMark}',
+                                  style: TextStyle(fontSize: 15.0),
+                                ),
+                                Row(children: <Widget>[
+                                  _buildTiles(index),
+                                ]),
+                              ]))),
+                        );
+                      })),
+           //   new Container(height: 20, alignment:Alignment.bottomLeft,child: Text('Comments:')),//MAYBE CHANGE THIS TO A labelText???????
+              new ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: 200.0,
+                  ),
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+                      child: new Scrollbar(
+                          child: new SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              reverse: true,
+                              child: TextField(
+                                keyboardType: TextInputType.multiline,
+                                maxLines: null,
+                                decoration: InputDecoration(
+                                  //hintText: "Comments",
+                                  labelText: "Comments",
+                                  fillColor: Colors.white70,
+                                  filled: true,
+                                  contentPadding: const EdgeInsets.all(20.0),
+                                ),
+                              )))))
+            ]));
   }
 }
 
@@ -176,9 +199,8 @@ Future<List<CriteriaDecode>> fetchCriteria(String i) async {
     print('response body: ' + response.body);
 
     List<CriteriaDecode> rValue = criteriaDecodeFromJson(response.body);
-    
-    return rValue;
 
+    return rValue;
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
     // showDialog_1(_assessmentContext, "Error!", "Response Code: 404.\n\n\t\t\tNo Assessments Found.", "Close & Return");
@@ -229,7 +251,7 @@ class Criterion {
   String maxMark;
   String displayText;
   bool _isChecked;
-  int iD,elementType,maxMarkI;
+  int iD, elementType, maxMarkI;
 
   TextEditingController tControl;
   double value = 0;
@@ -246,8 +268,8 @@ class Criterion {
       tControl = TextEditingController();
     }
     this.iD = int.parse(criteria);
-    this.elementType=int.parse(element);
-    this.maxMarkI=int.parse(maxMark);
+    this.elementType = int.parse(element);
+    this.maxMarkI = int.parse(maxMark);
   }
 
   factory Criterion.fromJson(Map<String, dynamic> json) => Criterion(
