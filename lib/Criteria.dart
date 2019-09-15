@@ -422,6 +422,7 @@ Future<List<CriteriaDecode>> fetchCriteria(String i) async {
 
     List<CriteriaDecode> rValue = criteriaDecodeFromJson(response.body);
     _isFetchDone = true;
+    
     return rValue;
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
