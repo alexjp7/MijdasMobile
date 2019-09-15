@@ -579,8 +579,8 @@ Future<List<StudentDecode>> fetchStudents(String s) async {
       body: jsonEncode({"request": "POPULATE_STUDENTS", "assessment_id": s}));
 
   if (response.statusCode == 200) {
-    print('response code:  200\n');
-    print('response body: ' + response.body);
+    // print('response code:  200\n');
+    // print('response body: ' + response.body);
 
     criteriaList = await fetchCriteria(_assessmentID);
 

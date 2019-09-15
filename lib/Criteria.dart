@@ -25,7 +25,7 @@ String assId;
 Future<List<CriteriaDecode>> fDecode;
 List<Criterion> assCrit;
 
-Route CriteriaRoute(Student s, String assID, List<Criterion>  crit) {
+Route CriteriaRoute(Student s, String assID, List<Criterion> crit) {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) =>
         CriteriaPageState(),
@@ -33,7 +33,7 @@ Route CriteriaRoute(Student s, String assID, List<Criterion>  crit) {
       selectedStudent = s; //assigning page ID
       assId = assID;
 
-      assCrit=crit;
+      assCrit = crit;
 
       print(selectedStudent.studentId);
       print(assID);
@@ -44,8 +44,6 @@ Route CriteriaRoute(Student s, String assID, List<Criterion>  crit) {
     },
   );
 }
-
-
 
 class CriteriaPageState extends StatefulWidget {
   //List<Criterion> items = List<Criterion>.generate(10, (i) => new Criterion("Criterea $i",i,i%3,(((i%3)*5)+5),1.0));
@@ -59,8 +57,7 @@ class CriteriaPage extends State<CriteriaPageState> {
 
   List<Criterion> items;
 
-
-  CriteriaPage(){
+  CriteriaPage() {
     items = assCrit;
   }
 
@@ -70,7 +67,7 @@ class CriteriaPage extends State<CriteriaPageState> {
           flex: 1,
           child: Slider(
             min: 0.0,
-            max: items[index].maxMarkI.toDouble(),
+            max: items[index].maxMarkI,
             onChanged: (newSliderValue) {
               setState(() {
                 items[index].value = newSliderValue.roundToDouble();
@@ -89,7 +86,7 @@ class CriteriaPage extends State<CriteriaPageState> {
                     setState(() {
                       items[index]._isChecked = val;
                       items[index]._isChecked
-                          ? items[index].value = items[index].maxMarkI.toDouble()
+                          ? items[index].value = items[index].maxMarkI
                           : items[index].value = 0;
                     });
                   })));
@@ -138,32 +135,37 @@ class CriteriaPage extends State<CriteriaPageState> {
           )
         ],
       ),
-      body:  ListView.builder(
+      body: ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          //adding code for interactive text results btw Joel
+          String criteriaValueText;
 
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    dense: true,
-                    enabled: true,
-                    isThreeLine: false,
-                    title: new Card(
-                        color: _accentColour,
-                        child: Center(
-                            child: Column(children: <Widget>[
-                              Text('${items[index].displayText}'),
-                              Text('${items[index].value}' +
-                                  '/' +
-                                  '${items[index].maxMark}'),
-                              Row(children: <Widget>[
-                                _buildTiles(index),
-                              ]),
-                            ]))),
-                  );
-                },
-              ),
+          if(items[index].maxMark == null)
+            criteriaValueText = "";
+          else
+            criteriaValueText = '${items[index].value}' + '/' + '${items[index].maxMark}';
 
-
-
+          return ListTile(
+            dense: true,
+            enabled: true,
+            isThreeLine: false,
+            title: new Card(
+                color: _accentColour,
+                child: Center(
+                    child: Column(children: <Widget>[
+                  Text('${items[index].displayText}'),
+                  Text(criteriaValueText),
+                  // Text('${items[index].value}' +
+                  //     '/' +
+                  //     '${items[index].maxMark}'),
+                  Row(children: <Widget>[
+                    _buildTiles(index),
+                  ]),
+                ]))),
+          );
+        },
+      ),
     );
   }
 }
@@ -176,9 +178,8 @@ Future<List<CriteriaDecode>> fetchCriteria(String i) async {
     print('response body: ' + response.body);
 
     List<CriteriaDecode> rValue = criteriaDecodeFromJson(response.body);
-    
-    return rValue;
 
+    return rValue;
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
     // showDialog_1(_assessmentContext, "Error!", "Response Code: 404.\n\n\t\t\tNo Assessments Found.", "Close & Return");
@@ -229,7 +230,8 @@ class Criterion {
   String maxMark;
   String displayText;
   bool _isChecked;
-  int iD,elementType,maxMarkI;
+  int iD, elementType;
+  double maxMarkI;
 
   TextEditingController tControl;
   double value = 0;
@@ -246,21 +248,25 @@ class Criterion {
       tControl = TextEditingController();
     }
     this.iD = int.parse(criteria);
-    this.elementType=int.parse(element);
-    this.maxMarkI=int.parse(maxMark);
+    this.elementType = int.parse(element);
+    if (maxMark == null)
+      this.maxMarkI =
+          -1.0; //temp fix, although can be used to identify null boxes in future
+    else
+      this.maxMarkI = double.parse(maxMark);
   }
 
   factory Criterion.fromJson(Map<String, dynamic> json) => Criterion(
         criteria: json["criteria"],
         element: json["element"],
-        maxMark: json["maxMark"],
+        maxMark: json["maxMark"] == null ? null : json["maxMark"],
         displayText: json["displayText"],
       );
 
   Map<String, dynamic> toJson() => {
         "criteria": criteria,
         "element": element,
-        "maxMark": maxMark,
+        "maxMark": maxMark == null ? null : maxMark,
         "displayText": displayText,
       };
 }
