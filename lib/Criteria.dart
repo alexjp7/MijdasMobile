@@ -1,8 +1,8 @@
 /*
 TODO----------
--add slider incerements
--fix http
--add submit button
+-add slider incerements --Done(-Mitch)
+-fix http --?(-Mitch)
+-add submit button --Done(-Mitch)
 
  */
 
@@ -22,7 +22,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Student _selectedStudent;
-Color _buttonColour = new Color(0xff0069C0);
+// Color _buttonColour = new Color(0xff0069C0);
+Color _activeColour = new Color(0xff0069C0);
+Color _inactiveColour = new Color(0xffA0C8E3);
 List<Criterion> _assCrit;
 bool
     _isFetchDone; //boolean check to see if API request is finished before populating certain fields
@@ -62,27 +64,22 @@ class CriteriaPage extends State<CriteriaPageState> {
     items = _assCrit;
   }
 
+  /*
+    element cheat sheet: (Element ID - Object Type)
+    
+    0 - Checkbox
+    1 - Slider
+    2 - Textfield
+  
+  */
   Widget _buildTiles(int index) {
     if (items[index].element == "0") {
-      return Flexible(
-          flex: 1,
-          child: Slider(
-            min: 0.0,
-            max: items[index].maxMarkI,
-            onChanged: (newSliderValue) {
-              setState(() {
-                items[index].value = newSliderValue.roundToDouble();
-              });
-            },
-            value: items[index].value,
-          ));
-    } else if (items[index].element == "1") {
-      //items[index].value = 0;
       return Flexible(
           flex: 1,
           child: Center(
               child: Checkbox(
                   value: items[index]._isChecked,
+                  activeColor: _activeColour,
                   onChanged: (val) {
                     setState(() {
                       items[index]._isChecked = val;
@@ -91,6 +88,34 @@ class CriteriaPage extends State<CriteriaPageState> {
                           : items[index].value = 0;
                     });
                   })));
+    } else if (items[index].element == "1") {
+      //items[index].value = 0;
+      return Flexible(
+          flex: 1,
+          child: SliderTheme(
+            data: SliderThemeData(
+              //for concealing track ticks lol
+              thumbColor: _activeColour,
+              activeTrackColor: _activeColour,
+              activeTickMarkColor: _activeColour,
+              inactiveTrackColor: _inactiveColour,
+              inactiveTickMarkColor: _inactiveColour,
+            ),
+            child: Slider(
+              min: 0.0,
+              max: items[index].maxMarkI,
+              divisions: items[index].maxMarkI.toInt() *
+                  4, //creates increments of 0.25
+              onChanged: (newSliderValue) {
+                setState(() {
+                  items[index].value = newSliderValue;
+                  // items[index].value = double.parse(newSliderValue.toStringAsPrecision(3));
+                  // items[index].value = newSliderValue.roundToDouble();
+                });
+              },
+              value: items[index].value,
+            ),
+          ));
     } else {
       return Flexible(
           flex: 1,
@@ -307,14 +332,21 @@ Widget _markingFooterArea() {
       Positioned(
         top: 25,
         left: 80,
-        width: 120,//should run to about the middle
+        width: 120, //should run to about the middle
         height: 40,
         child: RichText(
           text: TextSpan(
-            text: ("7.5/10"),
-            style: TextStyle(
-                color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
-          ),
+              text: (getTotalGivenMark().toString()),
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+              children: [
+                TextSpan(
+                    text: ("/" + getMaximumMark().toString()),
+                    style: TextStyle(
+                        color: Colors.grey[700], fontWeight: FontWeight.w600))
+              ]),
         ),
       ),
       Positioned(
@@ -333,10 +365,13 @@ Widget _markingFooterArea() {
               child: RichText(
                 text: TextSpan(
                   text: ("Submit"),
-                  style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
-              color: _buttonColour,
+              color: _activeColour,
               shape: RoundedRectangleBorder(
                   borderRadius: new BorderRadius.circular(7.0)),
               textColor: Colors.white,
@@ -359,6 +394,30 @@ Widget _markingFooterArea() {
 // void setFetchDone(bool b) {
 //   _isFetchDone = b;
 // }
+
+double getMaximumMark() {
+  var max = 0.00;
+  try {
+    _assCrit.forEach((x) {
+      if (x.maxMark != null) max += x.maxMarkI;
+    });
+  } catch (e) {
+    return -1;
+  }
+  return max;
+}
+
+double getTotalGivenMark() {
+  var count = 0.00;
+  try {
+    _assCrit.forEach((x) {
+      if (x.value != null) count += x.value;
+    });
+  } catch (e) {
+    return -1;
+  }
+  return count;
+}
 
 Future<List<CriteriaDecode>> fetchCriteria(String i) async {
   var response = await http.post('https://markit.mijdas.com/api/criteria/',
@@ -432,7 +491,7 @@ class Criterion {
     this.maxMark,
     this.displayText,
   }) {
-    if (element == "1") {
+    if (element == "0") {
       _isChecked = false;
     } else if (element == "2") {
       tControl = TextEditingController();
@@ -446,6 +505,14 @@ class Criterion {
       this.maxMarkI = double.parse(maxMark);
     // this.maxMarkI = int.parse(maxMark);
   }
+
+  // might need these later?
+  // bool getChecked(){
+  //   return _isChecked;
+  // }
+  // void setChecked(bool b){
+  //   _isChecked = b;
+  // }
 
   factory Criterion.fromJson(Map<String, dynamic> json) => Criterion(
         criteria: json["criteria"],
