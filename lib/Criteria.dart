@@ -10,10 +10,8 @@ TODO----------
 import 'package:flutter/material.dart';
 
 //local imports
-import './signin.dart';
 import './home.dart';
 import './students.dart';
-import './assessment.dart';
 
 //data handling/processing imports
 import 'dart:async';
@@ -100,6 +98,7 @@ class CriteriaPage extends State<CriteriaPageState> {
               activeTickMarkColor: _activeColour,
               inactiveTrackColor: _inactiveColour,
               inactiveTickMarkColor: _inactiveColour,
+              overlayColor: _activeColour.withAlpha(32),
             ),
             child: Slider(
               min: 0.0,
@@ -121,7 +120,7 @@ class CriteriaPage extends State<CriteriaPageState> {
           flex: 1,
           child: TextField(
             controller: items[index].tControl,
-            //textAlign: TextAlign.center,
+            // textAlign: TextAlign.center, //what a stupid bug this is
             onChanged: (text) {
               if (isNumeric(text)) {
                 items[index].value = double.parse(text);
@@ -243,6 +242,7 @@ Widget _markingTitleArea() {
   Color _mainBackdrop = new Color(0xff54b3ff); //lighter blue
   // Color _mainBackdrop = new Color(0xff2196F3); //light blue
   // _isFetchDone = false;
+  _mainBackdrop = isMarkedCol(getStudent());
 
   return Stack(
     fit: StackFit.expand,
@@ -267,7 +267,7 @@ Widget _markingTitleArea() {
                     style: TextStyle(color: Colors.black, fontSize: 16),
                     children: [
                       TextSpan(
-                        text: getStudentName(),
+                        text: getStudent(),
                         style: TextStyle(
                             color: Colors.black,
                             fontSize: 16,
@@ -280,17 +280,11 @@ Widget _markingTitleArea() {
         ),
       ),
       Positioned(
-        top: 15,
+        top: 5,
         left: 330,
         width: 80,
         height: 40,
-        child: RichText(
-          text: TextSpan(
-            text:
-                (""), //potentially used to show marking progress based on fields edited
-            style: TextStyle(color: Colors.black, fontSize: 16),
-          ),
-        ),
+        child: Text(""),
       ),
     ],
   );

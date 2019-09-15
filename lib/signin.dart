@@ -262,6 +262,6 @@ Widget _banner(BuildContext context) {
   );
 }
 
-String getStudentName() {
+String getUsername() {
   return _searchedUser;
 }

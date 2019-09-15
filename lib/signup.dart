@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mijdas_app/global_widgets.dart';
 
-import './assessment.dart';
-import './home.dart';
-import './signup.dart';
-import './main.dart';
+// import './assessment.dart';
+// import './home.dart';
+// import './signup.dart';
+// import './main.dart';
 
 import 'dart:async';
 import 'dart:convert';

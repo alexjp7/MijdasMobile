@@ -21,6 +21,7 @@ import 'package:http/http.dart' as http;
 //Private variables
 BuildContext _studentContext;
 String _assessmentID;
+String _selectedStudent;
 List<Student> _studentList;
 List<String> _studentIDList;
 List<String> _recentSearchesList;
@@ -487,8 +488,9 @@ class StudentSearch  extends SearchDelegate<String>  {
         decoration: BoxDecoration(color: _getMarkedStateBar(_getStudent(suggestedItems[index].toString()).result)),
         child: ListTile(
           onTap: () {
-            print(suggestedItems[index].toString());
-            print(_getIndexForStudent(suggestedItems[index].toString()));
+            // print(suggestedItems[index].toString());
+            // print(_getIndexForStudent(suggestedItems[index].toString()));
+            _selectedStudent = suggestedItems[index].toString();
             Navigator.push(context,
                 CriteriaRoute(_studentList[index], _assessmentID,criteriaList[0].criteria));//JOEL USE THIS TO NAVIGATE TO SELECTED STUDENTS CRITERIA!
             // close(context, route);
@@ -642,4 +644,19 @@ class Student {
         // "result": result,
         "result": result == null ? null : result,
       };
+}
+
+String getStudent(){
+  return _selectedStudent;
+}
+
+Color isMarkedCol(String s) {
+  try {
+    if (double.parse(_getStudent(s).result) >= 0)
+      return Colors.green[200];
+    else
+      return Colors.redAccent[100];
+  } catch (e) {
+    return Color(0xff54b3ff); //trying to mark null produces error
+  }
 }
