@@ -291,7 +291,7 @@ Widget _searchArea(BuildContext context) {
               height: 40,
               child: RichText(
                 text: TextSpan(
-                  text: (getSubjecttName() + " - " + getAssessmentName()),
+                  text: (getSubjectName() + " - " + getAssessmentName()),
                   style: TextStyle(color: Colors.black, fontSize: 16),
                 ),
               ),
@@ -579,10 +579,11 @@ Future<List<StudentDecode>> fetchStudents(String s) async {
       body: jsonEncode({"request": "POPULATE_STUDENTS", "assessment_id": s}));
 
   if (response.statusCode == 200) {
-    print('response code:  200\n');
-    print('response body: ' + response.body);
+    // print('response code:  200\n');
+    // print('response body: ' + response.body);
 
     criteriaList = await fetchCriteria(_assessmentID);
+
 
     return studentDecodeFromJson(response.body);
   } else if (response.statusCode == 404) {

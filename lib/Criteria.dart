@@ -10,6 +10,7 @@ TODO----------
 import 'package:flutter/material.dart';
 
 //local imports
+import './signin.dart';
 import './home.dart';
 import './students.dart';
 import './assessment.dart';
@@ -21,7 +22,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Student _selectedStudent;
+Color _buttonColour = new Color(0xff0069C0);
 List<Criterion> _assCrit;
+bool
+    _isFetchDone; //boolean check to see if API request is finished before populating certain fields
 
 Route CriteriaRoute(Student s, String assID, List<Criterion> crit) {
   return PageRouteBuilder(
@@ -64,7 +68,7 @@ class CriteriaPage extends State<CriteriaPageState> {
           flex: 1,
           child: Slider(
             min: 0.0,
-            max: items[index].maxMarkI.toDouble(),
+            max: items[index].maxMarkI,
             onChanged: (newSliderValue) {
               setState(() {
                 items[index].value = newSliderValue.roundToDouble();
@@ -83,8 +87,7 @@ class CriteriaPage extends State<CriteriaPageState> {
                     setState(() {
                       items[index]._isChecked = val;
                       items[index]._isChecked
-                          ? items[index].value =
-                              items[index].maxMarkI.toDouble()
+                          ? items[index].value = items[index].maxMarkI
                           : items[index].value = 0;
                     });
                   })));
@@ -121,7 +124,7 @@ class CriteriaPage extends State<CriteriaPageState> {
               },
             ),
           ),
-          title: Text('Assessments'),
+          title: Text('Marking'),
           centerTitle: true,
           actions: <Widget>[
             IconButton(
@@ -136,16 +139,32 @@ class CriteriaPage extends State<CriteriaPageState> {
         body: Column(
             verticalDirection: VerticalDirection.down,
             children: <Widget>[
-              new Flexible(
+              Container(
+                width: 500,
+                height: 50,
+                child: _markingTitleArea(),
+              ),
+              Flexible(
                   flex: 10,
                   child: ListView.builder(
                       itemCount: (items.length),
                       itemBuilder: (context, index) {
+                        //adding code for interactive text results btw Joel
+                        String criteriaValueText;
+
+                        if (items[index].maxMark == null)
+                          criteriaValueText = "";
+                        else
+                          criteriaValueText = '${items[index].value}' +
+                              '/' +
+                              '${items[index].maxMark}';
+
                         return ListTile(
                           dense: true,
                           enabled: true,
                           isThreeLine: false,
-                          title: new Card(  //MAKE BUILD CARDS
+                          title: new Card(
+                              //MAKE BUILD CARDS
                               color: _accentColour,
                               child: Center(
                                   child: Column(children: <Widget>[
@@ -154,9 +173,7 @@ class CriteriaPage extends State<CriteriaPageState> {
                                   style: TextStyle(fontSize: 18.0),
                                 ),
                                 Text(
-                                  '${items[index].value}' +
-                                      '/' +
-                                      '${items[index].maxMark}',
+                                  criteriaValueText,
                                   style: TextStyle(fontSize: 15.0),
                                 ),
                                 Row(children: <Widget>[
@@ -165,13 +182,14 @@ class CriteriaPage extends State<CriteriaPageState> {
                               ]))),
                         );
                       })),
-           //   new Container(height: 20, alignment:Alignment.bottomLeft,child: Text('Comments:')),//MAYBE CHANGE THIS TO A labelText???????
-              new ConstrainedBox(
+              //   new Container(height: 20, alignment:Alignment.bottomLeft,child: Text('Comments:')),//MAYBE CHANGE THIS TO A labelText???????
+              ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxHeight: 200.0,
+                    maxHeight: 175.0,
                   ),
                   child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 25.0, vertical: 15.0),
                       child: new Scrollbar(
                           child: new SingleChildScrollView(
                               scrollDirection: Axis.vertical,
@@ -186,10 +204,161 @@ class CriteriaPage extends State<CriteriaPageState> {
                                   filled: true,
                                   contentPadding: const EdgeInsets.all(20.0),
                                 ),
-                              )))))
+                              ))))),
+              Container(
+                width: 500,
+                height: 70,
+                child: _markingFooterArea(),
+              ),
             ]));
   }
 }
+
+Widget _markingTitleArea() {
+  Color _mainBackdrop = new Color(0xff54b3ff); //lighter blue
+  // Color _mainBackdrop = new Color(0xff2196F3); //light blue
+  // _isFetchDone = false;
+
+  return Stack(
+    fit: StackFit.expand,
+    children: <Widget>[
+      Positioned(
+        top: 0,
+        left: 0,
+        width: 500, //415 for width of pixel
+        height: 50,
+        child: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            Material(color: _mainBackdrop),
+            Positioned(
+              top: 15,
+              left: 30,
+              width: 330,
+              height: 30,
+              child: RichText(
+                text: TextSpan(
+                    text: ("Username:    "),
+                    style: TextStyle(color: Colors.black, fontSize: 16),
+                    children: [
+                      TextSpan(
+                        text: getStudentName(),
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ]),
+              ),
+            ),
+          ],
+        ),
+      ),
+      Positioned(
+        top: 15,
+        left: 330,
+        width: 80,
+        height: 40,
+        child: RichText(
+          text: TextSpan(
+            text:
+                (""), //potentially used to show marking progress based on fields edited
+            style: TextStyle(color: Colors.black, fontSize: 16),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+Widget _markingFooterArea() {
+  Color _mainBackdrop = new Color(0xffE1E2E1); //canvas colour
+  // Color _mainBackdrop = new Color(0xff54b3ff); //lighter blue
+  // Color _mainBackdrop = new Color(0xff2196F3); //light blue
+  // _isFetchDone = false;
+
+  return Stack(
+    fit: StackFit.expand,
+    children: <Widget>[
+      Positioned(
+        top: 0,
+        left: 0,
+        width: 500, //415 for width of pixel
+        height: 70,
+        child: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            Material(color: _mainBackdrop),
+            Positioned(
+              top: 5,
+              left: 60,
+              width: 150,
+              height: 30,
+              child: RichText(
+                text: TextSpan(
+                  text: ("Marks:"),
+                  style: TextStyle(color: Colors.black, fontSize: 16),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      Positioned(
+        top: 25,
+        left: 80,
+        width: 120,//should run to about the middle
+        height: 40,
+        child: RichText(
+          text: TextSpan(
+            text: ("7.5/10"),
+            style: TextStyle(
+                color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+      Positioned(
+        top: 0,
+        left: 210,
+        width: 170,
+        height: 60,
+        child: Container(
+          child: ButtonTheme(
+            minWidth: 170.0,
+            height: 60.0,
+            child: RaisedButton(
+              onPressed: () {
+                print("Submit Button pressed.");
+              },
+              child: RichText(
+                text: TextSpan(
+                  text: ("Submit"),
+                  style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              color: _buttonColour,
+              shape: RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(7.0)),
+              textColor: Colors.white,
+            ),
+          ),
+        ),
+
+        /*RichText(
+          text: TextSpan(
+            text: ("7.5/10"),
+            style: TextStyle(
+                color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),*/
+      ),
+    ],
+  );
+}
+
+// void setFetchDone(bool b) {
+//   _isFetchDone = b;
+// }
 
 Future<List<CriteriaDecode>> fetchCriteria(String i) async {
   var response = await http.post('https://markit.mijdas.com/api/criteria/',
@@ -199,7 +368,7 @@ Future<List<CriteriaDecode>> fetchCriteria(String i) async {
     print('response body: ' + response.body);
 
     List<CriteriaDecode> rValue = criteriaDecodeFromJson(response.body);
-
+    _isFetchDone = true;
     return rValue;
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
@@ -251,7 +420,8 @@ class Criterion {
   String maxMark;
   String displayText;
   bool _isChecked;
-  int iD, elementType, maxMarkI;
+  int iD, elementType;
+  double maxMarkI;
 
   TextEditingController tControl;
   double value = 0;
@@ -269,20 +439,25 @@ class Criterion {
     }
     this.iD = int.parse(criteria);
     this.elementType = int.parse(element);
-    this.maxMarkI = int.parse(maxMark);
+    if (maxMark == null)
+      this.maxMarkI =
+          -1.0; //temp fix, although can be used to identify null boxes in future
+    else
+      this.maxMarkI = double.parse(maxMark);
+    // this.maxMarkI = int.parse(maxMark);
   }
 
   factory Criterion.fromJson(Map<String, dynamic> json) => Criterion(
         criteria: json["criteria"],
         element: json["element"],
-        maxMark: json["maxMark"],
+        maxMark: json["maxMark"] == null ? null : json["maxMark"],
         displayText: json["displayText"],
       );
 
   Map<String, dynamic> toJson() => {
         "criteria": criteria,
         "element": element,
-        "maxMark": maxMark,
+        "maxMark": maxMark == null ? null : maxMark,
         "displayText": displayText,
       };
 }

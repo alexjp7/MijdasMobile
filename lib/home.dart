@@ -82,7 +82,7 @@ class Home extends StatelessWidget {
         ],
       ),
       body: FutureBuilder<List<Universities>>(
-        future: fetchUniversities(searchedUser),
+        future: fetchUniversities(getStudentName()),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             universitiesList = snapshot.data;
@@ -317,6 +317,6 @@ class Subject {
       };
 }
 
-String getSubjecttName() {
+String getSubjectName() {
   return _subjectName;
 }
