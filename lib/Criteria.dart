@@ -3,6 +3,8 @@ TODO----------
 -add slider incerements --Done(-Mitch)
 -fix http --?(-Mitch)
 -add submit button --Done(-Mitch)
+-make it so when you go back it resets the students(so marks get updated)
+
 
  */
 
@@ -24,6 +26,8 @@ Student _selectedStudent;
 Color _activeColour = new Color(0xff0069C0);
 Color _inactiveColour = new Color(0xffA0C8E3);
 List<Criterion> _assCrit;
+List<Criterion> _items;
+String _assID;
 bool
     _isFetchDone; //boolean check to see if API request is finished before populating certain fields
 
@@ -33,7 +37,7 @@ Route CriteriaRoute(Student s, String assID, List<Criterion> crit) {
         CriteriaPageState(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       _selectedStudent = s; //assigning page ID
-
+      _assID=assID;
       _assCrit = crit;
 
       print(_selectedStudent.studentId);
@@ -56,10 +60,10 @@ class CriteriaPageState extends StatefulWidget {
 class CriteriaPage extends State<CriteriaPageState> {
   Color _accentColour = Color(0xffBFD4DF);
 
-  List<Criterion> items;
+
 
   CriteriaPage() {
-    items = _assCrit;
+    _items = _assCrit;
   }
 
   /*
@@ -71,22 +75,22 @@ class CriteriaPage extends State<CriteriaPageState> {
   
   */
   Widget _buildTiles(int index) {
-    if (items[index].element == "0") {
+    if (_items[index].element == "0") {
       return Flexible(
           flex: 1,
           child: Center(
               child: Checkbox(
-                  value: items[index]._isChecked,
+                  value: _items[index]._isChecked,
                   activeColor: _activeColour,
                   onChanged: (val) {
                     setState(() {
-                      items[index]._isChecked = val;
-                      items[index]._isChecked
-                          ? items[index].value = items[index].maxMarkI
-                          : items[index].value = 0;
+                      _items[index]._isChecked = val;
+                      _items[index]._isChecked
+                          ? _items[index].value = _items[index].maxMarkI
+                          : _items[index].value = 0;
                     });
                   })));
-    } else if (items[index].element == "1") {
+    } else if (_items[index].element == "1") {
       //items[index].value = 0;
       return Flexible(
           flex: 1,
@@ -102,28 +106,28 @@ class CriteriaPage extends State<CriteriaPageState> {
             ),
             child: Slider(
               min: 0.0,
-              max: items[index].maxMarkI,
-              divisions: items[index].maxMarkI.toInt() *
+              max: _items[index].maxMarkI,
+              divisions: _items[index].maxMarkI.toInt() *
                   4, //creates increments of 0.25
               onChanged: (newSliderValue) {
                 setState(() {
-                  items[index].value = newSliderValue;
+                  _items[index].value = newSliderValue;
                   // items[index].value = double.parse(newSliderValue.toStringAsPrecision(3));
                   // items[index].value = newSliderValue.roundToDouble();
                 });
               },
-              value: items[index].value,
+              value: _items[index].value,
             ),
           ));
     } else {
       return Flexible(
           flex: 1,
           child: TextField(
-            controller: items[index].tControl,
+            controller: _items[index].tControl,
             // textAlign: TextAlign.center, //what a stupid bug this is
             onChanged: (text) {
               if (isNumeric(text)) {
-                items[index].value = double.parse(text);
+                _items[index].value = double.parse(text);
                 print(text);
               } else {
                 print("NOT ANUMBERRRR");
@@ -171,17 +175,17 @@ class CriteriaPage extends State<CriteriaPageState> {
               Flexible(
                   flex: 10,
                   child: ListView.builder(
-                      itemCount: (items.length),
+                      itemCount: (_items.length),
                       itemBuilder: (context, index) {
                         //adding code for interactive text results btw Joel
                         String criteriaValueText;
 
-                        if (items[index].maxMark == null)
+                        if (_items[index].maxMark == null)
                           criteriaValueText = "";
                         else
-                          criteriaValueText = '${items[index].value}' +
+                          criteriaValueText = '${_items[index].value}' +
                               '/' +
-                              '${items[index].maxMark}';
+                              '${_items[index].maxMark}';
 
                         return ListTile(
                           dense: true,
@@ -193,7 +197,7 @@ class CriteriaPage extends State<CriteriaPageState> {
                               child: Center(
                                   child: Column(children: <Widget>[
                                 Text(
-                                  '${items[index].displayText}',
+                                  '${_items[index].displayText}',
                                   style: TextStyle(fontSize: 18.0),
                                 ),
                                 Text(
@@ -353,8 +357,9 @@ Widget _markingFooterArea() {
             minWidth: 170.0,
             height: 60.0,
             child: RaisedButton(
-              onPressed: () {
+              onPressed: () async {
                 print("Submit Button pressed.");
+                postMark(_items);
               },
               child: RichText(
                 text: TextSpan(
@@ -437,6 +442,36 @@ Future<List<CriteriaDecode>> fetchCriteria(String i) async {
   }
 }
 
+Future<bool> postMark(List<Criterion> _criteriaPost) async{
+
+
+
+  String encodeJson = json.encode({
+    "request":"SUBMIT_MARK",
+    "student":_selectedStudent.studentId,
+    "assessment_id":_assID,
+    "results": List<dynamic>.from(_criteriaPost.map((x) => x.toJson())),
+  });
+
+
+
+  var response = await http.post('https://markit.mijdas.com/api/assessment/',
+      body: encodeJson);
+  if (response.statusCode == 200) {
+    print('response code:  200\n');
+    print('response body: ' + response.body);
+    return true;
+  } else if (response.statusCode == 404) {
+    print('response code:  404\n');
+  } else {
+    print('response code: ' + response.statusCode.toString());
+    print('response body: ' + response.body);
+    throw Exception(
+        'Failed to load post, error code: ' + response.statusCode.toString());
+  }
+}
+
+
 bool isNumeric(String s) {
   if (s == null) {
     return false;
@@ -464,15 +499,16 @@ class CriteriaDecode {
       );
 
   Map<String, dynamic> toJson() => {
-        "criteria": List<dynamic>.from(criteria.map((x) => x.toJson())),
+        "request":"SUBMIT_MARK",
+        "student":_selectedStudent.studentId,
+        "assessment_id":_assID,
+        "results": List<dynamic>.from(criteria.map((x) => x.toJson())),
       };
 }
 
 class Criterion {
-  String criteria;
-  String element;
-  String maxMark;
-  String displayText;
+  String criteria, element, maxMark, displayText;
+  String comment;
   bool _isChecked;
   int iD, elementType;
   double maxMarkI;
@@ -493,9 +529,10 @@ class Criterion {
     }
     this.iD = int.parse(criteria);
     this.elementType = int.parse(element);
-    if (maxMark == null)
-      this.maxMarkI =
-          -1.0; //temp fix, although can be used to identify null boxes in future
+    if (maxMark == null) {
+      this.maxMarkI = -1.0;
+      value = null;
+    }//temp fix, although can be used to identify null boxes in future
     else
       this.maxMarkI = double.parse(maxMark);
     // this.maxMarkI = int.parse(maxMark);
@@ -517,9 +554,8 @@ class Criterion {
       );
 
   Map<String, dynamic> toJson() => {
-        "criteria": criteria,
-        "element": element,
-        "maxMark": maxMark == null ? null : maxMark,
-        "displayText": displayText,
+        "c_id": criteria,
+        "result": value,
+        "comment":comment
       };
 }

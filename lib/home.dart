@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mijdas_app/QueryManager.dart';
 
 //local imports
 import './main.dart';
@@ -15,6 +16,7 @@ import 'package:http/http.dart' as http;
 
 String _subjectName;
 BuildContext _homeContext;
+
 
 Route homeRoute() {
   return PageRouteBuilder(
@@ -86,6 +88,9 @@ class Home extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             universitiesList = snapshot.data;
+
+            //QueryManager().universityList=snapshot.data;
+
             List<TileObj> _parentListItems = new List<TileObj>();
 
             for (int i = 0; i < snapshot.data.length; i++) {
@@ -244,7 +249,11 @@ List<TileObj> _resultsList = <TileObj>[
 */
 
 Future<List<Universities>> fetchUniversities(String s) async {
-  print('test');
+  //print('test');
+//  if(QueryManager().universityList.isNotEmpty){
+//    return QueryManager().universityList;
+//  }
+
   var response = await http.post(
       'https://markit.mijdas.com/api/requests/subject/',
       body: jsonEncode({
