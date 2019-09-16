@@ -140,7 +140,11 @@ class PopulateTiles extends StatelessWidget {
         dense: true,
         enabled: true,
         isThreeLine: false,
-        onLongPress: () => print("Long Press: [" + t.title + "]."),
+        onLongPress: () {
+            print("Long Press: [" + t.title + "]. UserPriv: ["+getPriv().toString()+"].");
+            if(getPriv() == 2)
+              onHoldSettings_Assessments(_assessmentContext, t.title);
+          },
         onTap: () {
           _assessmentName = t.title;
           _assessmentMaxMark = t.tileMaxMark;

@@ -200,7 +200,14 @@ class PopulateTiles extends StatelessWidget {
           dense: true,
           enabled: true,
           isThreeLine: false,
-          onLongPress: () => print("Long Press: [" + t.title + "]."),
+          onLongPress: () {
+            print("Long Press: [" +
+                t.title +
+                "]. UserPriv: [" +
+                getPriv().toString() +
+                "].");
+            if (getPriv() == 2) onHoldSettings_HomeTile(_homeContext, t.title);
+          },
           onTap: () {
             _subjectName = t.title;
             Navigator.push(_homeContext, assessmentRoute(t.tileID));
@@ -223,17 +230,27 @@ class PopulateTiles extends StatelessWidget {
           ));
     // title: new Text(t.title));
 
-    return new ExpansionTile(
-      key: new PageStorageKey<int>(3),
-      title: /*Container(
+    return new GestureDetector(
+      onLongPress: () {
+        print("Long Press: [" +
+            t.title +
+            "]. UserPriv: [" +
+            getPriv().toString() +
+            "].");
+        if (getPriv() == 2) onHoldSettings_HomeHead(_homeContext, t.title);
+      },
+      child: ExpansionTile(
+        key: new PageStorageKey<int>(3),
+        title: /*Container(
         child: */
-          Text(
-        t.title /*, style: TextStyle(color: Colors.green)*/,
+            Text(
+          t.title /*, style: TextStyle(color: Colors.green)*/,
+        ),
+        // alignment: Alignment.center,
+        // ),
+        // trailing: Text(""),
+        children: t.children.map(_buildList).toList(),
       ),
-      // alignment: Alignment.center,
-      // ),
-      // trailing: Text(""),
-      children: t.children.map(_buildList).toList(),
     );
   }
 }

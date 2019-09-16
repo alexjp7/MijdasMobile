@@ -44,6 +44,86 @@ void showDialog_2(BuildContext bctx, String title, String msg, String option) {
       });
 }
 
+//global settings prompts
+void onHoldSettings_HomeTile(BuildContext context, String selectedTitle) {
+  showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return Container(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.group_add),
+                title: Text("Add Student To Subject: " + selectedTitle),
+                onTap: () {
+                  print("Add Student Click.");
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.person_add),
+                title: Text("Add Tutor to Subject: " + selectedTitle),
+                onTap: () {
+                  print("Add Tutor Click.");
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      });
+}
+
+void onHoldSettings_HomeHead(BuildContext context, String selectedTitle) {
+  showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return Container(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.playlist_add),
+                title: Text("Create Subject For: " + selectedTitle),
+                onTap: () {
+                  print("Create Subject Click.");
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      });
+}
+
+void onHoldSettings_Assessments(BuildContext context, String selectedTitle) {
+  showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return Container(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.add_comment),
+                title: Text("Create Criteria For: " + selectedTitle),
+                onTap: () {
+                  print("Create Criteria Click.");
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.visibility),
+                title: Text("Toggle Activation For: " + selectedTitle),
+                onTap: () {
+                  print("Toggle Activation Click.");
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      });
+}
+
 //settings tile styling used globally
 Widget settingsTile(IconData icon, String label, Function onTap) {
   Color _mainBackdrop = new Color(0xff54b3ff); //lighter blue
