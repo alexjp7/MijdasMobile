@@ -12,6 +12,7 @@ import 'package:http/http.dart' as http;
 
 Color _buttonColour = new Color(0xff0069C0);
 String _searchedUser;
+int _userType;
 final String jsonURL =
     "https://markit.mijdas.com/api/requests/subject/read.php?username=";
 //for storing json results globally
@@ -135,6 +136,11 @@ class SignIn extends StatelessWidget {
                                       usernameController.text +
                                       "].");
                                   _searchedUser = usernameController.text;
+                                  if(_searchedUser == "st111")
+                                    _userType = 2;//for testing purposes, st111 is Coordinator
+                                  else
+                                    _userType = 1;//everyone else is tutor (eg aa111)
+                                    
                                   // getData(searchedUser); //commented out while back end was down
                                   Navigator.push(context, homeRoute());
                                 // } else {
@@ -264,4 +270,8 @@ Widget _banner(BuildContext context) {
 
 String getUsername() {
   return _searchedUser;
+}
+
+int getPriv() {
+  return _userType;
 }

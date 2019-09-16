@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 //local imports
-import './home.dart';
+import './signin.dart';
 import './students.dart';
 import './global_widgets.dart';
 
@@ -20,7 +20,7 @@ Route assessmentRoute(String s) {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) => Assessments(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      _assessmentContext = context;//assigning page buildcontext
+      _assessmentContext = context; //assigning page buildcontext
       _assessmentID = s; //assigning page ID
       return FadeTransition(
         opacity: animation,
@@ -48,15 +48,34 @@ class Assessments extends StatelessWidget {
         ),
         title: Text('Assessments'),
         centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.dehaze),
-            onPressed: () {
-              Navigator.push(context, homeRoute());
-              print("Hamburger Menu Clicked");
-            },
-          )
-        ],
+      ),
+      endDrawer: Drawer(
+        child: Container(
+          child: ListView(
+            // padding: EdgeInsets.all(10.0),
+            children: <Widget>[
+              settingsHeader(context, getUsername()),
+              settingsTile(Icons.person, "Profile", () {
+                print("Profile Clicked.");
+              }),
+              settingsTile(Icons.person, "Announcements", () {
+                print("Announcements Clicked.");
+              }),
+              settingsTile(Icons.person, "Calendar", () {
+                print("Calendar Clicked.");
+              }),
+              settingsTile(Icons.person, "Job Board", () {
+                print("Job Board Clicked.");
+              }),
+              settingsTile(Icons.person, "Settings", () {
+                print("Settings Clicked.");
+              }),
+              settingsTile(Icons.person, "Sign Out", () {
+                print("Sign Out Clicked.");
+              }),
+            ],
+          ),
+        ),
       ),
       body: FutureBuilder<List<Assessment>>(
         future: fetchAssessments(_assessmentID),
@@ -65,8 +84,11 @@ class Assessments extends StatelessWidget {
             List<TileObj> _parentListItems = new List<TileObj>();
 
             for (int i = 0; i < snapshot.data.length; i++) {
-              _parentListItems.add(new TileObj(snapshot.data[i].name,
-                  snapshot.data[i].id, snapshot.data[i].a_number, snapshot.data[i].maxMark));
+              _parentListItems.add(new TileObj(
+                  snapshot.data[i].name,
+                  snapshot.data[i].id,
+                  snapshot.data[i].a_number,
+                  snapshot.data[i].maxMark));
             }
             return ListView.builder(
               itemBuilder: (BuildContext context, int index) {
@@ -118,7 +140,11 @@ class PopulateTiles extends StatelessWidget {
         dense: true,
         enabled: true,
         isThreeLine: false,
-        onLongPress: () => print("Long Press: [" + t.title + "]."),
+        onLongPress: () {
+            print("Long Press: [" + t.title + "]. UserPriv: ["+getPriv().toString()+"].");
+            if(getPriv() == 2)
+              onHoldSettings_Assessments(_assessmentContext, t.title);
+          },
         onTap: () {
           _assessmentName = t.title;
           _assessmentMaxMark = t.tileMaxMark;
@@ -170,7 +196,12 @@ Future<List<Assessment>> fetchAssessments(String s) async {
     return assessmentsFromJson(response.body);
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
-    showDialog_1(_assessmentContext, "Error!", "Response Code: 404.\n\n\t\t\tNo Assessments Found.", "Close & Return");
+    showDialog_1(
+        _assessmentContext,
+        "Error!",
+        "Response Code: 404.\n\n\t\t\tNo Assessments Found.",
+        "Close & Return",
+        false);
     //navigate to an error page displaying lack of assessment error
     // return assessmentsFromJson(response.body);
   } else {
@@ -212,9 +243,10 @@ class Assessment {
       };
 }
 
-String getAssessmentName(){
+String getAssessmentName() {
   return _assessmentName;
 }
-String getAssessmentMaxMark(){
+
+String getAssessmentMaxMark() {
   return _assessmentMaxMark;
 }

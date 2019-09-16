@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mijdas_app/QueryManager.dart';
 
 //local imports
 import './main.dart';
@@ -71,21 +72,43 @@ class Home extends StatelessWidget {
         ),
         title: Text('Home'),
         centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.dehaze),
-            onPressed: () {
-              // Navigator.push(context, criteriaRoute());
-              print("Hamburger Menu Clicked");
-            },
-          )
-        ],
+      ),
+      endDrawer: Drawer(
+        child: Container(
+          child: ListView(
+            // padding: EdgeInsets.all(10.0),
+            children: <Widget>[
+              settingsHeader(context, getUsername()),
+              settingsTile(Icons.person, "Profile", () {
+                print("Profile Clicked.");
+              }),
+              settingsTile(Icons.person, "Announcements", () {
+                print("Announcements Clicked.");
+              }),
+              settingsTile(Icons.person, "Calendar", () {
+                print("Calendar Clicked.");
+              }),
+              settingsTile(Icons.person, "Job Board", () {
+                print("Job Board Clicked.");
+              }),
+              settingsTile(Icons.person, "Settings", () {
+                print("Settings Clicked.");
+              }),
+              settingsTile(Icons.person, "Sign Out", () {
+                print("Sign Out Clicked.");
+              }),
+            ],
+          ),
+        ),
       ),
       body: FutureBuilder<List<Universities>>(
         future: fetchUniversities(getUsername()),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             universitiesList = snapshot.data;
+
+            //QueryManager().universityList=snapshot.data;
+
             List<TileObj> _parentListItems = new List<TileObj>();
 
             for (int i = 0; i < snapshot.data.length; i++) {
@@ -177,7 +200,14 @@ class PopulateTiles extends StatelessWidget {
           dense: true,
           enabled: true,
           isThreeLine: false,
-          onLongPress: () => print("Long Press: [" + t.title + "]."),
+          onLongPress: () {
+            print("Long Press: [" +
+                t.title +
+                "]. UserPriv: [" +
+                getPriv().toString() +
+                "].");
+            if (getPriv() == 2) onHoldSettings_HomeTile(_homeContext, t.title);
+          },
           onTap: () {
             _subjectName = t.title;
             Navigator.push(_homeContext, assessmentRoute(t.tileID));
@@ -200,16 +230,27 @@ class PopulateTiles extends StatelessWidget {
           ));
     // title: new Text(t.title));
 
-    return new ExpansionTile(
-      key: new PageStorageKey<int>(3),
-      title: /*Container(
-        child: */Text(
+    return new GestureDetector(
+      onLongPress: () {
+        print("Long Press: [" +
+            t.title +
+            "]. UserPriv: [" +
+            getPriv().toString() +
+            "].");
+        if (getPriv() == 2) onHoldSettings_HomeHead(_homeContext, t.title);
+      },
+      child: ExpansionTile(
+        key: new PageStorageKey<int>(3),
+        title: /*Container(
+        child: */
+            Text(
           t.title /*, style: TextStyle(color: Colors.green)*/,
         ),
         // alignment: Alignment.center,
-      // ),
-      // trailing: Text(""),
-      children: t.children.map(_buildList).toList(),
+        // ),
+        // trailing: Text(""),
+        children: t.children.map(_buildList).toList(),
+      ),
     );
   }
 }
@@ -244,7 +285,11 @@ List<TileObj> _resultsList = <TileObj>[
 */
 
 Future<List<Universities>> fetchUniversities(String s) async {
-  print('test');
+  //print('test');
+//  if(QueryManager().universityList.isNotEmpty){
+//    return QueryManager().universityList;
+//  }
+
   var response = await http.post(
       'https://markit.mijdas.com/api/requests/subject/',
       body: jsonEncode({
@@ -259,8 +304,12 @@ Future<List<Universities>> fetchUniversities(String s) async {
     return universitiesFromJson(response.body);
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
-    showDialog_1(_homeContext, "Error!",
-        "Response Code: 404.\n\n\t\t\tNo Subjects Found.", "Close & Return");
+    showDialog_1(
+        _homeContext,
+        "Error!",
+        "Response Code: 404.\n\n\t\t\tNo Subjects Found.",
+        "Close & Return",
+        false);
   } else {
     print('response code: ' + response.statusCode.toString());
     print('response body: ' + response.body);
