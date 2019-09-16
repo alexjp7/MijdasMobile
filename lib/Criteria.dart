@@ -10,9 +10,10 @@ TODO----------
 
 //Got lost trying to figure multi pages out - will need it explained after/before meeting pls xoxo - this code is ready for posts - joel
 import 'package:flutter/material.dart';
+import 'package:mijdas_app/global_widgets.dart';
 
 //local imports
-import './home.dart';
+import './signin.dart';
 import './students.dart';
 
 //data handling/processing imports
@@ -22,6 +23,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Student _selectedStudent;
+BuildContext _critContext;
 // Color _buttonColour = new Color(0xff0069C0);
 Color _activeColour = new Color(0xff0069C0);
 Color _inactiveColour = new Color(0xffA0C8E3);
@@ -37,7 +39,7 @@ Route CriteriaRoute(Student s, String assID, List<Criterion> crit) {
         CriteriaPageState(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       _selectedStudent = s; //assigning page ID
-      _assID=assID;
+      _assID = assID;
       _assCrit = crit;
 
       print(_selectedStudent.studentId);
@@ -59,8 +61,6 @@ class CriteriaPageState extends StatefulWidget {
 
 class CriteriaPage extends State<CriteriaPageState> {
   Color _accentColour = Color(0xffBFD4DF);
-
-
 
   CriteriaPage() {
     _items = _assCrit;
@@ -154,15 +154,43 @@ class CriteriaPage extends State<CriteriaPageState> {
           ),
           title: Text('Marking'),
           centerTitle: true,
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.dehaze),
-              onPressed: () {
-                Navigator.push(context, homeRoute());
-                print("Hamburger Menu Clicked");
-              },
-            )
-          ],
+          // actions: <Widget>[
+          //   IconButton(
+          //     icon: Icon(Icons.dehaze),
+          //     onPressed: () {
+          //       Navigator.push(context, homeRoute());
+          //       print("Hamburger Menu Clicked");
+          //     },
+          //   )
+          // ],
+        ),
+        endDrawer: Drawer(
+          child: Container(
+            child: ListView(
+              // padding: EdgeInsets.all(10.0),
+              children: <Widget>[
+                settingsHeader(context, getUsername()),
+                settingsTile(Icons.person, "Profile", () {
+                  print("Profile Clicked.");
+                }),
+                settingsTile(Icons.person, "Announcements", () {
+                  print("Announcements Clicked.");
+                }),
+                settingsTile(Icons.person, "Calendar", () {
+                  print("Calendar Clicked.");
+                }),
+                settingsTile(Icons.person, "Job Board", () {
+                  print("Job Board Clicked.");
+                }),
+                settingsTile(Icons.person, "Settings", () {
+                  print("Settings Clicked.");
+                }),
+                settingsTile(Icons.person, "Sign Out", () {
+                  print("Sign Out Clicked.");
+                }),
+              ],
+            ),
+          ),
         ),
         body: Column(
             verticalDirection: VerticalDirection.down,
@@ -186,6 +214,8 @@ class CriteriaPage extends State<CriteriaPageState> {
                           criteriaValueText = '${_items[index].value}' +
                               '/' +
                               '${_items[index].maxMark}';
+
+                        _critContext = context;
 
                         return ListTile(
                           dense: true,
@@ -427,7 +457,7 @@ Future<List<CriteriaDecode>> fetchCriteria(String i) async {
 
     List<CriteriaDecode> rValue = criteriaDecodeFromJson(response.body);
     _isFetchDone = true;
-    
+
     return rValue;
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
@@ -442,24 +472,21 @@ Future<List<CriteriaDecode>> fetchCriteria(String i) async {
   }
 }
 
-Future<bool> postMark(List<Criterion> _criteriaPost) async{
-
-
-
+Future<bool> postMark(List<Criterion> _criteriaPost) async {
   String encodeJson = json.encode({
-    "request":"SUBMIT_MARK",
-    "student":_selectedStudent.studentId,
-    "assessment_id":_assID,
+    "request": "SUBMIT_MARK",
+    "student": _selectedStudent.studentId,
+    "assessment_id": _assID,
     "results": List<dynamic>.from(_criteriaPost.map((x) => x.toJson())),
   });
-
-
 
   var response = await http.post('https://markit.mijdas.com/api/assessment/',
       body: encodeJson);
   if (response.statusCode == 200) {
     print('response code:  200\n');
     print('response body: ' + response.body);
+    showDialog_1(_critContext, "Success!",
+        "Student Marks Submitted Successfully.", "Close", true);
     return true;
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
@@ -470,7 +497,6 @@ Future<bool> postMark(List<Criterion> _criteriaPost) async{
         'Failed to load post, error code: ' + response.statusCode.toString());
   }
 }
-
 
 bool isNumeric(String s) {
   if (s == null) {
@@ -499,9 +525,9 @@ class CriteriaDecode {
       );
 
   Map<String, dynamic> toJson() => {
-        "request":"SUBMIT_MARK",
-        "student":_selectedStudent.studentId,
-        "assessment_id":_assID,
+        "request": "SUBMIT_MARK",
+        "student": _selectedStudent.studentId,
+        "assessment_id": _assID,
         "results": List<dynamic>.from(criteria.map((x) => x.toJson())),
       };
 }
@@ -532,7 +558,7 @@ class Criterion {
     if (maxMark == null) {
       this.maxMarkI = -1.0;
       value = null;
-    }//temp fix, although can be used to identify null boxes in future
+    } //temp fix, although can be used to identify null boxes in future
     else
       this.maxMarkI = double.parse(maxMark);
     // this.maxMarkI = int.parse(maxMark);
@@ -553,9 +579,6 @@ class Criterion {
         displayText: json["displayText"],
       );
 
-  Map<String, dynamic> toJson() => {
-        "c_id": criteria,
-        "result": value,
-        "comment":comment
-      };
+  Map<String, dynamic> toJson() =>
+      {"c_id": criteria, "result": value, "comment": comment};
 }

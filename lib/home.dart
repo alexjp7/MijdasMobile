@@ -17,7 +17,6 @@ import 'package:http/http.dart' as http;
 String _subjectName;
 BuildContext _homeContext;
 
-
 Route homeRoute() {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) => Home(),
@@ -73,15 +72,34 @@ class Home extends StatelessWidget {
         ),
         title: Text('Home'),
         centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.dehaze),
-            onPressed: () {
-              // Navigator.push(context, criteriaRoute());
-              print("Hamburger Menu Clicked");
-            },
-          )
-        ],
+      ),
+      endDrawer: Drawer(
+        child: Container(
+          child: ListView(
+            // padding: EdgeInsets.all(10.0),
+            children: <Widget>[
+              settingsHeader(context, getUsername()),
+              settingsTile(Icons.person, "Profile", () {
+                print("Profile Clicked.");
+              }),
+              settingsTile(Icons.person, "Announcements", () {
+                print("Announcements Clicked.");
+              }),
+              settingsTile(Icons.person, "Calendar", () {
+                print("Calendar Clicked.");
+              }),
+              settingsTile(Icons.person, "Job Board", () {
+                print("Job Board Clicked.");
+              }),
+              settingsTile(Icons.person, "Settings", () {
+                print("Settings Clicked.");
+              }),
+              settingsTile(Icons.person, "Sign Out", () {
+                print("Sign Out Clicked.");
+              }),
+            ],
+          ),
+        ),
       ),
       body: FutureBuilder<List<Universities>>(
         future: fetchUniversities(getUsername()),
@@ -208,10 +226,11 @@ class PopulateTiles extends StatelessWidget {
     return new ExpansionTile(
       key: new PageStorageKey<int>(3),
       title: /*Container(
-        child: */Text(
-          t.title /*, style: TextStyle(color: Colors.green)*/,
-        ),
-        // alignment: Alignment.center,
+        child: */
+          Text(
+        t.title /*, style: TextStyle(color: Colors.green)*/,
+      ),
+      // alignment: Alignment.center,
       // ),
       // trailing: Text(""),
       children: t.children.map(_buildList).toList(),
@@ -268,8 +287,12 @@ Future<List<Universities>> fetchUniversities(String s) async {
     return universitiesFromJson(response.body);
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
-    showDialog_1(_homeContext, "Error!",
-        "Response Code: 404.\n\n\t\t\tNo Subjects Found.", "Close & Return");
+    showDialog_1(
+        _homeContext,
+        "Error!",
+        "Response Code: 404.\n\n\t\t\tNo Subjects Found.",
+        "Close & Return",
+        false);
   } else {
     print('response code: ' + response.statusCode.toString());
     print('response body: ' + response.body);
