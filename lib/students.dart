@@ -4,11 +4,10 @@ import 'package:mijdas_app/Criteria.dart' as prefix0;
 
 import 'package:pie_chart/pie_chart.dart';
 
-
 //local imports
 import './criteria.dart';
 import './assessment.dart';
-import './main.dart';
+import './signin.dart';
 import './home.dart';
 import './global_widgets.dart';
 
@@ -36,7 +35,6 @@ Icon _isMarked = new Icon(
 Icon _isNotMarked = new Icon(
   Icons.check_box_outline_blank,
 );
-
 
 Route studentsRoute(String id) {
   return PageRouteBuilder(
@@ -70,37 +68,42 @@ class Students extends StatelessWidget {
         ),
         title: Text('Students'),
         centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.dehaze),
-            onPressed: () {
-              // Navigator.push(context, PageThree());
-              print("Hamburger Menu Clicked");
-            },
-          )
-        ],
+        // actions: <Widget>[
+        //   IconButton(
+        //     icon: Icon(Icons.dehaze),
+        //     onPressed: () {
+        //       // Navigator.push(context, PageThree());
+        //       // ScaffoldState.openEndDrawer();
+        //       print("Hamburger Menu Clicked");
+        //     },
+        //   )
+        // ],
       ),
-      drawer: Drawer(
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            child: ListView(
-              padding: EdgeInsets.all(10.0),
-              children: <Widget>[
-                ListTile(
-                  title: Text("Go To First Screen"),
-                  onTap: () {
-                    print("First Clicked");
-                  },
-                ),
-                ListTile(
-                  title: Text("Go To Second Screen"),
-                  onTap: () {
-                    print("Second Clicked");
-                  },
-                ),
-              ],
-            ),
+      endDrawer: Drawer(
+        child: Container(
+          child: ListView(
+            // padding: EdgeInsets.all(10.0),
+            children: <Widget>[
+              settingsHeader(context, getUsername()),
+              settingsTile(Icons.person, "Profile", () {
+                print("Profile Clicked.");
+              }),
+              settingsTile(Icons.person, "Announcements", () {
+                print("Announcements Clicked.");
+              }),
+              settingsTile(Icons.person, "Calendar", () {
+                print("Calendar Clicked.");
+              }),
+              settingsTile(Icons.person, "Job Board", () {
+                print("Job Board Clicked.");
+              }),
+              settingsTile(Icons.person, "Settings", () {
+                print("Settings Clicked.");
+              }),
+              settingsTile(Icons.person, "Sign Out", () {
+                print("Sign Out Clicked.");
+              }),
+            ],
           ),
         ),
       ),
@@ -119,7 +122,6 @@ class Students extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   // print(snapshot.data[0].records[0].studentId);
-
 
                   _studentList = snapshot
                       .data[0].records; //studentList is the list of students
@@ -416,7 +418,7 @@ Widget _studentsMarkedChart() {
   );
 }
 
-class StudentSearch  extends SearchDelegate<String>  {
+class StudentSearch extends SearchDelegate<String> {
   //hardcoded searched items
   // final studentsList = [
   //   "this",
@@ -482,49 +484,78 @@ class StudentSearch  extends SearchDelegate<String>  {
         ? studentsList
         : studentsList.where((x) => x.startsWith(query)).toList();
 
-    return ListView.builder(
-
-      itemBuilder: (context, index) => Container(
-        decoration: BoxDecoration(color: _getMarkedStateBar(_getStudent(suggestedItems[index].toString()).result)),
-        child: ListTile(
-          onTap: () {
-            // print(suggestedItems[index].toString());
-            // print(_getIndexForStudent(suggestedItems[index].toString()));
-            _selectedStudent = suggestedItems[index].toString();
-            Navigator.push(context,
-                CriteriaRoute(_studentList[index], _assessmentID,criteriaList[0].criteria));//JOEL USE THIS TO NAVIGATE TO SELECTED STUDENTS CRITERIA!
-            // close(context, route);
-          },
-          leading: _getMarkedState(
-              _getStudent(suggestedItems[index].toString()).result),
-          trailing: RichText(
-            text: TextSpan(
-                text: _getStudent(suggestedItems[index].toString()).result,
-                style: TextStyle(
-                    color: Colors.grey[700], fontWeight: FontWeight.bold),
-                children: [
-                  TextSpan(
-                      text: (" /" + getAssessmentMaxMark()),
-                      style: TextStyle(color: Colors.grey))
-                ]),
+    return RefreshIndicator(
+      onRefresh: _refreshStudentsList,
+      child: ListView.builder(
+        itemBuilder: (context, index) => Container(
+          decoration: BoxDecoration(
+              color: _getMarkedStateBar(
+                  _getStudent(suggestedItems[index].toString()).result)),
+          child: ListTile(
+            onTap: () {
+              // print(suggestedItems[index].toString());
+              // print(_getIndexForStudent(suggestedItems[index].toString()));
+              _selectedStudent = suggestedItems[index].toString();
+              Navigator.push(
+                  context,
+                  CriteriaRoute(
+                      _studentList[index],
+                      _assessmentID,
+                      criteriaList[0]
+                          .criteria)); //JOEL USE THIS TO NAVIGATE TO SELECTED STUDENTS CRITERIA!
+              // close(context, route);
+            },
+            leading: _getMarkedState(
+                _getStudent(suggestedItems[index].toString()).result),
+            trailing: RichText(
+              text: TextSpan(
+                  text: _getStudent(suggestedItems[index].toString()).result,
+                  style: TextStyle(
+                      color: Colors.grey[700], fontWeight: FontWeight.bold),
+                  children: [
+                    TextSpan(
+                        text: (" /" + getAssessmentMaxMark()),
+                        style: TextStyle(color: Colors.grey))
+                  ]),
+            ),
+            title: RichText(
+              text: TextSpan(
+                  text: suggestedItems[index].substring(0, query.length),
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
+                  children: [
+                    TextSpan(
+                        text: suggestedItems[index].substring(query.length),
+                        style: TextStyle(color: Colors.grey))
+                  ]),
+            ),
           ),
-          title: RichText(
-            text: TextSpan(
-                text: suggestedItems[index].substring(0, query.length),
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                children: [
-                  TextSpan(
-                      text: suggestedItems[index].substring(query.length),
-                      style: TextStyle(color: Colors.grey))
-                ]),
-          ),
-
         ),
+        itemCount: suggestedItems.length,
       ),
-      itemCount: suggestedItems.length,
     );
   }
+}
+
+Future<void> _refreshStudentsList() async {
+  print("Refreshing Students");
+  FutureBuilder<List<StudentDecode>>(
+    future: fetchStudents(_assessmentID),
+    builder: (context, snapshot) {
+      if (snapshot.hasData) {
+        _studentList = snapshot.data[0].records;
+
+        for (int i = 0; i < _studentList.length; i++) {
+          _studentIDList.add(_studentList[i].studentId);
+        }
+        _isFetchDone = true;
+      } else if (snapshot.hasError) {
+        _isFetchDone = false;
+        showDialog_1(context, "Error!", snapshot.error, "Close", false);
+      }
+      return Center(child: CircularProgressIndicator()); //LOADING CIRCLE
+    },
+  );
 }
 
 class PopulateTiles extends StatelessWidget {
@@ -586,12 +617,15 @@ Future<List<StudentDecode>> fetchStudents(String s) async {
 
     criteriaList = await fetchCriteria(_assessmentID);
 
-
     return studentDecodeFromJson(response.body);
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
-    showDialog_1(_studentContext, "Error!",
-        "Response Code: 404.\n\n\t\t\tNo Students Found.", "Close & Return");
+    showDialog_1(
+        _studentContext,
+        "Error!",
+        "Response Code: 404.\n\n\t\t\tNo Students Found.",
+        "Close & Return",
+        false);
     //navigate to an error page displaying lack of assessment error
     // return studentDecodeFromJson(response.body);
   } else {
@@ -646,7 +680,7 @@ class Student {
       };
 }
 
-String getStudent(){
+String getStudent() {
   return _selectedStudent;
 }
 
