@@ -10,11 +10,11 @@ TODO----------
 
 //Got lost trying to figure multi pages out - will need it explained after/before meeting pls xoxo - this code is ready for posts - joel
 import 'package:flutter/material.dart';
-import 'package:mijdas_app/global_widgets.dart';
+import 'package:mijdas_app/Widgets/global_widgets.dart';
 
 //local imports
-import './signin.dart';
-import './students.dart';
+import 'signin.dart';
+import 'StudentsPage.dart';
 
 //data handling/processing imports
 import 'dart:async';
@@ -123,6 +123,7 @@ class CriteriaPage extends State<CriteriaPageState> {
       return Flexible(
           flex: 1,
           child: TextField(
+            keyboardType: TextInputType.number,
             controller: _items[index].tControl,
             // textAlign: TextAlign.center, //what a stupid bug this is
             onChanged: (text) {

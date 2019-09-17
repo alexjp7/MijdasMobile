@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mijdas_app/global_widgets.dart';
+import 'package:mijdas_app/Widgets/global_widgets.dart';
 
-// import './assessment.dart';
-// import './home.dart';
+// import './AssessmentPage.dart';
+// import './HomePage.dart';
 // import './signup.dart';
 // import './main.dart';
 

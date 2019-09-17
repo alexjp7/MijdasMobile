@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../Functions/fetches.dart';
 //dialog_1 = custom popup prompt with passable title, message and button text. returns a screen upon closure.
 void showDialog_1(BuildContext bctx, String title, String msg, String option,
     bool isDismissable) {

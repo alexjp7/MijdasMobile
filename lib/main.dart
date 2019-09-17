@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
-import './assessment.dart';
-import './home.dart';
-import './signup.dart';
-import './signin.dart';
+import 'Pages/AssessmentPage.dart';
+import 'Pages/HomePage.dart';
+import 'Pages/signup.dart';
+import 'Pages/signin.dart';
 
 import 'dart:async';
 import 'dart:convert';

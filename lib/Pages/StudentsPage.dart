@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 
-import 'package:mijdas_app/Criteria.dart' as prefix0;
+import 'package:mijdas_app/Pages/CriteriaPage.dart' as prefix0;
 
 import 'package:pie_chart/pie_chart.dart';
 
 //local imports
-import './criteria.dart';
-import './assessment.dart';
-import './signin.dart';
-import './home.dart';
-import './global_widgets.dart';
+import 'CriteriaPage.dart';
+import 'AssessmentPage.dart';
+import 'signin.dart';
+import 'HomePage.dart';
+import '../Widgets/global_widgets.dart';
+
+import '../Models/Assessment.dart';
 
 //data handling/processing imports
 import 'dart:async';
@@ -36,6 +38,8 @@ Icon _isNotMarked = new Icon(
   Icons.check_box_outline_blank,
 );
 
+
+//OPTIMIZE TO TAKE ASSESSMENT OBJECT
 Route studentsRoute(String id) {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) => Students(),
@@ -501,8 +505,7 @@ class StudentSearch extends SearchDelegate<String> {
                   CriteriaRoute(
                       _studentList[index],
                       _assessmentID,
-                      criteriaList[0]
-                          .criteria)); //JOEL USE THIS TO NAVIGATE TO SELECTED STUDENTS CRITERIA!
+                      criteriaList[0].criteria)); //Pass in a bool for isMarked to load the old marks
               // close(context, route);
             },
             leading: _getMarkedState(

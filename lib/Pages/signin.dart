@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import './assessment.dart';
-import './home.dart';
-import './signup.dart';
-import './global_widgets.dart';
-import './main.dart';
+import 'AssessmentPage.dart';
+import 'HomePage.dart';
+import 'signup.dart';
+import '../Widgets/global_widgets.dart';
+import '../main.dart';
 
 import 'dart:async';
 import 'dart:convert';
@@ -35,6 +35,11 @@ class SignIn extends StatelessWidget {
   // Color _primaryColour2 = Color(0xff2196F3);
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+
+  final FocusNode _userFocus = FocusNode();
+  final FocusNode _passFocus = FocusNode();
+
+
   ScrollController _scrollController = ScrollController();
 
   Future<String> getData(String s) async {
@@ -75,6 +80,9 @@ class SignIn extends StatelessWidget {
                     margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
                     alignment: Alignment.center,
                     child: TextField(
+
+                      textInputAction: TextInputAction.next,
+
                       // autofocus: false,
                       // textAlign: TextAlign.center,//cant use this as it crashes flutter - known bug.
                       decoration: InputDecoration(
@@ -93,12 +101,18 @@ class SignIn extends StatelessWidget {
                       onChanged: (v) {
                         _scrollToFields();
                       },
+                      focusNode: _userFocus,
+                      onSubmitted: (_user){
+                        _userFocus.unfocus();
+                        FocusScope.of(context).requestFocus(_passFocus);
+                      },
                     ),
                   ),
                   Container(
                     margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
                     alignment: Alignment.center,
                     child: TextField(
+                      textInputAction: TextInputAction.done,
                       // autofocus: false,
                       // textAlign: TextAlign.center,
                       decoration: InputDecoration(
@@ -113,7 +127,26 @@ class SignIn extends StatelessWidget {
                             borderRadius: BorderRadius.circular(7.0),
                             borderSide: BorderSide(color: Colors.white70)),
                       ),
+                      focusNode: _passFocus,
                       controller: passwordController,
+
+                      onSubmitted: (s){
+                        print(s);
+
+                        //TURN THIS INTO A FUNCTION
+                        print("Searching: [" +
+                            usernameController.text +
+                            "].");
+                        _searchedUser = usernameController.text;
+                        if(_searchedUser == "st111")
+                          _userType = 2;//for testing purposes, st111 is Coordinator
+                        else
+                          _userType = 1;//everyone else is tutor (eg aa111)
+
+                        // getData(searchedUser); //commented out while back end was down
+                        Navigator.push(context, homeRoute());
+                      },
+
                       obscureText: true,
                     ),
                   ),

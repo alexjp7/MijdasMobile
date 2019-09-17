@@ -1,9 +1,15 @@
+//can we rewrite populatetiles so that it takes in an assessment rather than another thing
+
+
 import 'package:flutter/material.dart';
 
 //local imports
-import './signin.dart';
-import './students.dart';
-import './global_widgets.dart';
+import 'signin.dart';
+import 'StudentsPage.dart';
+import '../Widgets/global_widgets.dart';
+
+//models
+import '../Models/Assessment.dart';
 
 //data handling/processing imports
 import 'dart:async';
@@ -188,7 +194,7 @@ class TileObj {
 
 Future<List<Assessment>> fetchAssessments(String s) async {
   var response = await http.post('https://markit.mijdas.com/api/assessment/',
-      body: jsonEncode({"request": "VIEW_ASSESSMENT", "subject_id": s}));
+      body: jsonEncode({"request": "VIEW_ASSESSMENT", "subject_id": s, "is_coordinator" : false}));
 
   if (response.statusCode == 200) {
 //    print('response code:  200\n');
@@ -205,7 +211,7 @@ Future<List<Assessment>> fetchAssessments(String s) async {
     //navigate to an error page displaying lack of assessment error
     // return assessmentsFromJson(response.body);
   } else {
-    print('response code: ' + response.statusCode.toString());
+    print('response ssssssssscode: ' + response.statusCode.toString());
     print('response body: ' + response.body);
     throw Exception(
         'Failed to load post, error code: ' + response.statusCode.toString());
@@ -215,33 +221,7 @@ Future<List<Assessment>> fetchAssessments(String s) async {
 List<Assessment> assessmentsFromJson(String str) => new List<Assessment>.from(
     json.decode(str)["records"].map((x) => Assessment.fromJson(x)));
 
-class Assessment {
-  String id;
-  String a_number;
-  String name;
-  String maxMark;
 
-  Assessment({
-    this.id,
-    this.a_number,
-    this.name,
-    this.maxMark,
-  });
-
-  factory Assessment.fromJson(Map<String, dynamic> json) => new Assessment(
-        id: json["id"],
-        a_number: json["a_number"],
-        name: json["name"],
-        maxMark: json["max_mark"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "a_number": a_number,
-        "name": name,
-        "max_mark": maxMark,
-      };
-}
 
 String getAssessmentName() {
   return _assessmentName;
