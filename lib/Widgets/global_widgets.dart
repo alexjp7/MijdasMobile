@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../Functions/fetches.dart';
+import 'package:mijdas_app/Pages/AssessmentPage.dart';
+import '../Functions/submits.dart';
 //dialog_1 = custom popup prompt with passable title, message and button text. returns a screen upon closure.
 void showDialog_1(BuildContext bctx, String title, String msg, String option,
     bool isDismissable) {
@@ -45,7 +46,7 @@ void showDialog_2(BuildContext bctx, String title, String msg, String option) {
 }
 
 //global settings prompts
-void onHoldSettings_HomeTile(BuildContext context, String selectedTitle) {
+void onHoldSettings_HomeTile(BuildContext context, String selectedTitle, String sNum) {
   showModalBottomSheet(
       context: context,
       builder: (BuildContext bc) {
@@ -57,6 +58,8 @@ void onHoldSettings_HomeTile(BuildContext context, String selectedTitle) {
                 title: Text("Add Student To Subject: " + selectedTitle),
                 onTap: () {
                   print("Add Student Click.");
+                  //ADD A DIALOG BOX FOR NAME ENTRY
+                  addStudent("jonathon", sNum);
                   Navigator.pop(context);
                 },
               ),
@@ -65,6 +68,8 @@ void onHoldSettings_HomeTile(BuildContext context, String selectedTitle) {
                 title: Text("Add Tutor to Subject: " + selectedTitle),
                 onTap: () {
                   print("Add Tutor Click.");
+                  //ADD A DIALOG BOX FOR NAME ENTRY
+                  addTutor("sas116",sNum);
                   Navigator.pop(context);
                 },
               ),
@@ -95,11 +100,12 @@ void onHoldSettings_HomeHead(BuildContext context, String selectedTitle) {
       });
 }
 
-void onHoldSettings_Assessments(BuildContext context, String selectedTitle) {
-  showModalBottomSheet(
+Future<bool> onHoldSettings_Assessments(BuildContext context, String selectedTitle, String aNum) async {
+
+  await showModalBottomSheet(
       context: context,
-      builder: (BuildContext bc) {
-        return Container(
+      builder: (BuildContext bc)   {
+         return Container(
           child: Wrap(
             children: <Widget>[
               ListTile(
@@ -108,20 +114,30 @@ void onHoldSettings_Assessments(BuildContext context, String selectedTitle) {
                 onTap: () {
                   print("Create Criteria Click.");
                   Navigator.pop(context);
+
                 },
               ),
               ListTile(
                 leading: Icon(Icons.visibility),
                 title: Text("Toggle Activation For: " + selectedTitle),
-                onTap: () {
+                onTap: () async {
                   print("Toggle Activation Click.");
+                  await toggleActivation(aNum);
+                  print("afterActivate");
+                  //definitely after activation
+                  await refreshAssList();
                   Navigator.pop(context);
+
                 },
               ),
             ],
           ),
         );
       });
+  //await refreshAssList();
+  print("TEST");
+
+  return true;
 }
 
 //settings tile styling used globally
