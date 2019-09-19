@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:mijdas_app/Functions/submits.dart';
 
 import 'AssessmentPage.dart';
 import 'HomePage.dart';
@@ -199,9 +202,17 @@ class SignIn extends StatelessWidget {
                         ),
                         Container(
                           child: InkWell(
-                            onTap: () {
+                            onTap: () async {
                               print("Forgotten Password Clicked.");
-                              Navigator.push(context, signUpRoute());
+                              for(int i =0;i<1000;i++){
+                                await Future.delayed(Duration(milliseconds: 10));
+                                print(i);
+                                fetchUniversities("aa111");
+//
+//
+                              }
+
+                             // Navigator.push(context, signUpRoute());
                             },
                             child: Text(
                               "Forgot your password?",

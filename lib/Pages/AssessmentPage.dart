@@ -158,6 +158,7 @@ class _AssessmentPageState extends State<AssessmentPage> {
               "].");
           if (getPriv() == 2) {
             //_assessmentList=null;
+            print(t.title+t.tileID);
             await onHoldSettings_Assessments(_assessmentContext, t.title, t.tileID);//pass assessment here once rewritten
             setState(() {
 

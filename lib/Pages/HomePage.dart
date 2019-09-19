@@ -287,19 +287,33 @@ List<TileObj> _resultsList = <TileObj>[
 */
 
 Future<List<Universities>> fetchUniversities(String s) async {
+
+  String _request;
   //print('test');
 //  if(QueryManager().universityList.isNotEmpty){
 //    return QueryManager().universityList;
 //  }
 
+
+
+    if(getPriv() == 2){_request= "VIEW_OWNED_SUBJECTS";}
+    else _request= "POPULATE_SUBJECTS";
+
+  //(getPriv() == 2)?request= "VIEW_SUBJECTS":request= "POPULATE_SUBJECTS";
+
+  var now = DateTime.now();
+
   var response = await http.post(
+
+
+
       'https://markit.mijdas.com/api/requests/subject/',
       body: jsonEncode({
         "request": "POPULATE_SUBJECTS",
         "username": s
       }) // change this to logged in username when time comes
       );
-
+  print("response time = "+(DateTime.now().difference(now)).toString());
   if (response.statusCode == 200) {
 //    print('response code:  200\n');
 //    print('response body: ' + response.body);

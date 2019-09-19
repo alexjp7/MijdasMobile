@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mijdas_app/Pages/AssessmentPage.dart';
 import '../Functions/submits.dart';
 //dialog_1 = custom popup prompt with passable title, message and button text. returns a screen upon closure.
+
+
 void showDialog_1(BuildContext bctx, String title, String msg, String option,
     bool isDismissable) {
   showDialog(
@@ -45,9 +47,38 @@ void showDialog_2(BuildContext bctx, String title, String msg, String option) {
       });
 }
 
+
+
+Future<String> displayDialogText(BuildContext context, String title, String msg, String option) async {
+  TextEditingController _textFieldController = TextEditingController();
+  String _textField;
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(title),
+            content: TextField(
+              controller: _textFieldController,
+              decoration: InputDecoration(hintText: msg),
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text(option),
+                onPressed: () {
+                  _textField = _textFieldController.value.text;
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
+    return _textField;
+}
+
+
 //global settings prompts
-void onHoldSettings_HomeTile(BuildContext context, String selectedTitle, String sNum) {
-  showModalBottomSheet(
+void onHoldSettings_HomeTile(BuildContext context, String selectedTitle, String sNum) async{
+  await showModalBottomSheet(
       context: context,
       builder: (BuildContext bc) {
         return Container(
@@ -56,20 +87,28 @@ void onHoldSettings_HomeTile(BuildContext context, String selectedTitle, String 
               ListTile(
                 leading: Icon(Icons.group_add),
                 title: Text("Add Student To Subject: " + selectedTitle),
-                onTap: () {
+                onTap: () async {
                   print("Add Student Click.");
                   //ADD A DIALOG BOX FOR NAME ENTRY
-                  addStudent("jonathon", sNum);
+
+                  String _stuName= await displayDialogText(context,"Add Student","Student Identifier","Submit");
+
+                  print(_stuName);
+                  await addStudent(_stuName, sNum);
                   Navigator.pop(context);
                 },
               ),
               ListTile(
                 leading: Icon(Icons.person_add),
                 title: Text("Add Tutor to Subject: " + selectedTitle),
-                onTap: () {
+                onTap: () async {
                   print("Add Tutor Click.");
+                  String tutName= await displayDialogText(context,"Add Tutor","Tutor Username","Submit");
+                  print(tutName);
+                  print("Displaybox done");
+                  //showDialog_3(context, "a", "b", "a");
                   //ADD A DIALOG BOX FOR NAME ENTRY
-                  addTutor("sas116",sNum);
+                  await addTutor(tutName,sNum);
                   Navigator.pop(context);
                 },
               ),
@@ -102,6 +141,7 @@ void onHoldSettings_HomeHead(BuildContext context, String selectedTitle) {
 
 Future<bool> onHoldSettings_Assessments(BuildContext context, String selectedTitle, String aNum) async {
 
+
   await showModalBottomSheet(
       context: context,
       builder: (BuildContext bc)   {
@@ -121,7 +161,7 @@ Future<bool> onHoldSettings_Assessments(BuildContext context, String selectedTit
                 leading: Icon(Icons.visibility),
                 title: Text("Toggle Activation For: " + selectedTitle),
                 onTap: () async {
-                  print("Toggle Activation Click.");
+                  print("TEST Toggle Activation Click for assignment: "+aNum);
                   await toggleActivation(aNum);
                   print("afterActivate");
                   //definitely after activation

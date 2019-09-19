@@ -17,10 +17,11 @@ import 'package:http/http.dart' as http;
 
 
 Future<bool> toggleActivation(String assessment_id) async{
-
+  var now = DateTime.now();
   var response = await http.post('https://markit.mijdas.com/api/assessment/',
       body: jsonEncode({"request": "TOGGLE_ACTIVATION", "assessment_id":  assessment_id}));
 
+  print("response time = "+(DateTime.now().difference(now)).toString());
   if (response.statusCode == 200) {
     print('response code:  200\n');
     print('response body: ' + response.body);
