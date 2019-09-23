@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-
+import 'package:mijdas_app/Pages/AssessmentPage.dart';
+import '../Functions/submits.dart';
+import '../Functions/routes.dart';
 //dialog_1 = custom popup prompt with passable title, message and button text. returns a screen upon closure.
+
+
 void showDialog_1(BuildContext bctx, String title, String msg, String option,
     bool isDismissable) {
   showDialog(
@@ -44,9 +48,38 @@ void showDialog_2(BuildContext bctx, String title, String msg, String option) {
       });
 }
 
+
+
+Future<String> displayDialogText(BuildContext context, String title, String msg, String option) async {
+  TextEditingController _textFieldController = TextEditingController();
+  String _textField;
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(title),
+            content: TextField(
+              controller: _textFieldController,
+              decoration: InputDecoration(hintText: msg),
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text(option),
+                onPressed: () {
+                  _textField = _textFieldController.value.text;
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
+    return _textField;
+}
+
+
 //global settings prompts
-void onHoldSettings_HomeTile(BuildContext context, String selectedTitle) {
-  showModalBottomSheet(
+void onHoldSettings_HomeTile(BuildContext context, String selectedTitle, String sNum) async{
+  await showModalBottomSheet(
       context: context,
       builder: (BuildContext bc) {
         return Container(
@@ -55,16 +88,28 @@ void onHoldSettings_HomeTile(BuildContext context, String selectedTitle) {
               ListTile(
                 leading: Icon(Icons.group_add),
                 title: Text("Add Student To Subject: " + selectedTitle),
-                onTap: () {
+                onTap: () async {
                   print("Add Student Click.");
+                  //ADD A DIALOG BOX FOR NAME ENTRY
+
+                  String _stuName= await displayDialogText(context,"Add Student","Student Identifier","Submit");
+
+                  print(_stuName);
+                  await addStudent(_stuName, sNum);
                   Navigator.pop(context);
                 },
               ),
               ListTile(
                 leading: Icon(Icons.person_add),
                 title: Text("Add Tutor to Subject: " + selectedTitle),
-                onTap: () {
+                onTap: () async {
                   print("Add Tutor Click.");
+                  String tutName= await displayDialogText(context,"Add Tutor","Tutor Username","Submit");
+                  print(tutName);
+                  print("Displaybox done");
+                  //showDialog_3(context, "a", "b", "a");
+                  //ADD A DIALOG BOX FOR NAME ENTRY
+                  await addTutor(tutName,sNum);
                   Navigator.pop(context);
                 },
               ),
@@ -95,11 +140,13 @@ void onHoldSettings_HomeHead(BuildContext context, String selectedTitle) {
       });
 }
 
-void onHoldSettings_Assessments(BuildContext context, String selectedTitle) {
-  showModalBottomSheet(
+Future<bool> onHoldSettings_Assessments(BuildContext context, String selectedTitle, String aNum) async {
+
+
+  await showModalBottomSheet(
       context: context,
-      builder: (BuildContext bc) {
-        return Container(
+      builder: (BuildContext bc)   {
+         return Container(
           child: Wrap(
             children: <Widget>[
               ListTile(
@@ -108,21 +155,62 @@ void onHoldSettings_Assessments(BuildContext context, String selectedTitle) {
                 onTap: () {
                   print("Create Criteria Click.");
                   Navigator.pop(context);
+
                 },
               ),
               ListTile(
                 leading: Icon(Icons.visibility),
                 title: Text("Toggle Activation For: " + selectedTitle),
-                onTap: () {
-                  print("Toggle Activation Click.");
+                onTap: () async {
+                  print("TEST Toggle Activation Click for assignment: "+aNum);
+                  await toggleActivation(aNum);
+                  print("afterActivate");
+                  //definitely after activation
+                  await refreshAssList();
                   Navigator.pop(context);
+
                 },
               ),
             ],
           ),
         );
       });
+  //await refreshAssList();
+  print("TEST");
+
+  return true;
 }
+
+List<Widget> sideBar(context,username){
+  return [
+    settingsHeader(context, username),
+    settingsTile(Icons.person, "Profile", () {
+      Navigator.push(context, profileRoute());
+    print("Profile Clicked.");
+    }),
+    settingsTile(Icons.person, "Announcements", () {
+      Navigator.push(context, announcementRoute());
+    print("Announcements Clicked.");
+    }),
+//    settingsTile(Icons.person, "Calendar", () {
+//      Navigator.push(context, settingsRoute());
+//    print("Calendar Clicked.");
+//    }),
+//    settingsTile(Icons.person, "Board", () {
+//    print("Job Board Clicked.");
+//    }),
+    settingsTile(Icons.person, "Settings", () {
+      Navigator.push(context, settingsRoute());
+    print("Settings Clicked.");
+    }),
+    settingsTile(Icons.person, "Sign Out", () {
+      Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+    print("Sign Out Clicked.");
+    }),
+  ];
+
+}
+
 
 //settings tile styling used globally
 Widget settingsTile(IconData icon, String label, Function onTap) {
@@ -133,6 +221,19 @@ Widget settingsTile(IconData icon, String label, Function onTap) {
     _labelStyle = TextStyle(fontSize: 20.0, color: Colors.red[900]);
   else
     _labelStyle = TextStyle(fontSize: 20.0);
+
+//  return Center(
+//    child:InkWell(
+//      onTap: onTap,
+//      child:Padding(
+//        padding:EdgeInsets.fromLTRB(8.0, 0, 8.0, 0) ,
+//        child: Container(
+//          height: 60,
+//          child:Text(label, style: _labelStyle,),
+//        ),
+//      )
+//    ),
+//  );
 
   return Padding(
     padding: EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
@@ -145,17 +246,17 @@ Widget settingsTile(IconData icon, String label, Function onTap) {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             // Icon(Icons.arrow_left),
-            SizedBox(width: 24), //temporary to keep padding
+            SizedBox(width: 0), //temporary to keep padding
             Row(
               children: <Widget>[
                 // Icon(icon),
-                SizedBox(width: 24),
-                SizedBox(width: 10),
+               // SizedBox(width: 24),
+               // SizedBox(width: 10),
                 Text(label, style: _labelStyle),
                 // SizedBox(width: 105),
               ],
             ),
-            SizedBox(width: 0),
+          //  SizedBox(width: 0),
             SizedBox(width: 0),
           ],
         ),

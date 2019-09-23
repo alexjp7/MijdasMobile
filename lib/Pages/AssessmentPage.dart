@@ -1,9 +1,14 @@
+//can we rewrite populatetiles so that it takes in an assessment rather than another thing
+
 import 'package:flutter/material.dart';
 
 //local imports
-import './signin.dart';
-import './students.dart';
-import './global_widgets.dart';
+import 'signin.dart';
+import 'StudentsPage.dart';
+import '../Widgets/global_widgets.dart';
+
+//models
+import '../Models/Assessment.dart';
 
 //data handling/processing imports
 import 'dart:async';
@@ -15,10 +20,11 @@ BuildContext _assessmentContext;
 String _assessmentID;
 String _assessmentName;
 String _assessmentMaxMark;
+Future<List<Assessment>> _assessmentList;
 
 Route assessmentRoute(String s) {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => Assessments(),
+    pageBuilder: (context, animation, secondaryAnimation) => AssessmentPage(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       _assessmentContext = context; //assigning page buildcontext
       _assessmentID = s; //assigning page ID
@@ -30,7 +36,18 @@ Route assessmentRoute(String s) {
   );
 }
 
-class Assessments extends StatelessWidget {
+class AssessmentPage extends StatefulWidget {
+  @override
+  _AssessmentPageState createState() => _AssessmentPageState();
+}
+
+class _AssessmentPageState extends State<AssessmentPage> {
+  @override
+  void initState() {
+    super.initState();
+    _assessmentList = fetchAssessments(_assessmentID);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,32 +70,13 @@ class Assessments extends StatelessWidget {
         child: Container(
           child: ListView(
             // padding: EdgeInsets.all(10.0),
-            children: <Widget>[
-              settingsHeader(context, getUsername()),
-              settingsTile(Icons.person, "Profile", () {
-                print("Profile Clicked.");
-              }),
-              settingsTile(Icons.person, "Announcements", () {
-                print("Announcements Clicked.");
-              }),
-              settingsTile(Icons.person, "Calendar", () {
-                print("Calendar Clicked.");
-              }),
-              settingsTile(Icons.person, "Job Board", () {
-                print("Job Board Clicked.");
-              }),
-              settingsTile(Icons.person, "Settings", () {
-                print("Settings Clicked.");
-              }),
-              settingsTile(Icons.person, "Sign Out", () {
-                print("Sign Out Clicked.");
-              }),
-            ],
+            children:
+              sideBar(context, getUsername())
           ),
         ),
       ),
       body: FutureBuilder<List<Assessment>>(
-        future: fetchAssessments(_assessmentID),
+        future: _assessmentList,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<TileObj> _parentListItems = new List<TileObj>();
@@ -88,11 +86,12 @@ class Assessments extends StatelessWidget {
                   snapshot.data[i].name,
                   snapshot.data[i].id,
                   snapshot.data[i].a_number,
+                  snapshot.data[i].isActive,
                   snapshot.data[i].maxMark));
             }
             return ListView.builder(
               itemBuilder: (BuildContext context, int index) {
-                return new PopulateTiles(_parentListItems[index], context);
+                return _buildList(_parentListItems[index]);
               },
               itemCount: _parentListItems.length,
             );
@@ -119,36 +118,39 @@ class Assessments extends StatelessWidget {
       ),*/
     );
   }
-}
 
-class PopulateTiles extends StatelessWidget {
-  Color _accentColour = Color(0xffBFD4DF);
-
-  final TileObj fTile;
-  BuildContext contextT;
-  PopulateTiles(this.fTile, [this.contextT]);
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildList(fTile);
-  }
-
-//widget to load tile list
   Widget _buildList(TileObj t) {
+    Color _accentColour = Color(0xffBFD4DF);
     // if (t.children.isEmpty)
+
+    if (t.isActive == "0") {
+      _accentColour = Color(0x11000000);
+    }
+
     return new ListTile(
         dense: true,
         enabled: true,
         isThreeLine: false,
-        onLongPress: () {
-            print("Long Press: [" + t.title + "]. UserPriv: ["+getPriv().toString()+"].");
-            if(getPriv() == 2)
-              onHoldSettings_Assessments(_assessmentContext, t.title);
-          },
+        onLongPress: () async {
+          print("Long Press: [" +
+              t.title +
+              "]. UserPriv: [" +
+              getPriv().toString() +
+              "].");
+          if (getPriv() == 2) {
+            //_assessmentList=null;
+            print(t.title+t.tileID);
+            await onHoldSettings_Assessments(_assessmentContext, t.title, t.tileID);//pass assessment here once rewritten
+            setState(() {
+
+            });
+
+          }
+        },
         onTap: () {
           _assessmentName = t.title;
           _assessmentMaxMark = t.tileMaxMark;
-          Navigator.push(contextT, studentsRoute(t.tileID));
+          Navigator.push(context, studentsRoute(t.tileID));
         },
         // subtitle: new Text("Subtitle"),
         // leading: new Text("Leading"),
@@ -166,33 +168,108 @@ class PopulateTiles extends StatelessWidget {
             ],
           ),
         ));
-    // title: new Text(t.title));
-
-    // return new ExpansionTile(
-    //   key: new PageStorageKey<int>(3),
-    //   title: new Text(t.title),
-    //   // title: new Text(t.title, style: TextStyle(color: Colors.black),),
-    //   children: t.children.map(_buildList).toList(),
-    // );
+//    // title: new Text(t.title));
+//
+//    // return new ExpansionTile(
+//    //   key: new PageStorageKey<int>(3),
+//    //   title: new Text(t.title),
+//    //   // title: new Text(t.title, style: TextStyle(color: Colors.black),),
+//    //   children: t.children.map(_buildList).toList(),
+//    // );
   }
 }
+
+//class PopulateTiles extends StatelessWidget {
+//  Color _accentColour = Color(0xffBFD4DF);
+//
+//  final TileObj fTile;
+//  BuildContext contextT;
+//  PopulateTiles(this.fTile, [this.contextT]);
+//
+//
+//
+//  @override
+//  Widget build(BuildContext context) {
+//    return _buildList(fTile);
+//  }
+//
+////widget to load tile list
+//  Widget _buildList(TileObj t) {
+//    // if (t.children.isEmpty)
+//
+//    if(t.isActive=="0"){
+//      _accentColour = Color(0x11000000);
+//    }
+//
+//    return new ListTile(
+//        dense: true,
+//        enabled: true,
+//        isThreeLine: false,
+//        onLongPress: () async {
+//            print("Long Press: [" + t.title + "]. UserPriv: ["+getPriv().toString()+"].");
+//            if(getPriv() == 2) {
+//              _assessmentList=null;
+//             await onHoldSettings_Assessments(_assessmentContext, t.title,t.tileID);//pass assessment here once rewritten
+//              //refreshAssList();
+//            }
+//
+//
+//          },
+//        onTap: () {
+//          _assessmentName = t.title;
+//          _assessmentMaxMark = t.tileMaxMark;
+//          Navigator.push(contextT, studentsRoute(t.tileID));
+//        },
+//        // subtitle: new Text("Subtitle"),
+//        // leading: new Text("Leading"),
+//        selected: true,
+//        // trailing: new Text("Trailing"),
+//        title: new Card(
+//          color: _accentColour,
+//          child: Column(
+//            children: <Widget>[
+//              Container(
+//                height: 85.0,
+//                alignment: Alignment(0.0, 0.0),
+//                child: Text(t.title),
+//              )
+//            ],
+//          ),
+//        ));
+//    // title: new Text(t.title));
+//
+//    // return new ExpansionTile(
+//    //   key: new PageStorageKey<int>(3),
+//    //   title: new Text(t.title),
+//    //   // title: new Text(t.title, style: TextStyle(color: Colors.black),),
+//    //   children: t.children.map(_buildList).toList(),
+//    // );
+//  }
+//}
 
 //class structure for each tile object
 class TileObj {
   String title;
   String tileID;
   String tileANum;
+  String isActive;
   String tileMaxMark;
-  TileObj(this.title, this.tileID, this.tileANum, this.tileMaxMark);
+
+  TileObj(
+      this.title, this.tileID, this.tileANum, this.isActive, this.tileMaxMark);
 }
 
 Future<List<Assessment>> fetchAssessments(String s) async {
   var response = await http.post('https://markit.mijdas.com/api/assessment/',
-      body: jsonEncode({"request": "VIEW_ASSESSMENT", "subject_id": s}));
+      body: jsonEncode({
+        "request": "VIEW_ASSESSMENT",
+        "subject_id": s,
+        "is_coordinator": (getPriv() == 2)
+      }));
 
   if (response.statusCode == 200) {
 //    print('response code:  200\n');
-//    print('response body: ' + response.body);
+    print('response body: ' + response.body);
     return assessmentsFromJson(response.body);
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
@@ -215,38 +292,19 @@ Future<List<Assessment>> fetchAssessments(String s) async {
 List<Assessment> assessmentsFromJson(String str) => new List<Assessment>.from(
     json.decode(str)["records"].map((x) => Assessment.fromJson(x)));
 
-class Assessment {
-  String id;
-  String a_number;
-  String name;
-  String maxMark;
-
-  Assessment({
-    this.id,
-    this.a_number,
-    this.name,
-    this.maxMark,
-  });
-
-  factory Assessment.fromJson(Map<String, dynamic> json) => new Assessment(
-        id: json["id"],
-        a_number: json["a_number"],
-        name: json["name"],
-        maxMark: json["max_mark"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "a_number": a_number,
-        "name": name,
-        "max_mark": maxMark,
-      };
-}
-
 String getAssessmentName() {
   return _assessmentName;
 }
 
 String getAssessmentMaxMark() {
   return _assessmentMaxMark;
+}
+
+Future<bool> refreshAssList() async {
+  //_assessmentList = null;
+  print("REFRESHING");
+  //DO SOMETHING HERE
+  await(_assessmentList = fetchAssessments(_assessmentID));
+  print("REFRESHED");
+  return(true);
 }

@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:mijdas_app/Widgets/global_widgets.dart';
 
-import './assessment.dart';
-import './home.dart';
-import './signup.dart';
-import './global_widgets.dart';
-import './main.dart';
+// import './AssessmentPage.dart';
+// import './HomePage.dart';
+// import './signup.dart';
+// import './main.dart';
 
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Color _buttonColour = new Color(0xff0069C0);
-String _searchedUser;
-int _userType;
-final String jsonURL =
-    "https://markit.mijdas.com/api/requests/subject/read.php?username=";
-//for storing json results globally
-Map<String, dynamic> fetchedData;
+String _username;
+String _email;
+String _password;
 
-Route signInRoute() {
+Route signUpRoute() {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => SignIn(),
+    pageBuilder: (context, animation, secondaryAnimation) => SignUp(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(
         opacity: animation,
@@ -30,26 +27,22 @@ Route signInRoute() {
   );
 }
 
-class SignIn extends StatelessWidget {
-  // Color _primaryColour = Color(0xff0069C0);
-  // Color _primaryColour2 = Color(0xff2196F3);
+// //base url as string
+// final String jsonURL = "https://markit.mijdas.com/api/requests/subject/read.php?username=";
+// //for storing json results globally
+// Map<String, dynamic> fetchedData;
+
+class SignUp extends StatelessWidget {
   final usernameController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final passwordController_2 = TextEditingController();
   ScrollController _scrollController = ScrollController();
-
-  Future<String> getData(String s) async {
-    var response = await http.get(Uri.encodeFull(jsonURL + s),
-        headers: {"Accept": "application/json"});
-
-    // Map<String, dynamic> fetchedData = json.decode(response.body);
-    fetchedData = json.decode(response.body);
-    print(fetchedData);
-  }
 
   //jump the screen down - the animation looked smoother but was buggy, decided to use Jump for prototype demo
   _scrollToFields() {
     // print("\n\n\nMETHOD CALLED\n\n\n");
-    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    _scrollController.jumpTo(_scrollController.position.maxScrollExtent - 20.0);
     // _scrollController.animateTo(_scrollController.position.maxScrollExtent,
     //     duration: Duration(milliseconds: 250), curve: Curves.decelerate);
   }
@@ -63,7 +56,7 @@ class SignIn extends StatelessWidget {
           children: <Widget>[
             Container(
               width: 500,
-              height: 330,
+              height: 270,
               child: _banner(context),
             ),
             Center(
@@ -75,11 +68,8 @@ class SignIn extends StatelessWidget {
                     margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
                     alignment: Alignment.center,
                     child: TextField(
-                      // autofocus: false,
-                      // textAlign: TextAlign.center,//cant use this as it crashes flutter - known bug.
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person),
-                        // hintText: "Username..",
                         labelText: "Username",
                         fillColor: Colors.white70,
                         filled: true,
@@ -99,11 +89,26 @@ class SignIn extends StatelessWidget {
                     margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
                     alignment: Alignment.center,
                     child: TextField(
-                      // autofocus: false,
-                      // textAlign: TextAlign.center,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock_outline),
-                        // hintText: "Password..",
+                        prefixIcon: Icon(Icons.mail),
+                        labelText: "Email",
+                        fillColor: Colors.white70,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7.0)),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7.0),
+                            borderSide: BorderSide(color: Colors.white70)),
+                      ),
+                      controller: emailController,
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
+                    alignment: Alignment.center,
+                    child: TextField(
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.lock),
                         labelText: "Password",
                         fillColor: Colors.white70,
                         filled: true,
@@ -114,6 +119,26 @@ class SignIn extends StatelessWidget {
                             borderSide: BorderSide(color: Colors.white70)),
                       ),
                       controller: passwordController,
+                      obscureText: true,
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
+                    alignment: Alignment.center,
+                    child: TextField(
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.lock_outline),
+                        labelText: "Confirm Password",
+                        labelStyle: TextStyle(fontSize: 12),
+                        fillColor: Colors.white70,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7.0)),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7.0),
+                            borderSide: BorderSide(color: Colors.white70)),
+                      ),
+                      controller: passwordController_2,
                       obscureText: true,
                     ),
                   ),
@@ -131,21 +156,16 @@ class SignIn extends StatelessWidget {
                             height: 50.0,
                             child: RaisedButton(
                               onPressed: () {
-                                // if (passwordController.text == "") {
-                                  print("Searching: [" +
-                                      usernameController.text +
-                                      "].");
-                                  _searchedUser = usernameController.text;
-                                  if(_searchedUser == "st111")
-                                    _userType = 2;//for testing purposes, st111 is Coordinator
-                                  else
-                                    _userType = 1;//everyone else is tutor (eg aa111)
-                                    
+                                if (passwordController.text ==
+                                    passwordController_2.text) {
+                                  _username = usernameController.text;
+                                  _password = passwordController.text;
+                                  _email = emailController.text;
                                   // getData(searchedUser); //commented out while back end was down
-                                  Navigator.push(context, homeRoute());
-                                // } else {
-                                //   showDialog_2(context, "Login Failed", "Login Details Incorrect.", "Close");
-                                // }
+                                  showDialog_1(context, "Success!", "Signup Was a success!\nHead back to the home screen and try signing in with your new details!", "Close and Return", false);
+                                } else {
+                                  showDialog_2(context, "Error", "There was a problem with the information entered, make sure all fields are correct.", "Close");
+                                }
                               },
                               child: RichText(
                                 text: TextSpan(
@@ -161,21 +181,6 @@ class SignIn extends StatelessWidget {
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        Container(
-                          child: InkWell(
-                            onTap: () {
-                              print("Forgotten Password Clicked.");
-                              Navigator.push(context, signUpRoute());
-                            },
-                            child: Text(
-                              "Forgot your password?",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        )
                       ],
                     ),
                   ),
@@ -235,13 +240,13 @@ Widget _banner(BuildContext context) {
               ),
             ),
             Positioned(
-              top: 125,
-              left: 150,
+              top: 105,
+              left: 145,
               width: 330,
-              height: 40,
+              height: 85,
               child: RichText(
                 text: TextSpan(
-                  text: ("Sign In"),
+                  text: ("  Tutor\nSign Up"),
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 36,
@@ -266,12 +271,4 @@ Widget _banner(BuildContext context) {
       ),
     ],
   );
-}
-
-String getUsername() {
-  return _searchedUser;
-}
-
-int getPriv() {
-  return _userType;
 }

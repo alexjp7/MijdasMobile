@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mijdas_app/QueryManager.dart';
 
 //local imports
-import './main.dart';
-import './signin.dart';
-import './assessment.dart';
-import './global_widgets.dart';
+import '../main.dart';
+import 'signin.dart';
+import 'AssessmentPage.dart';
+import '../Widgets/global_widgets.dart';
 // import './criteria_manager.dart';
+
+
 
 //data handling/processing imports
 import 'dart:async';
@@ -60,16 +62,17 @@ class Home extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
-        leading: Padding(
-          padding: EdgeInsets.only(left: 12),
-          child: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              Navigator.pop(context);
-              print("Back Arrow Clicked");
-            },
-          ),
-        ),
+          leading:Container(),
+//        leading: Padding(
+//          padding: EdgeInsets.only(left: 12),
+//          child: IconButton(
+//            icon: Icon(Icons.arrow_back_ios),
+//            onPressed: () {
+//              Navigator.pop(context);
+//              print("Back Arrow Clicked");
+//            },
+//          ),
+//        ),
         title: Text('Home'),
         centerTitle: true,
       ),
@@ -77,27 +80,7 @@ class Home extends StatelessWidget {
         child: Container(
           child: ListView(
             // padding: EdgeInsets.all(10.0),
-            children: <Widget>[
-              settingsHeader(context, getUsername()),
-              settingsTile(Icons.person, "Profile", () {
-                print("Profile Clicked.");
-              }),
-              settingsTile(Icons.person, "Announcements", () {
-                print("Announcements Clicked.");
-              }),
-              settingsTile(Icons.person, "Calendar", () {
-                print("Calendar Clicked.");
-              }),
-              settingsTile(Icons.person, "Job Board", () {
-                print("Job Board Clicked.");
-              }),
-              settingsTile(Icons.person, "Settings", () {
-                print("Settings Clicked.");
-              }),
-              settingsTile(Icons.person, "Sign Out", () {
-                print("Sign Out Clicked.");
-              }),
-            ],
+            children:sideBar(context, getUsername()),
           ),
         ),
       ),
@@ -206,7 +189,7 @@ class PopulateTiles extends StatelessWidget {
                 "]. UserPriv: [" +
                 getPriv().toString() +
                 "].");
-            if (getPriv() == 2) onHoldSettings_HomeTile(_homeContext, t.title);
+            if (getPriv() == 2) onHoldSettings_HomeTile(_homeContext, t.title,t.tileID);
           },
           onTap: () {
             _subjectName = t.title;
@@ -285,19 +268,33 @@ List<TileObj> _resultsList = <TileObj>[
 */
 
 Future<List<Universities>> fetchUniversities(String s) async {
+
+  String _request;
   //print('test');
 //  if(QueryManager().universityList.isNotEmpty){
 //    return QueryManager().universityList;
 //  }
 
+
+
+    if(getPriv() == 2){_request= "VIEW_OWNED_SUBJECTS";}
+    else _request= "POPULATE_SUBJECTS";
+
+  //(getPriv() == 2)?request= "VIEW_SUBJECTS":request= "POPULATE_SUBJECTS";
+
+  var now = DateTime.now();
+
   var response = await http.post(
+
+
+
       'https://markit.mijdas.com/api/requests/subject/',
       body: jsonEncode({
         "request": "POPULATE_SUBJECTS",
         "username": s
       }) // change this to logged in username when time comes
       );
-
+  print("response time = "+(DateTime.now().difference(now)).toString());
   if (response.statusCode == 200) {
 //    print('response code:  200\n');
 //    print('response body: ' + response.body);

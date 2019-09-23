@@ -1,23 +1,26 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:mijdas_app/global_widgets.dart';
+import 'package:flutter/services.dart';
+import 'package:mijdas_app/Functions/submits.dart';
 
-// import './assessment.dart';
-// import './home.dart';
-// import './signup.dart';
-// import './main.dart';
-
+import 'AssessmentPage.dart';
+import 'HomePage.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Color _buttonColour = new Color(0xff0069C0);
-String _username;
-String _email;
-String _password;
+String _searchedUser;
+int _userType;
+final String jsonURL =
+    "https://markit.mijdas.com/api/requests/subject/read.php?username=";
+//for storing json results globally
+Map<String, dynamic> fetchedData;
 
-Route signUpRoute() {
+Route signInRoute() {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => SignUp(),
+    pageBuilder: (context, animation, secondaryAnimation) => SignIn(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(
         opacity: animation,
@@ -27,22 +30,31 @@ Route signUpRoute() {
   );
 }
 
-// //base url as string
-// final String jsonURL = "https://markit.mijdas.com/api/requests/subject/read.php?username=";
-// //for storing json results globally
-// Map<String, dynamic> fetchedData;
-
-class SignUp extends StatelessWidget {
+class SignIn extends StatelessWidget {
+  // Color _primaryColour = Color(0xff0069C0);
+  // Color _primaryColour2 = Color(0xff2196F3);
   final usernameController = TextEditingController();
-  final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final passwordController_2 = TextEditingController();
+
+  final FocusNode _userFocus = FocusNode();
+  final FocusNode _passFocus = FocusNode();
+
+
   ScrollController _scrollController = ScrollController();
+
+  Future<String> getData(String s) async {
+    var response = await http.get(Uri.encodeFull(jsonURL + s),
+        headers: {"Accept": "application/json"});
+
+    // Map<String, dynamic> fetchedData = json.decode(response.body);
+    fetchedData = json.decode(response.body);
+    print(fetchedData);
+  }
 
   //jump the screen down - the animation looked smoother but was buggy, decided to use Jump for prototype demo
   _scrollToFields() {
     // print("\n\n\nMETHOD CALLED\n\n\n");
-    _scrollController.jumpTo(_scrollController.position.maxScrollExtent - 20.0);
+    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     // _scrollController.animateTo(_scrollController.position.maxScrollExtent,
     //     duration: Duration(milliseconds: 250), curve: Curves.decelerate);
   }
@@ -56,7 +68,7 @@ class SignUp extends StatelessWidget {
           children: <Widget>[
             Container(
               width: 500,
-              height: 270,
+              height: 330,
               child: _banner(context),
             ),
             Center(
@@ -68,8 +80,14 @@ class SignUp extends StatelessWidget {
                     margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
                     alignment: Alignment.center,
                     child: TextField(
+
+                      textInputAction: TextInputAction.next,
+
+                      // autofocus: false,
+                      // textAlign: TextAlign.center,//cant use this as it crashes flutter - known bug.
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person),
+                        // hintText: "Username..",
                         labelText: "Username",
                         fillColor: Colors.white70,
                         filled: true,
@@ -81,7 +99,12 @@ class SignUp extends StatelessWidget {
                       ),
                       controller: usernameController,
                       onChanged: (v) {
-                        _scrollToFields();
+                        //_scrollToFields();
+                      },
+                      focusNode: _userFocus,
+                      onSubmitted: (_user){
+                        _userFocus.unfocus();
+                        FocusScope.of(context).requestFocus(_passFocus);
                       },
                     ),
                   ),
@@ -89,26 +112,12 @@ class SignUp extends StatelessWidget {
                     margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
                     alignment: Alignment.center,
                     child: TextField(
+                      textInputAction: TextInputAction.done,
+                      // autofocus: false,
+                      // textAlign: TextAlign.center,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.mail),
-                        labelText: "Email",
-                        fillColor: Colors.white70,
-                        filled: true,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(7.0)),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(7.0),
-                            borderSide: BorderSide(color: Colors.white70)),
-                      ),
-                      controller: emailController,
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
-                    alignment: Alignment.center,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
+                        prefixIcon: Icon(Icons.lock_outline),
+                        // hintText: "Password..",
                         labelText: "Password",
                         fillColor: Colors.white70,
                         filled: true,
@@ -118,27 +127,16 @@ class SignUp extends StatelessWidget {
                             borderRadius: BorderRadius.circular(7.0),
                             borderSide: BorderSide(color: Colors.white70)),
                       ),
+                      focusNode: _passFocus,
                       controller: passwordController,
-                      obscureText: true,
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
-                    alignment: Alignment.center,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock_outline),
-                        labelText: "Confirm Password",
-                        labelStyle: TextStyle(fontSize: 12),
-                        fillColor: Colors.white70,
-                        filled: true,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(7.0)),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(7.0),
-                            borderSide: BorderSide(color: Colors.white70)),
-                      ),
-                      controller: passwordController_2,
+
+                      onSubmitted: (s){
+                        print(s);
+                        signIn(context, usernameController);
+
+
+                      },
+
                       obscureText: true,
                     ),
                   ),
@@ -156,16 +154,11 @@ class SignUp extends StatelessWidget {
                             height: 50.0,
                             child: RaisedButton(
                               onPressed: () {
-                                if (passwordController.text ==
-                                    passwordController_2.text) {
-                                  _username = usernameController.text;
-                                  _password = passwordController.text;
-                                  _email = emailController.text;
-                                  // getData(searchedUser); //commented out while back end was down
-                                  showDialog_1(context, "Success!", "Signup Was a success!\nHead back to the home screen and try signing in with your new details!", "Close and Return", false);
-                                } else {
-                                  showDialog_2(context, "Error", "There was a problem with the information entered, make sure all fields are correct.", "Close");
-                                }
+
+                                 _userFocus.unfocus();
+                                FocusScope.of(context).requestFocus(FocusNode());
+                                signIn(context, usernameController);
+
                               },
                               child: RichText(
                                 text: TextSpan(
@@ -181,6 +174,30 @@ class SignUp extends StatelessWidget {
                             ),
                           ),
                         ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Container(
+                          child: InkWell(
+                            onTap: () async {
+                              print("Forgotten Password Clicked.");
+//                              for(int i =0;i<1000;i++){
+//                                await Future.delayed(Duration(milliseconds: 10));
+//                                print(i);
+//                                fetchUniversities("aa111");
+////
+////
+//                              }
+
+                             // Navigator.push(context, signUpRoute());
+                            },
+
+                            child: Text(
+                              "Forgot your password?",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -240,13 +257,13 @@ Widget _banner(BuildContext context) {
               ),
             ),
             Positioned(
-              top: 105,
-              left: 145,
+              top: 125,
+              left: 150,
               width: 330,
-              height: 85,
+              height: 40,
               child: RichText(
                 text: TextSpan(
-                  text: ("  Tutor\nSign Up"),
+                  text: ("Sign In"),
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 36,
@@ -271,4 +288,33 @@ Widget _banner(BuildContext context) {
       ),
     ],
   );
+}
+
+String getUsername() {
+  return _searchedUser;
+}
+
+int getPriv() {
+  return _userType;
+}
+
+void signIn(context, usernameController){
+
+
+  SystemChannels.textInput.invokeMethod('TextInput.hide');
+  //TURN THIS INTO A FUNCTION
+  print("Searching: [" +
+      usernameController.text +
+      "].");
+  _searchedUser = usernameController.text;
+  if(_searchedUser == "st111")
+    _userType = 2;//for testing purposes, st111 is Coordinator
+  else
+    _userType = 1;//everyone else is tutor (eg aa111)
+
+  // getData(searchedUser); //commented out while back end was down
+
+  //FocusScope.of(context).requestFocus(FocusNode());
+  print("S1");
+  Navigator.push(context, homeRoute());
 }
