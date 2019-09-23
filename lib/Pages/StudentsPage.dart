@@ -87,27 +87,7 @@ class Students extends StatelessWidget {
         child: Container(
           child: ListView(
             // padding: EdgeInsets.all(10.0),
-            children: <Widget>[
-              settingsHeader(context, getUsername()),
-              settingsTile(Icons.person, "Profile", () {
-                print("Profile Clicked.");
-              }),
-              settingsTile(Icons.person, "Announcements", () {
-                print("Announcements Clicked.");
-              }),
-              settingsTile(Icons.person, "Calendar", () {
-                print("Calendar Clicked.");
-              }),
-              settingsTile(Icons.person, "Job Board", () {
-                print("Job Board Clicked.");
-              }),
-              settingsTile(Icons.person, "Settings", () {
-                print("Settings Clicked.");
-              }),
-              settingsTile(Icons.person, "Sign Out", () {
-                print("Sign Out Clicked.");
-              }),
-            ],
+            children: sideBar(context, getUsername()),
           ),
         ),
       ),

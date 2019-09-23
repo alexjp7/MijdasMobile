@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mijdas_app/Pages/AssessmentPage.dart';
 import '../Functions/submits.dart';
+import '../Functions/routes.dart';
 //dialog_1 = custom popup prompt with passable title, message and button text. returns a screen upon closure.
 
 
@@ -180,6 +181,37 @@ Future<bool> onHoldSettings_Assessments(BuildContext context, String selectedTit
   return true;
 }
 
+List<Widget> sideBar(context,username){
+  return [
+    settingsHeader(context, username),
+    settingsTile(Icons.person, "Profile", () {
+      Navigator.push(context, profileRoute());
+    print("Profile Clicked.");
+    }),
+    settingsTile(Icons.person, "Announcements", () {
+      Navigator.push(context, announcementRoute());
+    print("Announcements Clicked.");
+    }),
+//    settingsTile(Icons.person, "Calendar", () {
+//      Navigator.push(context, settingsRoute());
+//    print("Calendar Clicked.");
+//    }),
+//    settingsTile(Icons.person, "Board", () {
+//    print("Job Board Clicked.");
+//    }),
+    settingsTile(Icons.person, "Settings", () {
+      Navigator.push(context, settingsRoute());
+    print("Settings Clicked.");
+    }),
+    settingsTile(Icons.person, "Sign Out", () {
+      Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+    print("Sign Out Clicked.");
+    }),
+  ];
+
+}
+
+
 //settings tile styling used globally
 Widget settingsTile(IconData icon, String label, Function onTap) {
   Color _mainBackdrop = new Color(0xff54b3ff); //lighter blue
@@ -189,6 +221,19 @@ Widget settingsTile(IconData icon, String label, Function onTap) {
     _labelStyle = TextStyle(fontSize: 20.0, color: Colors.red[900]);
   else
     _labelStyle = TextStyle(fontSize: 20.0);
+
+//  return Center(
+//    child:InkWell(
+//      onTap: onTap,
+//      child:Padding(
+//        padding:EdgeInsets.fromLTRB(8.0, 0, 8.0, 0) ,
+//        child: Container(
+//          height: 60,
+//          child:Text(label, style: _labelStyle,),
+//        ),
+//      )
+//    ),
+//  );
 
   return Padding(
     padding: EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
@@ -201,17 +246,17 @@ Widget settingsTile(IconData icon, String label, Function onTap) {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             // Icon(Icons.arrow_left),
-            SizedBox(width: 24), //temporary to keep padding
+            SizedBox(width: 0), //temporary to keep padding
             Row(
               children: <Widget>[
                 // Icon(icon),
-                SizedBox(width: 24),
-                SizedBox(width: 10),
+               // SizedBox(width: 24),
+               // SizedBox(width: 10),
                 Text(label, style: _labelStyle),
                 // SizedBox(width: 105),
               ],
             ),
-            SizedBox(width: 0),
+          //  SizedBox(width: 0),
             SizedBox(width: 0),
           ],
         ),

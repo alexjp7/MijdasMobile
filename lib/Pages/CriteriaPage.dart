@@ -31,7 +31,7 @@ List<Criterion> _assCrit;
 List<Criterion> _items;
 String _assID;
 bool
-    _isFetchDone; //boolean check to see if API request is finished before populating certain fields
+_isFetchDone; //boolean check to see if API request is finished before populating certain fields
 
 Route CriteriaRoute(Student s, String assID, List<Criterion> crit) {
   return PageRouteBuilder(
@@ -72,6 +72,7 @@ class CriteriaPage extends State<CriteriaPageState> {
     0 - Checkbox
     1 - Slider
     2 - Textfield
+    3 - CommentBox
   
   */
   Widget _buildTiles(int index) {
@@ -107,8 +108,8 @@ class CriteriaPage extends State<CriteriaPageState> {
             child: Slider(
               min: 0.0,
               max: _items[index].maxMarkI,
-              divisions: _items[index].maxMarkI.toInt() *
-                  4, //creates increments of 0.25
+              divisions: _items[index].maxMarkI.toInt() * 4,
+              //creates increments of 0.25
               onChanged: (newSliderValue) {
                 setState(() {
                   _items[index].value = newSliderValue;
@@ -119,30 +120,63 @@ class CriteriaPage extends State<CriteriaPageState> {
               value: _items[index].value,
             ),
           ));
-    } else {
+    } else if (_items[index].element == "2") {
       return Flexible(
-          flex: 1,
-          child: TextField(
-            keyboardType: TextInputType.number,
-            controller: _items[index].tControl,
-            // textAlign: TextAlign.center, //what a stupid bug this is
-            onChanged: (text) {
-              if (isNumeric(text)) {
-                _items[index].value = double.parse(text);
-                print(text);
-              } else {
-                print("NOT ANUMBERRRR");
-              }
-            },
-          ));
-    }
+
+          flex: 10,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(100, 0, 100, 0),
+              child:Row(
+
+            //crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+            Flexible(
+            flex: 1,
+                child: TextField(
+                    keyboardType: TextInputType.number,
+                    controller: _items[index].tControl,
+
+                    //textAlign: TextAlign.right, //what a stupid bug this is
+                    onChanged: (text) {
+                      if (isNumeric(text)) {
+                        double _enteredMark = double.parse(text);
+                        if (_enteredMark >= _items[index].maxMarkI) {
+                          _items[index].value = _items[index].maxMarkI;
+                        }
+                        else
+                          _items[index].value = _enteredMark;
+                        print(text);
+                      }
+                    },
+                    onSubmitted :(text){
+                      if (isNumeric(text)){
+                        double _enteredMark = double.parse(text);
+                        if(_enteredMark>=_items[index].maxMarkI) {
+                          _items[index].tControl.text = _items[index].maxMark;
+                        }
+                        print(text);
+                        }
+                    },
+
+    )),
+    Expanded(child: Text('/${_items[index].maxMark}')),
+    ])));
+    } else
+    return Flexible(child
+    :
+    TextField
+    (
+    )
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: Theme
+              .of(context)
+              .primaryColor,
           leading: Padding(
             padding: EdgeInsets.only(left: 12),
             child: IconButton(
@@ -169,27 +203,7 @@ class CriteriaPage extends State<CriteriaPageState> {
           child: Container(
             child: ListView(
               // padding: EdgeInsets.all(10.0),
-              children: <Widget>[
-                settingsHeader(context, getUsername()),
-                settingsTile(Icons.person, "Profile", () {
-                  print("Profile Clicked.");
-                }),
-                settingsTile(Icons.person, "Announcements", () {
-                  print("Announcements Clicked.");
-                }),
-                settingsTile(Icons.person, "Calendar", () {
-                  print("Calendar Clicked.");
-                }),
-                settingsTile(Icons.person, "Job Board", () {
-                  print("Job Board Clicked.");
-                }),
-                settingsTile(Icons.person, "Settings", () {
-                  print("Settings Clicked.");
-                }),
-                settingsTile(Icons.person, "Sign Out", () {
-                  print("Sign Out Clicked.");
-                }),
-              ],
+              children: sideBar(context, getUsername()),
             ),
           ),
         ),
@@ -223,22 +237,22 @@ class CriteriaPage extends State<CriteriaPageState> {
                           enabled: true,
                           isThreeLine: false,
                           title: new Card(
-                              //MAKE BUILD CARDS
+                            //MAKE BUILD CARDS
                               color: _accentColour,
                               child: Center(
                                   child: Column(children: <Widget>[
-                                Text(
-                                  '${_items[index].displayText}',
-                                  style: TextStyle(fontSize: 18.0),
-                                ),
-                                Text(
-                                  criteriaValueText,
-                                  style: TextStyle(fontSize: 15.0),
-                                ),
-                                Row(children: <Widget>[
-                                  _buildTiles(index),
-                                ]),
-                              ]))),
+                                    Text(
+                                      '${_items[index].displayText}',
+                                      style: TextStyle(fontSize: 18.0),
+                                    ),
+                                    Text(
+                                      criteriaValueText,
+                                      style: TextStyle(fontSize: 15.0),
+                                    ),
+                                    Row(children: <Widget>[
+                                      _buildTiles(index),
+                                    ]),
+                                  ]))),
                         );
                       })),
               //   new Container(height: 20, alignment:Alignment.bottomLeft,child: Text('Comments:')),//MAYBE CHANGE THIS TO A labelText???????
@@ -285,7 +299,8 @@ Widget _markingTitleArea() {
       Positioned(
         top: 0,
         left: 0,
-        width: 500, //415 for width of pixel
+        width: 500,
+        //415 for width of pixel
         height: 50,
         child: Stack(
           fit: StackFit.expand,
@@ -337,7 +352,8 @@ Widget _markingFooterArea() {
       Positioned(
         top: 0,
         left: 0,
-        width: 500, //415 for width of pixel
+        width: 500,
+        //415 for width of pixel
         height: 70,
         child: Stack(
           fit: StackFit.expand,
@@ -361,7 +377,8 @@ Widget _markingFooterArea() {
       Positioned(
         top: 25,
         left: 80,
-        width: 120, //should run to about the middle
+        width: 120,
+        //should run to about the middle
         height: 40,
         child: RichText(
           text: TextSpan(
@@ -520,12 +537,14 @@ class CriteriaDecode {
     this.criteria,
   });
 
-  factory CriteriaDecode.fromJson(Map<String, dynamic> json) => CriteriaDecode(
+  factory CriteriaDecode.fromJson(Map<String, dynamic> json) =>
+      CriteriaDecode(
         criteria: List<Criterion>.from(
             json["records"].map((x) => Criterion.fromJson(x))),
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "request": "SUBMIT_MARK",
         "student": _selectedStudent.studentId,
         "assessment_id": _assID,
@@ -550,10 +569,14 @@ class Criterion {
     this.displayText,
   }) {
     if (element == "0") {
-      _isChecked = false;
+      _isChecked = true;
     } else if (element == "2") {
       tControl = TextEditingController();
     }
+    if (maxMark != null) {
+      value = double.parse(maxMark);
+    }
+
     this.iD = int.parse(criteria);
     this.elementType = int.parse(element);
     if (maxMark == null) {
@@ -573,7 +596,8 @@ class Criterion {
   //   _isChecked = b;
   // }
 
-  factory Criterion.fromJson(Map<String, dynamic> json) => Criterion(
+  factory Criterion.fromJson(Map<String, dynamic> json) =>
+      Criterion(
         criteria: json["criteria"],
         element: json["element"],
         maxMark: json["maxMark"] == null ? null : json["maxMark"],

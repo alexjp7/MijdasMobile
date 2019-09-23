@@ -62,16 +62,17 @@ class Home extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
-        leading: Padding(
-          padding: EdgeInsets.only(left: 12),
-          child: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              Navigator.pop(context);
-              print("Back Arrow Clicked");
-            },
-          ),
-        ),
+          leading:Container(),
+//        leading: Padding(
+//          padding: EdgeInsets.only(left: 12),
+//          child: IconButton(
+//            icon: Icon(Icons.arrow_back_ios),
+//            onPressed: () {
+//              Navigator.pop(context);
+//              print("Back Arrow Clicked");
+//            },
+//          ),
+//        ),
         title: Text('Home'),
         centerTitle: true,
       ),
@@ -79,27 +80,7 @@ class Home extends StatelessWidget {
         child: Container(
           child: ListView(
             // padding: EdgeInsets.all(10.0),
-            children: <Widget>[
-              settingsHeader(context, getUsername()),
-              settingsTile(Icons.person, "Profile", () {
-                print("Profile Clicked.");
-              }),
-              settingsTile(Icons.person, "Announcements", () {
-                print("Announcements Clicked.");
-              }),
-              settingsTile(Icons.person, "Calendar", () {
-                print("Calendar Clicked.");
-              }),
-              settingsTile(Icons.person, "Job Board", () {
-                print("Job Board Clicked.");
-              }),
-              settingsTile(Icons.person, "Settings", () {
-                print("Settings Clicked.");
-              }),
-              settingsTile(Icons.person, "Sign Out", () {
-                print("Sign Out Clicked.");
-              }),
-            ],
+            children:sideBar(context, getUsername()),
           ),
         ),
       ),

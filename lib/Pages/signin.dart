@@ -1,14 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mijdas_app/Functions/submits.dart';
 
 import 'AssessmentPage.dart';
 import 'HomePage.dart';
-import 'signup.dart';
-import '../Widgets/global_widgets.dart';
-import '../main.dart';
-
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -102,7 +99,7 @@ class SignIn extends StatelessWidget {
                       ),
                       controller: usernameController,
                       onChanged: (v) {
-                        _scrollToFields();
+                        //_scrollToFields();
                       },
                       focusNode: _userFocus,
                       onSubmitted: (_user){
@@ -135,19 +132,9 @@ class SignIn extends StatelessWidget {
 
                       onSubmitted: (s){
                         print(s);
+                        signIn(context, usernameController);
 
-                        //TURN THIS INTO A FUNCTION
-                        print("Searching: [" +
-                            usernameController.text +
-                            "].");
-                        _searchedUser = usernameController.text;
-                        if(_searchedUser == "st111")
-                          _userType = 2;//for testing purposes, st111 is Coordinator
-                        else
-                          _userType = 1;//everyone else is tutor (eg aa111)
 
-                        // getData(searchedUser); //commented out while back end was down
-                        Navigator.push(context, homeRoute());
                       },
 
                       obscureText: true,
@@ -167,21 +154,11 @@ class SignIn extends StatelessWidget {
                             height: 50.0,
                             child: RaisedButton(
                               onPressed: () {
-                                // if (passwordController.text == "") {
-                                  print("Searching: [" +
-                                      usernameController.text +
-                                      "].");
-                                  _searchedUser = usernameController.text;
-                                  if(_searchedUser == "st111")
-                                    _userType = 2;//for testing purposes, st111 is Coordinator
-                                  else
-                                    _userType = 1;//everyone else is tutor (eg aa111)
-                                    
-                                  // getData(searchedUser); //commented out while back end was down
-                                  Navigator.push(context, homeRoute());
-                                // } else {
-                                //   showDialog_2(context, "Login Failed", "Login Details Incorrect.", "Close");
-                                // }
+
+                                 _userFocus.unfocus();
+                                FocusScope.of(context).requestFocus(FocusNode());
+                                signIn(context, usernameController);
+
                               },
                               child: RichText(
                                 text: TextSpan(
@@ -204,16 +181,17 @@ class SignIn extends StatelessWidget {
                           child: InkWell(
                             onTap: () async {
                               print("Forgotten Password Clicked.");
-                              for(int i =0;i<1000;i++){
-                                await Future.delayed(Duration(milliseconds: 10));
-                                print(i);
-                                fetchUniversities("aa111");
-//
-//
-                              }
+//                              for(int i =0;i<1000;i++){
+//                                await Future.delayed(Duration(milliseconds: 10));
+//                                print(i);
+//                                fetchUniversities("aa111");
+////
+////
+//                              }
 
                              // Navigator.push(context, signUpRoute());
                             },
+
                             child: Text(
                               "Forgot your password?",
                               style: TextStyle(fontWeight: FontWeight.bold),
@@ -318,4 +296,25 @@ String getUsername() {
 
 int getPriv() {
   return _userType;
+}
+
+void signIn(context, usernameController){
+
+
+  SystemChannels.textInput.invokeMethod('TextInput.hide');
+  //TURN THIS INTO A FUNCTION
+  print("Searching: [" +
+      usernameController.text +
+      "].");
+  _searchedUser = usernameController.text;
+  if(_searchedUser == "st111")
+    _userType = 2;//for testing purposes, st111 is Coordinator
+  else
+    _userType = 1;//everyone else is tutor (eg aa111)
+
+  // getData(searchedUser); //commented out while back end was down
+
+  //FocusScope.of(context).requestFocus(FocusNode());
+  print("S1");
+  Navigator.push(context, homeRoute());
 }
