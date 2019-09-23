@@ -28,8 +28,8 @@ void showDialog_1(BuildContext bctx, String title, String msg, String option,
 }
 
 //dialog_2 = same as dialog_1 but doesnt go back a screen, only closes dialog box upon closure.
-void showDialog_2(BuildContext bctx, String title, String msg, String option) {
-  showDialog(
+Future<void> showDialog_2 (BuildContext bctx, String title, String msg, String option) async {
+  await showDialog(
       context: bctx,
       barrierDismissible: true, //user can close however they want
       builder: (BuildContext bctx) {
@@ -149,21 +149,21 @@ Future<bool> onHoldSettings_Assessments(BuildContext context, String selectedTit
          return Container(
           child: Wrap(
             children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.add_comment),
-                title: Text("Create Criteria For: " + selectedTitle),
-                onTap: () {
-                  print("Create Criteria Click.");
-                  Navigator.pop(context);
-
-                },
-              ),
+//              ListTile(
+//                leading: Icon(Icons.add_comment),
+//                title: Text("Create Criteria For: " + selectedTitle),
+//                onTap: () {
+//                  print("Create Criteria Click.");
+//                  Navigator.pop(context);
+//
+//                },
+//              ),
               ListTile(
                 leading: Icon(Icons.visibility),
                 title: Text("Toggle Activation For: " + selectedTitle),
                 onTap: () async {
                   print("TEST Toggle Activation Click for assignment: "+aNum);
-                  await toggleActivation(aNum);
+                  await showDialog_2(context,"", await toggleActivation(aNum),"Close");
                   print("afterActivate");
                   //definitely after activation
                   await refreshAssList();
