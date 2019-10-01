@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:mijdas_app/Functions/submits.dart';
 
 import 'AssessmentPage.dart';
-import 'HomePage.dart';
+import '../Functions/routes.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;

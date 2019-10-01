@@ -404,19 +404,6 @@ Widget _studentsMarkedChart() {
 
 class StudentSearch extends SearchDelegate<String> {
   //hardcoded searched items
-  // final studentsList = [
-  //   "this",
-  //   "is",
-  //   "a",
-  //   "list",
-  //   "of",
-  //   "hardcoded",
-  //   "students",
-  //   "ab123",
-  //   "cd456",
-  //   "ef789",
-  //   "gh000",
-  // ];
   // final recentSearches = [
   //   "ab123",
   //   "cd456",
@@ -426,7 +413,6 @@ class StudentSearch extends SearchDelegate<String> {
   // ];
 
   final studentsList = _studentIDList;
-  // final recentSearches = _recentSearchesList;
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -477,13 +463,13 @@ class StudentSearch extends SearchDelegate<String> {
                   _getStudent(suggestedItems[index].toString()).result)),
           child: ListTile(
             onTap: () {
-              // print(suggestedItems[index].toString());
-              // print(_getIndexForStudent(suggestedItems[index].toString()));
+               print(suggestedItems[index].toString());
+               print(_getIndexForStudent(suggestedItems[index].toString()));
               _selectedStudent = suggestedItems[index].toString();
               Navigator.push(
                   context,
                   CriteriaRoute(
-                      _studentList[index],
+                      _studentList[_getIndexForStudent(suggestedItems[index].toString())],
                       _assessmentID,
                       criteriaList[0].criteria)); //Pass in a bool for isMarked to load the old marks
               // close(context, route);
@@ -662,7 +648,7 @@ class Student {
         "result": result == null ? null : result,
       };
 }
-
+//
 String getStudent() {
   return _selectedStudent;
 }

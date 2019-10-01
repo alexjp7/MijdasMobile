@@ -6,6 +6,7 @@ import '../main.dart';
 import 'signin.dart';
 import 'AssessmentPage.dart';
 import '../Widgets/global_widgets.dart';
+import '../Models/University.dart';
 // import './criteria_manager.dart';
 
 
@@ -19,43 +20,13 @@ import 'package:http/http.dart' as http;
 String _subjectName;
 BuildContext _homeContext;
 
-Route homeRoute() {
-  return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => Home(),
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      _homeContext = context; //assigning buildcontext
-      return FadeTransition(
-        opacity: animation,
-        child: child,
-      );
-    },
-  );
-}
-
-// //base url as string
-// final String jsonURL = "https://markit.mijdas.com/api/requests/subject/read.php?username=";
-// //for storing json results globally
-// Map<String, dynamic> fetchedData;
-
-//uninitiated global context variable for use later
-// BuildContext homepageContext;
-// String chosenAssessmentID;
-
 class Home extends StatelessWidget {
-  // Future<String> getData(String s) async {
-  //   var response = await http.get(
-  //     Uri.encodeFull(jsonURL+s),
-  //     headers: {
-  //       "Accept": "application/json"
-  //     }
-  //   );
-
-  //   // Map<String, dynamic> fetchedData = json.decode(response.body);
-  //   fetchedData = json.decode(response.body);
-  //   print(fetchedData);
-  // }
 
   List<Universities> universitiesList;
+
+  Home(context){
+    _homeContext = context; //assigning buildcontext
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,26 +218,6 @@ class TileObj {
   TileObj.subject(this.title, this.tileID, [this.children = const <TileObj>[]]);
 }
 
-/*
-//List to hold results
-List<TileObj> _resultsList = <TileObj>[
-  new TileObj(
-    'University of Wollongong',
-    <TileObj>[
-      new TileObj('CSIT321 - Project (Annual)'),
-      new TileObj('CSIT314 - Software Development Methodologies (Autumn)'),
-    ],
-  ),
-  new TileObj(
-    'University of Example',
-    <TileObj>[
-      new TileObj('ISIT307 - Backend Web Programming (Autumn)'),
-      new TileObj('CSCI361 - Cryptography and Secure Applications (Autumn)'),
-    ],
-  )
-];
-*/
-
 Future<List<Universities>> fetchUniversities(String s) async {
 
   String _request;
@@ -275,26 +226,23 @@ Future<List<Universities>> fetchUniversities(String s) async {
 //    return QueryManager().universityList;
 //  }
 
-
-
-    if(getPriv() == 2){_request= "VIEW_OWNED_SUBJECTS";}
-    else _request= "POPULATE_SUBJECTS";
+  if(getPriv() == 2) _request= "VIEW_OWNED_SUBJECTS";
+  else _request= "POPULATE_SUBJECTS";
 
   //(getPriv() == 2)?request= "VIEW_SUBJECTS":request= "POPULATE_SUBJECTS";
 
-  var now = DateTime.now();
+  //var now = DateTime.now();
 
   var response = await http.post(
-
-
-
       'https://markit.mijdas.com/api/requests/subject/',
       body: jsonEncode({
         "request": "POPULATE_SUBJECTS",
         "username": s
-      }) // change this to logged in username when time comes
+      })
       );
-  print("response time = "+(DateTime.now().difference(now)).toString());
+
+  //print("response time = "+(DateTime.now().difference(now)).toString());
+
   if (response.statusCode == 200) {
 //    print('response code:  200\n');
 //    print('response body: ' + response.body);
@@ -307,11 +255,11 @@ Future<List<Universities>> fetchUniversities(String s) async {
         "Response Code: 404.\n\n\t\t\tNo Subjects Found.",
         "Close & Return",
         false);
+    throw Exception('Failed to load post, error code: ' + response.statusCode.toString());
   } else {
     print('response code: ' + response.statusCode.toString());
     print('response body: ' + response.body);
-    throw Exception(
-        'Failed to load post, error code: ' + response.statusCode.toString());
+    throw Exception('Failed to load post, error code: ' + response.statusCode.toString());
   }
 }
 
@@ -322,46 +270,8 @@ List<Universities> universitiesFromJson(String str) =>
 String universitiesToJson(List<Universities> data) =>
     json.encode(new List<dynamic>.from(data.map((x) => x.toJson())));
 
-class Universities {
-  String institution;
-  List<Subject> subjects;
 
-  Universities({
-    this.institution,
-    this.subjects,
-  });
 
-  factory Universities.fromJson(Map<String, dynamic> json) => new Universities(
-        institution: json["institution"],
-        subjects: new List<Subject>.from(
-            json["subjects"].map((x) => Subject.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "institution": institution,
-        "subjects": new List<dynamic>.from(subjects.map((x) => x.toJson())),
-      };
-}
-
-class Subject {
-  String subjectCode;
-  String id;
-
-  Subject({
-    this.subjectCode,
-    this.id,
-  });
-
-  factory Subject.fromJson(Map<String, dynamic> json) => new Subject(
-        subjectCode: json["subject_code"],
-        id: json["id"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "subject_code": subjectCode,
-        "id": id,
-      };
-}
 
 String getSubjectName() {
   return _subjectName;
