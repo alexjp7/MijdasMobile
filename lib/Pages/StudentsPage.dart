@@ -518,6 +518,8 @@ Future<void> _refreshStudentsList() async {
           _studentIDList.add(_studentList[i].studentId);
         }
         _isFetchDone = true;
+        //this should work, confirmed issue on back-end fetch. Tested with postman.
+        // Navigator.pop(_studentContext);
       } else if (snapshot.hasError) {
         _isFetchDone = false;
         showDialog_1(context, "Error!", snapshot.error, "Close", false);
