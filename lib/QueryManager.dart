@@ -1,16 +1,24 @@
-//USE TO STORE API REQUESTS
+/*
+Authors: Joel
+Date: 3/10/19
+Group: Mijdas(kw01)
+Purpose: Caching
+*/
 
 
 
+import 'package:mijdas_app/Models/CriteriaDecode.dart';
 
-import 'Pages/HomePage.dart';
-import 'Pages/AssessmentPage.dart';
+//import './Models/Assessment.dart';
+//import './Models/Subject.dart';
+//import './Models/University.dart';
 
 
 class QueryManager{
   static final QueryManager _queryManager = new QueryManager._internal();//singleton stuff
 
  // List<Universities> universityList;
+  List<CriteriaDecode> criteriaList;
 
 
   factory QueryManager(){

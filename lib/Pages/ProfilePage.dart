@@ -1,23 +1,28 @@
+/*
+Authors: Joel and Mitch
+Date: 3/10/19
+Group: Mijdas(kw01)
+Purpose:
+*/
 import 'package:flutter/material.dart';
 
-import 'package:mijdas_app/Pages/CriteriaPage.dart' as prefix0;
 
-import 'package:pie_chart/pie_chart.dart';
+//import 'package:pie_chart/pie_chart.dart';
 
 //local imports
-import 'CriteriaPage.dart';
-import 'AssessmentPage.dart';
+//import 'CriteriaPage.dart';
+//import 'AssessmentPage.dart';
 import 'signin.dart';
-import 'HomePage.dart';
+//import 'HomePage.dart';
 import '../Widgets/global_widgets.dart';
 
-import '../Models/Assessment.dart';
+//import '../Models/Assessment.dart';
 
 //data handling/processing imports
-import 'dart:async';
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
+//import 'dart:async';
+//import 'dart:convert';
+//
+//import 'package:http/http.dart' as http;
 
 
 

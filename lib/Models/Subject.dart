@@ -1,3 +1,9 @@
+/*
+Authors: Joel and Mitch
+Date: 3/10/19
+Group: Mijdas(kw01)
+Purpose:
+*/
 class Subject {
   String subjectCode;
   String id;

@@ -1,3 +1,9 @@
+/*
+Authors: Joel and Mitch
+Date: 3/10/19
+Group: Mijdas(kw01)
+Purpose:
+*/
 import 'package:flutter/material.dart';
 import 'package:mijdas_app/Widgets/global_widgets.dart';
 
@@ -5,10 +11,10 @@ import 'package:mijdas_app/Widgets/global_widgets.dart';
 // import './HomePage.dart';
 // import './signup.dart';
 // import './main.dart';
-
-import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+//
+//import 'dart:async';
+//import 'dart:convert';
+//import 'package:http/http.dart' as http;
 
 Color _buttonColour = new Color(0xff0069C0);
 String _username;

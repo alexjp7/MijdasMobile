@@ -1,4 +1,11 @@
+/*
+Authors: Joel and Mitch
+Date: 3/10/19
+Group: Mijdas(kw01)
+Purpose:
+*/
 import './Subject.dart';
+import 'dart:convert';
 
 class Universities {
   String institution;
@@ -20,3 +27,7 @@ class Universities {
     "subjects": new List<dynamic>.from(subjects.map((x) => x.toJson())),
   };
 }
+
+List<Universities> universitiesFromJson(String str) =>
+    new List<Universities>.from(
+        json.decode(str).map((x) => Universities.fromJson(x)));

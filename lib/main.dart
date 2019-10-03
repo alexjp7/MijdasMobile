@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
+//import 'package:flutter/semantics.dart';
 
-import 'Pages/AssessmentPage.dart';
-import 'Pages/HomePage.dart';
+//import 'Pages/AssessmentPage.dart';
+//import 'Pages/HomePage.dart';
 import 'Pages/signup.dart';
 import 'Pages/signin.dart';
 
-import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+//import 'dart:async';
+//import 'dart:convert';
+//import 'package:http/http.dart' as http;
 
 void main() {
   // runApp(MyApp());

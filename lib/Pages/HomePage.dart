@@ -1,11 +1,22 @@
+/*
+Authors: Joel and Mitch
+Date: 3/10/19
+Group: Mijdas(kw01)
+Purpose:
+*/
 import 'package:flutter/material.dart';
-import 'package:mijdas_app/QueryManager.dart';
+//import 'package:mijdas_app/QueryManager.dart';
 
 //local imports
-import '../main.dart';
+//import '../main.dart';
 import 'signin.dart';
-import 'AssessmentPage.dart';
+//import 'AssessmentPage.dart';
+
+import '../Functions/routes.dart';
+import '../Functions/fetches.dart';
+
 import '../Widgets/global_widgets.dart';
+
 import '../Models/University.dart';
 // import './criteria_manager.dart';
 
@@ -19,21 +30,38 @@ import 'package:http/http.dart' as http;
 
 String _subjectName;
 BuildContext _homeContext;
+Future<List<Universities>> _universitiesList;
 
-class Home extends StatelessWidget {
 
-  List<Universities> universitiesList;
 
-  Home(context){
+class HomePage extends StatefulWidget {
+
+  HomePage(context){
     _homeContext = context; //assigning buildcontext
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-          leading:Container(),
+  _HomePageState createState() => _HomePageState();
+
+}
+
+class _HomePageState extends State<HomePage>{
+
+  @override
+  void initState() {
+    super.initState();
+    _universitiesList = fetchUniversities(getUsername(),_homeContext, (getPriv() == 2));
+  }
+
+@override
+Widget build(BuildContext context) {
+
+
+
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: Theme.of(context).primaryColor,
+      leading:Container(),
 //        leading: Padding(
 //          padding: EdgeInsets.only(left: 12),
 //          child: IconButton(
@@ -44,60 +72,56 @@ class Home extends StatelessWidget {
 //            },
 //          ),
 //        ),
-        title: Text('Home'),
-        centerTitle: true,
-      ),
-      endDrawer: Drawer(
-        child: Container(
-          child: ListView(
-            // padding: EdgeInsets.all(10.0),
-            children:sideBar(context, getUsername()),
-          ),
+      title: Text('Home'),
+      centerTitle: true,
+    ),
+    endDrawer: Drawer(
+      child: Container(
+        child: ListView(
+          // padding: EdgeInsets.all(10.0),
+          children:sideBar(context, getUsername()),
         ),
       ),
-      body: FutureBuilder<List<Universities>>(
-        future: fetchUniversities(getUsername()),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            universitiesList = snapshot.data;
+    ),
+    body: FutureBuilder<List<Universities>>(
+      future: _universitiesList,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          //_universitiesList = snapshot.data;
 
-            //QueryManager().universityList=snapshot.data;
+          //QueryManager().universityList=snapshot.data;
 
-            List<TileObj> _parentListItems = new List<TileObj>();
+          List<TileObj> _parentListItems = new List<TileObj>();
 
-            for (int i = 0; i < snapshot.data.length; i++) {
-              List<TileObj> _childrenListItems = new List<TileObj>();
-              for (int i2 = 0; i2 < snapshot.data[i].subjects.length; i2++) {
-                _childrenListItems.add(new TileObj.subject(
-                    snapshot.data[i].subjects[i2].subjectCode,
-                    universitiesList[i].subjects[i2].id));
-              }
-              _parentListItems.add(new TileObj(
-                  snapshot.data[i].institution, _childrenListItems));
+          for (int i = 0; i < snapshot.data.length; i++) {
+            List<TileObj> _childrenListItems = new List<TileObj>();
+            for (int i2 = 0; i2 < snapshot.data[i].subjects.length; i2++) {
+              _childrenListItems.add(new TileObj.subject(
+                  snapshot.data[i].subjects[i2].subjectCode,
+                  snapshot.data[i].subjects[i2].id));
             }
-            return ListView.builder(
-              itemBuilder: (BuildContext context, int index) {
-                // homepageContext = context; //pass and store the page context globally instead of carrying it with each tile.
-                return new PopulateTiles(_parentListItems[index]);
-              },
-              itemCount: _parentListItems.length,
-            );
-
-            //Maybe leave this here for future reference(-Mitch):
-
-            //Text('${snapshot.data[0].institution}');
-            //MITCH LOOK HERE I DONT KNOW HOW TO FORMAT IT SORRY. i didnt delete your old stuff but my brain is in post mode
-            //snapshot.data[].institution = uni name,
-            //snapshot.data[].subjects[].subjectCode=subjectCode
-            //snapshot.data[].subjects[].id=subject id
-
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
+            _parentListItems.add(new TileObj(
+                snapshot.data[i].institution, _childrenListItems));
           }
-          return Center(child: CircularProgressIndicator()); //LOADING CIRCLE
-        },
-      ),
-      /*
+          return RefreshIndicator(
+              onRefresh: _refreshAssessmentsList,
+              child: ListView.builder(
+            itemBuilder: (BuildContext context, int index) {
+              // homepageContext = context; //pass and store the page context globally instead of carrying it with each tile.
+              return new PopulateTiles(_parentListItems[index]);
+            },
+            itemCount: _parentListItems.length,
+          ));
+
+
+
+        } else if (snapshot.hasError) {
+          return Text("${snapshot.error}");
+        }
+        return Center(child: CircularProgressIndicator()); //LOADING CIRCLE
+      },
+    ),
+    /*
 
         Maybe leave this here too for reference, we can clean it all up at the end?
 
@@ -110,13 +134,13 @@ class Home extends StatelessWidget {
       ),
       */
 
-      // ListView(
-      //     physics: const AlwaysScrollableScrollPhysics(),
-      //     padding: const EdgeInsets.all(8.0),
-      //     children: <Widget>[
+    // ListView(
+    //     physics: const AlwaysScrollableScrollPhysics(),
+    //     padding: const EdgeInsets.all(8.0),
+    //     children: <Widget>[
 
-      //     ]),
-      /*bottomNavigationBar: BottomAppBar(
+    //     ]),
+    /*bottomNavigationBar: BottomAppBar(
         child: Container(
             height: 70.0,
             child: IconButton(
@@ -131,12 +155,12 @@ class Home extends StatelessWidget {
             )),
         color: Theme.of(context).primaryColor,
       ),*/
-    );
-  }
+  );
+}
 }
 
 class PopulateTiles extends StatelessWidget {
-  Color _accentColour = Color(0xffBFD4DF);
+
 
   final TileObj fTile;
   // BuildContext contextT;
@@ -149,6 +173,7 @@ class PopulateTiles extends StatelessWidget {
 
 //widget to load tile list
   Widget _buildList(TileObj t) {
+    Color _accentColour = Color(0xffBFD4DF);
     if (t.children.isEmpty)
       return new ListTile(
           dense: true,
@@ -218,60 +243,11 @@ class TileObj {
   TileObj.subject(this.title, this.tileID, [this.children = const <TileObj>[]]);
 }
 
-Future<List<Universities>> fetchUniversities(String s) async {
 
-  String _request;
-  //print('test');
-//  if(QueryManager().universityList.isNotEmpty){
-//    return QueryManager().universityList;
-//  }
 
-  if(getPriv() == 2) _request= "VIEW_OWNED_SUBJECTS";
-  else _request= "POPULATE_SUBJECTS";
-
-  //(getPriv() == 2)?request= "VIEW_SUBJECTS":request= "POPULATE_SUBJECTS";
-
-  //var now = DateTime.now();
-
-  var response = await http.post(
-      'https://markit.mijdas.com/api/requests/subject/',
-      body: jsonEncode({
-        "request": "POPULATE_SUBJECTS",
-        "username": s
-      })
-      );
-
-  //print("response time = "+(DateTime.now().difference(now)).toString());
-
-  if (response.statusCode == 200) {
-//    print('response code:  200\n');
-//    print('response body: ' + response.body);
-    return universitiesFromJson(response.body);
-  } else if (response.statusCode == 404) {
-    print('response code:  404\n');
-    showDialog_1(
-        _homeContext,
-        "Error!",
-        "Response Code: 404.\n\n\t\t\tNo Subjects Found.",
-        "Close & Return",
-        false);
-    throw Exception('Failed to load post, error code: ' + response.statusCode.toString());
-  } else {
-    print('response code: ' + response.statusCode.toString());
-    print('response body: ' + response.body);
-    throw Exception('Failed to load post, error code: ' + response.statusCode.toString());
-  }
+Future<void> _refreshAssessmentsList() async {
+  await (_universitiesList = fetchUniversities(getUsername(),_homeContext, (getPriv() == 2)));
 }
-
-List<Universities> universitiesFromJson(String str) =>
-    new List<Universities>.from(
-        json.decode(str).map((x) => Universities.fromJson(x)));
-
-String universitiesToJson(List<Universities> data) =>
-    json.encode(new List<dynamic>.from(data.map((x) => x.toJson())));
-
-
-
 
 String getSubjectName() {
   return _subjectName;
