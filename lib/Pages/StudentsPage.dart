@@ -7,7 +7,7 @@ Purpose:
 import 'package:flutter/material.dart';
 
 
-import 'package:mijdas_app/QueryManager.dart';
+import '../QueryManager.dart';
 
 import 'package:pie_chart/pie_chart.dart';
 
@@ -52,18 +52,29 @@ Icon _isNotMarked = new Icon(
   Icons.check_box_outline_blank,
 );
 
-
-
-
-
-class StudentsPage extends StatelessWidget {
-
-
+class StudentsPage extends StatefulWidget{
 
   StudentsPage(context,id){
     _studentContext = context; //assigning page context
     _assessmentID = id;
-    _studentDecodeList =  fetchStudents(id, _studentContext);
+
+  }
+
+  @override
+  _StudentsPageState createState() => _StudentsPageState();
+
+}
+
+
+
+class _StudentsPageState extends State<StudentsPage> {
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    _studentDecodeList =  fetchStudents(_assessmentID, _studentContext);
   }
 
 

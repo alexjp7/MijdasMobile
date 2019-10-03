@@ -14,7 +14,7 @@ TODO----------
 
  */
 import 'package:flutter/material.dart';
-import 'package:mijdas_app/Widgets/global_widgets.dart';
+import '../Widgets/global_widgets.dart';
 
 //local imports
 import 'signin.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mijdas_app/Pages/AssessmentPage.dart';
+import '../Pages/AssessmentPage.dart';
 import '../Functions/submits.dart';
 import '../Functions/routes.dart';
 //dialog_1 = custom popup prompt with passable title, message and button text. returns a screen upon closure.

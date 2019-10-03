@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         children: <Widget>[
           Container(
             width: 500,
-            height: 370,
+            height: 250,
             child: _banner(context),
           ),
           Center(
@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
                           child: Text("Sign Up"),
                           color: _buttonColour,
                           shape: RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(7.0)),
+                              borderRadius: new BorderRadius.circular(7.0)),
                           textColor: Colors.white,
                         ),
                       ),
@@ -97,7 +97,8 @@ class MyApp extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             IconButton(
-                              icon: Icon(Icons.language, size: 35.0),//or public
+                              icon: Icon(Icons.language, size: 35.0),
+                              //or public
                               onPressed: () {},
                             ),
                             SizedBox(width: 10),
@@ -136,66 +137,89 @@ Widget _banner(BuildContext context) {
   Color _mainBackdrop = new Color(0xff54b3ff); //lighter blue
   // Color _mainBackdrop = new Color(0xff2196F3); //light blue
 
-  return Stack(
-    fit: StackFit.expand,
-    children: <Widget>[
-      Positioned(
-        top: 0,
-        left: 0,
-        width: 500, //415 for width of pixel
-        height: 250,
-        child: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: <Color>[
-                    Color(0xFF0069C0),
-                    Color(0xFF026AC1),
-                    Color(0xFF71ABDC),
-                    // Color(0xFF0D47A1),
-                    // Color(0xFF1976D2),
-                    // Color(0xFF42A5F5),
-                  ],
-                ),
-              ),
-              child: Material(color: Colors.transparent),
+  return Container(
+    height: 50.0,
+    child: Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[
+                Color(0xFF0069C0),
+                Color(0xFF026AC1),
+                Color(0xFF71ABDC),
+                // Color(0xFF0D47A1),
+                // Color(0xFF1976D2),
+                // Color(0xFF42A5F5),
+              ],
             ),
-            Positioned(
-              top: 125,
-              left: 150,
-              width: 330,
-              height: 40,
-              child: RichText(
-                text: TextSpan(
-                  text: ("MarkIt"),
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 36,
-                      fontWeight: FontWeight.w500),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 30,
-              left: 175,
-              width: 80,
-              height: 40,
-              child: RichText(
-                text: TextSpan(
-                  text: (""),
-                  style: TextStyle(color: Colors.black54, fontSize: 22),
-                ),
-              ),
-            ),
-          ],
+          ),
+          child: Material(color: Colors.transparent),
         ),
-      ),
-    ],
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/markItLogo.png'),
+            ),
+          ),)
+      ],
+    )
+
   );
+//  Stack(
+//    fit: StackFit.expand,
+//    children: <Widget>[
+//      Positioned(
+//        top: 0,
+//        left: 0,
+//        width: 500,
+//        //415 for width of pixel
+//        height: 250,
+//        child: Stack(
+//          fit: StackFit.expand,
+//          children: <Widget>[
+//            Container(
+//              decoration: const BoxDecoration(
+//                gradient: LinearGradient(
+//                  begin: Alignment.topCenter,
+//                  end: Alignment.bottomCenter,
+//                  colors: <Color>[
+//                    Color(0xFF0069C0),
+//                    Color(0xFF026AC1),
+//                    Color(0xFF71ABDC),
+//                    // Color(0xFF0D47A1),
+//                    // Color(0xFF1976D2),
+//                    // Color(0xFF42A5F5),
+//                  ],
+//                ),
+//              ),
+//              child: Material(color: Colors.transparent),
+//            ),
+//
+////            Positioned(
+////              top: 30,
+////              left: 175,
+////              width: 80,
+////              height: 40,
+////              child: RichText(
+////                text: TextSpan(
+////                  text: (""),
+////                  style: TextStyle(color: Colors.black54, fontSize: 22),
+////                ),
+////              ),
+////            ),
+//            Center(
+//                child: Image.asset(
+//              'assets/markItLogo.png',
+//            ))
+//          ],
+//        ),
+//      ),
+//    ],
+//  );
 }
 
 //following pages are test template pages.
@@ -217,6 +241,7 @@ class PageTwo extends MaterialPageRoute<Null> {
             ),
           );
         });
+
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
@@ -256,6 +281,7 @@ class PageThree extends MaterialPageRoute<Null> {
             ),
           );
         });
+
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {

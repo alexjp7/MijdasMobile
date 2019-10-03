@@ -7,7 +7,7 @@ Purpose: Caching
 
 
 
-import 'package:mijdas_app/Models/CriteriaDecode.dart';
+import './Models/CriteriaDecode.dart';
 
 //import './Models/Assessment.dart';
 //import './Models/Subject.dart';
