@@ -104,7 +104,10 @@ Widget build(BuildContext context) {
                 snapshot.data[i].institution, _childrenListItems));
           }
           return RefreshIndicator(
-              onRefresh: _refreshAssessmentsList,
+              onRefresh: (){
+
+                _refreshAssessmentsList;
+                },
               child: ListView.builder(
             itemBuilder: (BuildContext context, int index) {
               // homepageContext = context; //pass and store the page context globally instead of carrying it with each tile.
@@ -247,6 +250,7 @@ class TileObj {
 
 Future<void> _refreshAssessmentsList() async {
   await (_universitiesList = fetchUniversities(getUsername(),_homeContext, (getPriv() == 2)));
+  return;
 }
 
 String getSubjectName() {

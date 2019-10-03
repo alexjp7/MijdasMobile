@@ -7,6 +7,8 @@ Purpose:
 
 //can we rewrite populatetiles so that it takes in an assessment rather than another thing
 
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 //local imports
@@ -126,7 +128,19 @@ class _AssessmentPageState extends State<AssessmentPage> {
       ),*/
     );
   }
+  Future<Null> _refreshAssList() async {
+    //_assessmentList = null;
 
+    print("REFRESHING");
+    //DO SOMETHING HERE
+    await(_assessmentList = fetchAssessments(_assessmentID,_assessmentContext, (getPriv()==2)));
+    print("REFRESHED");
+
+    setState(() {
+
+    });
+    return null;
+  }
   Widget _buildList(Assessment t) {
     Color _accentColour = Color(0xffBFD4DF);
     // if (t.children.isEmpty)
@@ -281,14 +295,6 @@ Future<bool> refreshAssList() async {
   //DO SOMETHING HERE
   await(_assessmentList = fetchAssessments(_assessmentID,_assessmentContext, (getPriv()==2)));
   print("REFRESHED");
-  return(true);
+  return true;
 }
 
-Future<void> _refreshAssList() async {
-  //_assessmentList = null;
-  print("REFRESHING");
-  //DO SOMETHING HERE
-  await(_assessmentList = fetchAssessments(_assessmentID,_assessmentContext, (getPriv()==2)));
-  print("REFRESHED");
-  return(true);
-}

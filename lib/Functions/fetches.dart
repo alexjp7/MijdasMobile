@@ -5,7 +5,7 @@ Group: Mijdas(kw01)
 Purpose:
 */
 
-import 'package:mijdas_app/QueryManager.dart';
+import '../QueryManager.dart';
 
 import '../Models/CriteriaDecode.dart';
 import '../Models/StudentDecode.dart';

@@ -5,7 +5,7 @@ Group: Mijdas(kw01)
 Purpose:
 */
 import 'package:flutter/material.dart';
-import 'package:mijdas_app/Widgets/global_widgets.dart';
+import '../Widgets/global_widgets.dart';
 
 // import './AssessmentPage.dart';
 // import './HomePage.dart';

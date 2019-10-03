@@ -1,5 +1,5 @@
-name: mijdas_app
-description: A new Flutter project.
+name: MarkIt
+description: MarkIt by Mijdas.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -26,6 +26,7 @@ dependencies:
   http: ^0.12.0
   pie_chart: ^1.2.0
   #charts_flutter: ^0.2.0
+  #image: ^2.1.4
 
 dev_dependencies:
   flutter_test:
@@ -45,7 +46,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/mijdasLogo.png
+    - assets/
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
 

@@ -74,7 +74,7 @@ class SignIn extends StatelessWidget {
           children: <Widget>[
             Container(
               width: 500,
-              height: 330,
+              height: 250,
               child: _banner(context),
             ),
             Center(
