@@ -1,23 +1,35 @@
+/*
+Authors: Joel and Mitch
+Date: 3/10/19
+Group: Mijdas(kw01)
+Purpose:
+*/
 import 'package:flutter/material.dart';
 
-import 'package:mijdas_app/Pages/CriteriaPage.dart' as prefix0;
+
+import 'package:mijdas_app/QueryManager.dart';
 
 import 'package:pie_chart/pie_chart.dart';
 
 //local imports
-import 'CriteriaPage.dart';
+//import 'CriteriaPage.dart';
 import 'AssessmentPage.dart';
 import 'signin.dart';
 import 'HomePage.dart';
+
+import '../Models/Student.dart';
+import '../Models/StudentDecode.dart';
+
 import '../Widgets/global_widgets.dart';
 
-import '../Models/Assessment.dart';
+import '../Functions/fetches.dart';
+import '../Functions/routes.dart';
 
 //data handling/processing imports
 import 'dart:async';
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
+//import 'dart:convert';
+//
+//import 'package:http/http.dart' as http;
 
 //Private variables
 BuildContext _studentContext;
@@ -25,11 +37,13 @@ String _assessmentID;
 String _selectedStudent;
 List<Student> _studentList;
 List<String> _studentIDList;
-List<String> _recentSearchesList;
+//List<String> _recentSearchesList;
 
+Future<List<StudentDecode>> _studentDecodeList;
 var criteriaList;
 
 bool _isFetchDone;
+
 Icon _isMarked = new Icon(
   Icons.check_box,
   color: Colors.green,
@@ -39,22 +53,20 @@ Icon _isNotMarked = new Icon(
 );
 
 
-//OPTIMIZE TO TAKE ASSESSMENT OBJECT
-Route studentsRoute(String id) {
-  return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => Students(),
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      _studentContext = context; //assigning page context
-      _assessmentID = id; //assigning page ID
-      return FadeTransition(
-        opacity: animation,
-        child: child,
-      );
-    },
-  );
-}
 
-class Students extends StatelessWidget {
+
+
+class StudentsPage extends StatelessWidget {
+
+
+
+  StudentsPage(context,id){
+    _studentContext = context; //assigning page context
+    _assessmentID = id;
+    _studentDecodeList =  fetchStudents(id, _studentContext);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,7 +114,7 @@ class Students extends StatelessWidget {
             width: 500,
             height: 503,
             child: FutureBuilder<List<StudentDecode>>(
-              future: fetchStudents(_assessmentID),
+              future: _studentDecodeList,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   // print(snapshot.data[0].records[0].studentId);
@@ -241,22 +253,22 @@ int _getMarkedCount() {
   return count;
 }
 
-int _getTotalCount() {
-  var count = 0;
-  try {
-    _studentList.forEach((x) {
-      count++;
-    });
-  } catch (e) {
-    return -1;
-  }
-  return count;
-}
+//int _getTotalCount() {
+//  var count = 0;
+//  try {
+//    _studentList.forEach((x) {
+//      count++;
+//    });
+//  } catch (e) {
+//    return -1;
+//  }
+//  return count;
+//}
 
 Widget _searchArea(BuildContext context) {
   Color _mainBackdrop = new Color(0xff54b3ff); //lighter blue
   // Color _mainBackdrop = new Color(0xff2196F3); //light blue
-  final studentSearchController = TextEditingController();
+  //final studentSearchController = TextEditingController();
   _isFetchDone = false;
 
   return Stack(
@@ -402,21 +414,32 @@ Widget _studentsMarkedChart() {
   );
 }
 
+Future<void> _refreshStudentsList() async {
+  print("Refreshing Students");
+
+  await (_studentDecodeList=fetchStudents(_assessmentID, _studentContext));
+
+  //REFRESH SEARCHED LIST HERE
+}
+
+String getStudent() {
+  return _selectedStudent;
+}
+
+Color isMarkedCol(String s) {
+  try {
+    if (double.parse(_getStudent(s).result) >= 0)
+      return Colors.green[200];
+    else
+      return Colors.redAccent[100];
+  } catch (e) {
+    return Color(0xff54b3ff); //trying to mark null produces error
+  }
+}
+
+
 class StudentSearch extends SearchDelegate<String> {
   //hardcoded searched items
-  // final studentsList = [
-  //   "this",
-  //   "is",
-  //   "a",
-  //   "list",
-  //   "of",
-  //   "hardcoded",
-  //   "students",
-  //   "ab123",
-  //   "cd456",
-  //   "ef789",
-  //   "gh000",
-  // ];
   // final recentSearches = [
   //   "ab123",
   //   "cd456",
@@ -426,7 +449,6 @@ class StudentSearch extends SearchDelegate<String> {
   // ];
 
   final studentsList = _studentIDList;
-  // final recentSearches = _recentSearchesList;
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -477,15 +499,15 @@ class StudentSearch extends SearchDelegate<String> {
                   _getStudent(suggestedItems[index].toString()).result)),
           child: ListTile(
             onTap: () {
-              // print(suggestedItems[index].toString());
-              // print(_getIndexForStudent(suggestedItems[index].toString()));
+               print(suggestedItems[index].toString());
+               print(_getIndexForStudent(suggestedItems[index].toString()));
               _selectedStudent = suggestedItems[index].toString();
               Navigator.push(
                   context,
-                  CriteriaRoute(
-                      _studentList[index],
+                  criteriaRoute(
+                      _studentList[_getIndexForStudent(suggestedItems[index].toString())],
                       _assessmentID,
-                      criteriaList[0].criteria)); //Pass in a bool for isMarked to load the old marks
+                      QueryManager().criteriaList[0].criteria)); //Pass in a bool for isMarked to load the old marks
               // close(context, route);
             },
             leading: _getMarkedState(
@@ -520,160 +542,54 @@ class StudentSearch extends SearchDelegate<String> {
   }
 }
 
-Future<void> _refreshStudentsList() async {
-  print("Refreshing Students");
-  FutureBuilder<List<StudentDecode>>(
-    future: fetchStudents(_assessmentID),
-    builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        _studentList = snapshot.data[0].records;
-
-        for (int i = 0; i < _studentList.length; i++) {
-          _studentIDList.add(_studentList[i].studentId);
-        }
-        _isFetchDone = true;
-      } else if (snapshot.hasError) {
-        _isFetchDone = false;
-        showDialog_1(context, "Error!", snapshot.error, "Close", false);
-      }
-      return Center(child: CircularProgressIndicator()); //LOADING CIRCLE
-    },
-  );
-}
-
-class PopulateTiles extends StatelessWidget {
-  Color _accentColour = Color(0xffBFD4DF);
-
-  final TileObj fTile;
-  BuildContext contextT;
-  PopulateTiles(this.fTile, [this.contextT]);
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildList(fTile);
-  }
-
-//widget to load tile list
-  Widget _buildList(TileObj t) {
-    return new ListTile(
-        dense: true,
-        enabled: true,
-        isThreeLine: false,
-        onLongPress: () => print("Long Press: [" + t.title + "]."),
-        onTap: () {
-          // Navigator.push(contextT, criteriaRoute(t.tileID));
-          print("Tap: [" + t.title + "].");
-        },
-        // subtitle: new Text("Subtitle"),
-        // leading: new Text("Leading"),
-        selected: true,
-        // trailing: new Text("Trailing"),
-        title: new Card(
-          color: _accentColour,
-          child: Column(
-            children: <Widget>[
-              Container(
-                height: 85.0,
-                alignment: Alignment(0.0, 0.0),
-                child: Text(t.title),
-              )
-            ],
-          ),
-        ));
-  }
-}
-
-//class structure for each tile object
 class TileObj {
   String title;
   String tileResult;
   TileObj(this.title, this.tileResult);
 }
 
-Future<List<StudentDecode>> fetchStudents(String s) async {
-  var response = await http.post('https://markit.mijdas.com/api/assessment/',
-      body: jsonEncode({"request": "POPULATE_STUDENTS", "assessment_id": s}));
 
-  if (response.statusCode == 200) {
-    // print('response code:  200\n');
-    // print('response body: ' + response.body);
+//class PopulateTiles extends StatelessWidget {
+//
+//
+//  final TileObj fTile;
+//  BuildContext contextT;
+//  PopulateTiles(this.fTile, [this.contextT]);
+//
+//  @override
+//  Widget build(BuildContext context) {
+//    //return _buildList(fTile);
+//  }
+//
+////widget to load tile list
+////  Widget _buildList(TileObj t) {
+////    Color _accentColour = Color(0xffBFD4DF);
+////    return new ListTile(
+////        dense: true,
+////        enabled: true,
+////        isThreeLine: false,
+////        onLongPress: () => print("Long Press: [" + t.title + "]."),
+////        onTap: () {
+////          // Navigator.push(contextT, criteriaRoute(t.tileID));
+////          print("Tap: [" + t.title + "].");
+////        },
+////        // subtitle: new Text("Subtitle"),
+////        // leading: new Text("Leading"),
+////        selected: true,
+////        // trailing: new Text("Trailing"),
+////        title: new Card(
+////          color: _accentColour,
+////          child: Column(
+////            children: <Widget>[
+////              Container(
+////                height: 85.0,
+////                alignment: Alignment(0.0, 0.0),
+////                child: Text(t.title),
+////              )
+////            ],
+////          ),
+////        ));
+////  }
+//}
 
-    criteriaList = await fetchCriteria(_assessmentID);
-
-    return studentDecodeFromJson(response.body);
-  } else if (response.statusCode == 404) {
-    print('response code:  404\n');
-    showDialog_1(
-        _studentContext,
-        "Error!",
-        "Response Code: 404.\n\n\t\t\tNo Students Found.",
-        "Close & Return",
-        false);
-    //navigate to an error page displaying lack of assessment error
-    // return studentDecodeFromJson(response.body);
-  } else {
-    print('response code: ' + response.statusCode.toString());
-    print('response body: ' + response.body);
-    throw Exception(
-        'Failed to load post, error code: ' + response.statusCode.toString());
-  }
-}
-
-List<StudentDecode> studentDecodeFromJson(String str) =>
-    new List<StudentDecode>.from(
-        json.decode(str).map((x) => StudentDecode.fromJson(x)));
-
-class StudentDecode {
-  List<Student> records;
-
-  StudentDecode({
-    this.records,
-  });
-
-  factory StudentDecode.fromJson(Map<String, dynamic> json) =>
-      new StudentDecode(
-        records: new List<Student>.from(
-            json["records"].map((x) => Student.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "records": new List<dynamic>.from(records.map((x) => x.toJson())),
-      };
-}
-
-class Student {
-  String studentId;
-  String result;
-
-  Student({
-    this.studentId,
-    this.result,
-  });
-
-  factory Student.fromJson(Map<String, dynamic> json) => new Student(
-        studentId: json["student_id"],
-        // result: json["result"],
-        result: json["result"] == null ? null : json["result"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "student_id": studentId,
-        // "result": result,
-        "result": result == null ? null : result,
-      };
-}
-
-String getStudent() {
-  return _selectedStudent;
-}
-
-Color isMarkedCol(String s) {
-  try {
-    if (double.parse(_getStudent(s).result) >= 0)
-      return Colors.green[200];
-    else
-      return Colors.redAccent[100];
-  } catch (e) {
-    return Color(0xff54b3ff); //trying to mark null produces error
-  }
-}
+//class structure for each tile object

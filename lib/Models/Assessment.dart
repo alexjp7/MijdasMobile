@@ -1,3 +1,10 @@
+/*
+Authors: Joel and Mitch
+Date: 3/10/19
+Group: Mijdas(kw01)
+Purpose:
+*/
+
 import 'dart:convert';
 
 class Assessment {
@@ -31,3 +38,5 @@ class Assessment {
     "isActive":isActive,
   };
 }
+List<Assessment> assessmentsFromJson(String str) => new List<Assessment>.from(
+    json.decode(str)["records"].map((x) => Assessment.fromJson(x)));

@@ -1,4 +1,10 @@
 /*
+Authors: Joel and Mitch
+Date: 3/10/19
+Group: Mijdas(kw01)
+Purpose:
+*/
+/*
 TODO----------
 -add slider incerements --Done(-Mitch)
 -fix http --?(-Mitch)
@@ -7,8 +13,6 @@ TODO----------
 
 
  */
-
-//Got lost trying to figure multi pages out - will need it explained after/before meeting pls xoxo - this code is ready for posts - joel
 import 'package:flutter/material.dart';
 import 'package:mijdas_app/Widgets/global_widgets.dart';
 
@@ -16,11 +20,14 @@ import 'package:mijdas_app/Widgets/global_widgets.dart';
 import 'signin.dart';
 import 'StudentsPage.dart';
 
-//data handling/processing imports
-import 'dart:async';
-import 'dart:convert';
+import '../Models/Criterion.dart';
+//import '../Models/CriteriaDecode.dart';
+import '../Models/Student.dart';
 
-import 'package:http/http.dart' as http;
+import '../Functions/submits.dart';
+
+
+//data handling/processing imports
 
 Student _selectedStudent;
 BuildContext _critContext;
@@ -30,30 +37,17 @@ Color _inactiveColour = new Color(0xffA0C8E3);
 List<Criterion> _assCrit;
 List<Criterion> _items;
 String _assID;
-bool
-_isFetchDone; //boolean check to see if API request is finished before populating certain fields
+//bool _isFetchDone; //boolean check to see if API request is finished before populating certain fields
 
-Route CriteriaRoute(Student s, String assID, List<Criterion> crit) {
-  return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) =>
-        CriteriaPageState(),
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      _selectedStudent = s; //assigning page ID
-      _assID = assID;
-      _assCrit = crit;
 
-      print(_selectedStudent.studentId);
-      print(assID);
-      return FadeTransition(
-        opacity: animation,
-        child: child,
-      );
-    },
-  );
-}
 
 class CriteriaPageState extends StatefulWidget {
   //List<Criterion> items = List<Criterion>.generate(10, (i) => new Criterion("Criterea $i",i,i%3,(((i%3)*5)+5),1.0));
+  CriteriaPageState(s,assID,criteria){
+    _selectedStudent = s; //assigning page ID
+    _assID = assID;
+    _assCrit = criteria;
+  }
 
   @override
   CriteriaPage createState() => CriteriaPage();
@@ -81,12 +75,12 @@ class CriteriaPage extends State<CriteriaPageState> {
           flex: 1,
           child: Center(
               child: Checkbox(
-                  value: _items[index]._isChecked,
+                  value: _items[index].isChecked(),
                   activeColor: _activeColour,
                   onChanged: (val) {
                     setState(() {
-                      _items[index]._isChecked = val;
-                      _items[index]._isChecked
+                      _items[index].makeChecked(val);
+                      _items[index].isChecked()
                           ? _items[index].value = _items[index].maxMarkI
                           : _items[index].value = 0;
                     });
@@ -407,7 +401,7 @@ Widget _markingFooterArea() {
             child: RaisedButton(
               onPressed: () async {
                 print("Submit Button pressed.");
-                postMark(_items);
+                postMark(_items,_selectedStudent.studentId,_assID,_critContext);
               },
               child: RichText(
                 text: TextSpan(
@@ -438,10 +432,6 @@ Widget _markingFooterArea() {
   );
 }
 
-// void setFetchDone(bool b) {
-//   _isFetchDone = b;
-// }
-
 double getMaximumMark() {
   var max = 0.00;
   try {
@@ -466,56 +456,6 @@ double getTotalGivenMark() {
   return count;
 }
 
-Future<List<CriteriaDecode>> fetchCriteria(String i) async {
-  var response = await http.post('https://markit.mijdas.com/api/criteria/',
-      body: jsonEncode({"request": "VIEW_CRITERIA", "assessment_id": i}));
-  if (response.statusCode == 200) {
-    print('response code:  200\n');
-    print('response body: ' + response.body);
-
-    List<CriteriaDecode> rValue = criteriaDecodeFromJson(response.body);
-    _isFetchDone = true;
-
-    return rValue;
-  } else if (response.statusCode == 404) {
-    print('response code:  404\n');
-    // showDialog_1(_assessmentContext, "Error!", "Response Code: 404.\n\n\t\t\tNo Assessments Found.", "Close & Return");
-    //navigate to an error page displaying lack of assessment error
-    // return assessmentsFromJson(response.body);
-  } else {
-    print('response code: ' + response.statusCode.toString());
-    print('response body: ' + response.body);
-    throw Exception(
-        'Failed to load post, error code: ' + response.statusCode.toString());
-  }
-}
-
-Future<bool> postMark(List<Criterion> _criteriaPost) async {
-  String encodeJson = json.encode({
-    "request": "SUBMIT_MARK",
-    "student": _selectedStudent.studentId,
-    "assessment_id": _assID,
-    "results": List<dynamic>.from(_criteriaPost.map((x) => x.toJson())),
-  });
-
-  var response = await http.post('https://markit.mijdas.com/api/assessment/',
-      body: encodeJson);
-  if (response.statusCode == 200) {
-    print('response code:  200\n');
-    print('response body: ' + response.body);
-    showDialog_1(_critContext, "Success!",
-        "Student Marks Submitted Successfully.", "Close", true);
-    return true;
-  } else if (response.statusCode == 404) {
-    print('response code:  404\n');
-  } else {
-    print('response code: ' + response.statusCode.toString());
-    print('response body: ' + response.body);
-    throw Exception(
-        'Failed to load post, error code: ' + response.statusCode.toString());
-  }
-}
-
 bool isNumeric(String s) {
   if (s == null) {
     return false;
@@ -523,87 +463,3 @@ bool isNumeric(String s) {
   return double.parse(s) != null;
 }
 
-List<CriteriaDecode> criteriaDecodeFromJson(String str) =>
-    List<CriteriaDecode>.from(
-        json.decode(str).map((x) => CriteriaDecode.fromJson(x)));
-
-String criteriaDecodeToJson(List<CriteriaDecode> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
-
-class CriteriaDecode {
-  List<Criterion> criteria;
-
-  CriteriaDecode({
-    this.criteria,
-  });
-
-  factory CriteriaDecode.fromJson(Map<String, dynamic> json) =>
-      CriteriaDecode(
-        criteria: List<Criterion>.from(
-            json["records"].map((x) => Criterion.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() =>
-      {
-        "request": "SUBMIT_MARK",
-        "student": _selectedStudent.studentId,
-        "assessment_id": _assID,
-        "results": List<dynamic>.from(criteria.map((x) => x.toJson())),
-      };
-}
-
-class Criterion {
-  String criteria, element, maxMark, displayText;
-  String comment;
-  bool _isChecked;
-  int iD, elementType;
-  double maxMarkI;
-
-  TextEditingController tControl;
-  double value = 0;
-
-  Criterion({
-    this.criteria,
-    this.element,
-    this.maxMark,
-    this.displayText,
-  }) {
-    if (element == "0") {
-      _isChecked = true;
-    } else if (element == "2") {
-      tControl = TextEditingController();
-    }
-    if (maxMark != null) {
-      value = double.parse(maxMark);
-    }
-
-    this.iD = int.parse(criteria);
-    this.elementType = int.parse(element);
-    if (maxMark == null) {
-      this.maxMarkI = -1.0;
-      value = null;
-    } //temp fix, although can be used to identify null boxes in future
-    else
-      this.maxMarkI = double.parse(maxMark);
-    // this.maxMarkI = int.parse(maxMark);
-  }
-
-  // might need these later?
-  // bool getChecked(){
-  //   return _isChecked;
-  // }
-  // void setChecked(bool b){
-  //   _isChecked = b;
-  // }
-
-  factory Criterion.fromJson(Map<String, dynamic> json) =>
-      Criterion(
-        criteria: json["criteria"],
-        element: json["element"],
-        maxMark: json["maxMark"] == null ? null : json["maxMark"],
-        displayText: json["displayText"],
-      );
-
-  Map<String, dynamic> toJson() =>
-      {"c_id": criteria, "result": value, "comment": comment};
-}

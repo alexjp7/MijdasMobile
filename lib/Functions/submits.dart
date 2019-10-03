@@ -1,14 +1,13 @@
-//##################
-//JOEL IDK HOW U PLAN TO USE THIS FILE SO IM CHUCKING IN
-//RANDOM API STUFF I PLAN TO USE GLOBALLY, U CAN REARRANGE HOWEVER U WANT OK -MITCH
-//WILL PROBS ADD THE CALLS IN AFTER MEETING, UNLESS U DO FIRST.
-//CALLS TO BE ADDED: (Referenced in API Doc)
-//          - '3.2.7 Add Student to Subject'
-//          - '3.2.9  Add Tutor to Subject'
-//          - '3.2.10  Toggle Assessment Activation'
-//          - '3.2.11  Create Subject'
-//          - '3.2.12  Create Criteria'
-//##################
+/*
+Authors: Joel and Mitch
+Date: 3/10/19
+Group: Mijdas(kw01)
+Purpose:
+*/
+
+import '../Widgets/global_widgets.dart';
+
+import '../Models/Criterion.dart';
 
 import 'dart:async';
 import 'dart:convert';
@@ -71,4 +70,31 @@ Future<bool> addStudent(String sName, String subjectId) async{
     return false;
   }
 
+}
+
+Future<bool> postMark(List<Criterion> _criteriaPost, String _student, String _a,  _critContext) async {
+  String encodeJson = json.encode({
+    "request": "SUBMIT_MARK",
+    "student": _student,
+    "assessment_id": _a,
+    "results": List<dynamic>.from(_criteriaPost.map((x) => x.toJson())),
+  });
+
+  var response = await http.post('https://markit.mijdas.com/api/assessment/',
+      body: encodeJson);
+  if (response.statusCode == 200) {
+    print('response code:  200\n');
+    print('response body: ' + response.body);
+    showDialog_1(_critContext, "Success!",
+        "Student Marks Submitted Successfully.", "Close", true);
+    return true;
+  } else if (response.statusCode == 404) {
+    print('response code:  404\n');
+    return false;
+  } else {
+    print('response code: ' + response.statusCode.toString());
+    print('response body: ' + response.body);
+    throw Exception(
+        'Failed to load post, error code: ' + response.statusCode.toString());
+  }
 }

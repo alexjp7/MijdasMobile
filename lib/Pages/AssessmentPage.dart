@@ -1,20 +1,31 @@
+/*
+Authors: Joel and Mitch
+Date: 3/10/19
+Group: Mijdas(kw01)
+Purpose:
+*/
+
 //can we rewrite populatetiles so that it takes in an assessment rather than another thing
 
 import 'package:flutter/material.dart';
 
 //local imports
 import 'signin.dart';
-import 'StudentsPage.dart';
+//import 'StudentsPage.dart';
+
+
+import '../Functions/routes.dart';
+import '../Functions/fetches.dart';
+
 import '../Widgets/global_widgets.dart';
 
-//models
 import '../Models/Assessment.dart';
 
 //data handling/processing imports
 import 'dart:async';
-import 'dart:convert';
+//import 'dart:convert';
 
-import 'package:http/http.dart' as http;
+//import 'package:http/http.dart' as http;
 
 BuildContext _assessmentContext;
 String _assessmentID;
@@ -22,30 +33,25 @@ String _assessmentName;
 String _assessmentMaxMark;
 Future<List<Assessment>> _assessmentList;
 
-Route assessmentRoute(String s) {
-  return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => AssessmentPage(),
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      _assessmentContext = context; //assigning page buildcontext
-      _assessmentID = s; //assigning page ID
-      return FadeTransition(
-        opacity: animation,
-        child: child,
-      );
-    },
-  );
-}
+
 
 class AssessmentPage extends StatefulWidget {
+
+  AssessmentPage(context, s){
+    _assessmentContext = context; //assigning page buildcontext
+    _assessmentID = s; //assigning page ID
+  }
+
   @override
   _AssessmentPageState createState() => _AssessmentPageState();
 }
 
 class _AssessmentPageState extends State<AssessmentPage> {
+
   @override
   void initState() {
     super.initState();
-    _assessmentList = fetchAssessments(_assessmentID);
+    _assessmentList = fetchAssessments(_assessmentID,_assessmentContext, (getPriv()==2));
   }
 
   @override
@@ -79,22 +85,24 @@ class _AssessmentPageState extends State<AssessmentPage> {
         future: _assessmentList,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            List<TileObj> _parentListItems = new List<TileObj>();
-
-            for (int i = 0; i < snapshot.data.length; i++) {
-              _parentListItems.add(new TileObj(
-                  snapshot.data[i].name,
-                  snapshot.data[i].id,
-                  snapshot.data[i].a_number,
-                  snapshot.data[i].isActive,
-                  snapshot.data[i].maxMark));
-            }
-            return ListView.builder(
+//            List<TileObj> _parentListItems = new List<TileObj>();
+//
+//            for (int i = 0; i < snapshot.data.length; i++) {
+//              _parentListItems.add(new TileObj(
+//                  snapshot.data[i].name,
+//                  snapshot.data[i].id,
+//                  snapshot.data[i].a_number,
+//                  snapshot.data[i].isActive,
+//                  snapshot.data[i].maxMark));
+//            }
+            return RefreshIndicator(
+                onRefresh: _refreshAssList,
+                child:  ListView.builder(
               itemBuilder: (BuildContext context, int index) {
-                return _buildList(_parentListItems[index]);
+                return _buildList(snapshot.data[index]);
               },
-              itemCount: _parentListItems.length,
-            );
+              itemCount: snapshot.data.length,
+            ));
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
           }
@@ -119,7 +127,7 @@ class _AssessmentPageState extends State<AssessmentPage> {
     );
   }
 
-  Widget _buildList(TileObj t) {
+  Widget _buildList(Assessment t) {
     Color _accentColour = Color(0xffBFD4DF);
     // if (t.children.isEmpty)
 
@@ -133,14 +141,14 @@ class _AssessmentPageState extends State<AssessmentPage> {
         isThreeLine: false,
         onLongPress: () async {
           print("Long Press: [" +
-              t.title +
+              t.name +
               "]. UserPriv: [" +
               getPriv().toString() +
               "].");
           if (getPriv() == 2) {
             //_assessmentList=null;
-            print(t.title+t.tileID);
-            await onHoldSettings_Assessments(_assessmentContext, t.title, t.tileID);//pass assessment here once rewritten
+            print(t.name+t.id);
+            await onHoldSettings_Assessments(_assessmentContext, t.name, t.id);//pass assessment here once rewritten
             setState(() {
 
             });
@@ -148,9 +156,9 @@ class _AssessmentPageState extends State<AssessmentPage> {
           }
         },
         onTap: () {
-          _assessmentName = t.title;
-          _assessmentMaxMark = t.tileMaxMark;
-          Navigator.push(context, studentsRoute(t.tileID));
+          _assessmentName = t.name;
+          _assessmentMaxMark = t.maxMark;
+          Navigator.push(context, studentsRoute(t.id));
         },
         // subtitle: new Text("Subtitle"),
         // leading: new Text("Leading"),
@@ -163,7 +171,7 @@ class _AssessmentPageState extends State<AssessmentPage> {
               Container(
                 height: 85.0,
                 alignment: Alignment(0.0, 0.0),
-                child: Text(t.title),
+                child: Text(t.name),
               )
             ],
           ),
@@ -248,49 +256,16 @@ class _AssessmentPageState extends State<AssessmentPage> {
 //}
 
 //class structure for each tile object
-class TileObj {
-  String title;
-  String tileID;
-  String tileANum;
-  String isActive;
-  String tileMaxMark;
-
-  TileObj(
-      this.title, this.tileID, this.tileANum, this.isActive, this.tileMaxMark);
-}
-
-Future<List<Assessment>> fetchAssessments(String s) async {
-  var response = await http.post('https://markit.mijdas.com/api/assessment/',
-      body: jsonEncode({
-        "request": "VIEW_ASSESSMENT",
-        "subject_id": s,
-        "is_coordinator": (getPriv() == 2)
-      }));
-
-  if (response.statusCode == 200) {
-//    print('response code:  200\n');
-    print('response body: ' + response.body);
-    return assessmentsFromJson(response.body);
-  } else if (response.statusCode == 404) {
-    print('response code:  404\n');
-    showDialog_1(
-        _assessmentContext,
-        "Error!",
-        "Response Code: 404.\n\n\t\t\tNo Assessments Found.",
-        "Close & Return",
-        false);
-    //navigate to an error page displaying lack of assessment error
-    // return assessmentsFromJson(response.body);
-  } else {
-    print('response code: ' + response.statusCode.toString());
-    print('response body: ' + response.body);
-    throw Exception(
-        'Failed to load post, error code: ' + response.statusCode.toString());
-  }
-}
-
-List<Assessment> assessmentsFromJson(String str) => new List<Assessment>.from(
-    json.decode(str)["records"].map((x) => Assessment.fromJson(x)));
+//class TileObj {
+//  String title;
+//  String tileID;
+//  String tileANum;
+//  String isActive;
+//  String tileMaxMark;
+//
+//  TileObj(
+//      this.title, this.tileID, this.tileANum, this.isActive, this.tileMaxMark);
+//}
 
 String getAssessmentName() {
   return _assessmentName;
@@ -304,7 +279,16 @@ Future<bool> refreshAssList() async {
   //_assessmentList = null;
   print("REFRESHING");
   //DO SOMETHING HERE
-  await(_assessmentList = fetchAssessments(_assessmentID));
+  await(_assessmentList = fetchAssessments(_assessmentID,_assessmentContext, (getPriv()==2)));
+  print("REFRESHED");
+  return(true);
+}
+
+Future<void> _refreshAssList() async {
+  //_assessmentList = null;
+  print("REFRESHING");
+  //DO SOMETHING HERE
+  await(_assessmentList = fetchAssessments(_assessmentID,_assessmentContext, (getPriv()==2)));
   print("REFRESHED");
   return(true);
 }
