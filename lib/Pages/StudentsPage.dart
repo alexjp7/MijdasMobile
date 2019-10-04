@@ -80,7 +80,9 @@ class _StudentsPageState extends State<StudentsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return RefreshIndicator(
+        onRefresh: _refreshStudentsList,
+        child:Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         leading: Padding(
@@ -218,8 +220,20 @@ class _StudentsPageState extends State<StudentsPage> {
             )),
         color: Theme.of(context).primaryColor,
       ),*/
+    ),
     );
   }
+
+  Future<void> _refreshStudentsList() async {
+    print("Refreshing Students");
+
+    await (_studentDecodeList=fetchStudents(_assessmentID, _studentContext));
+    setState((){});
+    return;
+
+    //REFRESH SEARCHED LIST HERE
+  }
+
 }
 
 Icon _getMarkedState(String s) {
@@ -425,13 +439,7 @@ Widget _studentsMarkedChart() {
   );
 }
 
-Future<void> _refreshStudentsList() async {
-  print("Refreshing Students");
 
-  await (_studentDecodeList=fetchStudents(_assessmentID, _studentContext));
-
-  //REFRESH SEARCHED LIST HERE
-}
 
 String getStudent() {
   return _selectedStudent;
@@ -501,9 +509,7 @@ class StudentSearch extends SearchDelegate<String> {
         ? studentsList
         : studentsList.where((x) => x.startsWith(query)).toList();
 
-    return RefreshIndicator(
-      onRefresh: _refreshStudentsList,
-      child: ListView.builder(
+    return  ListView.builder(
         itemBuilder: (context, index) => Container(
           decoration: BoxDecoration(
               color: _getMarkedStateBar(
@@ -548,9 +554,14 @@ class StudentSearch extends SearchDelegate<String> {
           ),
         ),
         itemCount: suggestedItems.length,
-      ),
-    );
+      );
+
+
+
   }
+
+
+
 }
 
 class TileObj {
