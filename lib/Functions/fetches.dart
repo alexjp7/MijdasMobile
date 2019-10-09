@@ -5,7 +5,7 @@ Group: Mijdas(kw01)
 Purpose:
 */
 
-import '../QueryManager.dart';
+import '../Models/QueryManager.dart';
 
 import '../Models/CriteriaDecode.dart';
 import '../Models/StudentDecode.dart';
@@ -106,7 +106,7 @@ Future<List<Assessment>> fetchAssessments(String s, context,bool isPriv) async {
   }
 }
 
-Future<List<Universities>> fetchUniversities(String s, _homeContext, bool isCoord) async {
+Future<List<University>> fetchUniversities(String s, _homeContext, bool isCoord) async {
 
   String _request;
   //print('test');

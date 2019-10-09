@@ -6,8 +6,7 @@ Purpose:
 */
 import 'package:flutter/material.dart';
 
-
-import '../QueryManager.dart';
+import '../Models/QueryManager.dart';
 
 import 'package:pie_chart/pie_chart.dart';
 
@@ -27,6 +26,7 @@ import '../Functions/routes.dart';
 
 //data handling/processing imports
 import 'dart:async';
+
 //import 'dart:convert';
 //
 //import 'package:http/http.dart' as http;
@@ -52,31 +52,22 @@ Icon _isNotMarked = new Icon(
   Icons.check_box_outline_blank,
 );
 
-class StudentsPage extends StatefulWidget{
-
-  StudentsPage(context,id){
+class StudentsPage extends StatefulWidget {
+  StudentsPage(context, id) {
     _studentContext = context; //assigning page context
     _assessmentID = id;
-
   }
 
   @override
   _StudentsPageState createState() => _StudentsPageState();
-
 }
 
-
-
 class _StudentsPageState extends State<StudentsPage> {
-
-
-
   @override
   void initState() {
     super.initState();
-    _studentDecodeList =  fetchStudents(_assessmentID, _studentContext);
+    _studentDecodeList = fetchStudents(_assessmentID, _studentContext);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -195,30 +186,17 @@ class _StudentsPageState extends State<StudentsPage> {
           ),
         ],
       ),
-      /*Center(
-        child: IconButton(
-          icon: Icon(Icons.search),
-          onPressed: () {
-            showSearch(context: context, delegate: StudentSearch());
-          },
-        ),
-      ),*/
-      /*bottomNavigationBar: BottomAppBar(
-        child: Container(
-            height: 70.0,
-            child: IconButton(
-              icon: Icon(Icons.more_horiz),
-              onPressed: () {
-                print("Bottom AppBar Pressed");
-                // fetchedData.forEach((key, val) => print('Key: $key, Value: $val'));
-                // print(searchedUser);
-                // getData(searchedUser);
-                // getData();
-              },
-            )),
-        color: Theme.of(context).primaryColor,
-      ),*/
     );
+  }
+
+  Future<void> refreshStudentsList() async {
+    print("Refreshing Students");
+
+    await (_studentDecodeList = fetchStudents(_assessmentID, _studentContext));
+    setState(() {});
+    return;
+
+    //REFRESH SEARCHED LIST HERE
   }
 }
 
@@ -288,7 +266,8 @@ Widget _searchArea(BuildContext context) {
       Positioned(
         top: 0,
         left: 0,
-        width: 500, //415 for width of pixel
+        width: 500,
+        //415 for width of pixel
         height: 100,
         child: Stack(
           fit: StackFit.expand,
@@ -425,14 +404,6 @@ Widget _studentsMarkedChart() {
   );
 }
 
-Future<void> _refreshStudentsList() async {
-  print("Refreshing Students");
-
-  await (_studentDecodeList=fetchStudents(_assessmentID, _studentContext));
-
-  //REFRESH SEARCHED LIST HERE
-}
-
 String getStudent() {
   return _selectedStudent;
 }
@@ -447,7 +418,6 @@ Color isMarkedCol(String s) {
     return Color(0xff54b3ff); //trying to mark null produces error
   }
 }
-
 
 class StudentSearch extends SearchDelegate<String> {
   //hardcoded searched items
@@ -501,24 +471,25 @@ class StudentSearch extends SearchDelegate<String> {
         ? studentsList
         : studentsList.where((x) => x.startsWith(query)).toList();
 
-    return RefreshIndicator(
-      onRefresh: _refreshStudentsList,
-      child: ListView.builder(
+    return ListView.builder(
         itemBuilder: (context, index) => Container(
           decoration: BoxDecoration(
               color: _getMarkedStateBar(
                   _getStudent(suggestedItems[index].toString()).result)),
           child: ListTile(
             onTap: () {
-               print(suggestedItems[index].toString());
-               print(_getIndexForStudent(suggestedItems[index].toString()));
+              print(suggestedItems[index].toString());
+              print(_getIndexForStudent(suggestedItems[index].toString()));
               _selectedStudent = suggestedItems[index].toString();
               Navigator.push(
                   context,
                   criteriaRoute(
-                      _studentList[_getIndexForStudent(suggestedItems[index].toString())],
+                      _studentList[_getIndexForStudent(
+                          suggestedItems[index].toString())],
                       _assessmentID,
-                      QueryManager().criteriaList[0].criteria)); //Pass in a bool for isMarked to load the old marks
+                      QueryManager()
+                          .criteriaList[0]
+                          .criteria)); //Pass in a bool for isMarked to load the old marks
               // close(context, route);
             },
             leading: _getMarkedState(
@@ -548,7 +519,7 @@ class StudentSearch extends SearchDelegate<String> {
           ),
         ),
         itemCount: suggestedItems.length,
-      ),
+
     );
   }
 }
@@ -556,9 +527,9 @@ class StudentSearch extends SearchDelegate<String> {
 class TileObj {
   String title;
   String tileResult;
+
   TileObj(this.title, this.tileResult);
 }
-
 
 //class PopulateTiles extends StatelessWidget {
 //

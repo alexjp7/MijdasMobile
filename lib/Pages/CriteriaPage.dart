@@ -214,13 +214,12 @@ class CriteriaPage extends State<CriteriaPageState> {
                   child: ListView.builder(
                       itemCount: (_items.length),
                       itemBuilder: (context, index) {
-                        //adding code for interactive text results btw Joel
+
                         String criteriaValueText;
 
-                        if (_items[index].maxMark == null)
-                          criteriaValueText = "";
-                        else
-                          criteriaValueText = '${_items[index].value}' +
+                        if (_items[index].maxMark == null) index++;//if its the overall comment then ignore it
+
+                        criteriaValueText = '${_items[index].value}' +
                               '/' +
                               '${_items[index].maxMark}';
 
@@ -262,6 +261,7 @@ class CriteriaPage extends State<CriteriaPageState> {
                               scrollDirection: Axis.vertical,
                               reverse: true,
                               child: TextField(
+                                controller: _items[0].tControl,
                                 keyboardType: TextInputType.multiline,
                                 maxLines: null,
                                 decoration: InputDecoration(
@@ -271,6 +271,10 @@ class CriteriaPage extends State<CriteriaPageState> {
                                   filled: true,
                                   contentPadding: const EdgeInsets.all(20.0),
                                 ),
+                                onChanged: (s){
+                                  _items[0].comment=_items[0].tControl.text;
+                                  print(_items[0].comment);
+                                },
                               ))))),
               Container(
                 width: 500,

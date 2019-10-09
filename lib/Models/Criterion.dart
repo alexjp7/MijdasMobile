@@ -29,6 +29,7 @@ class Criterion {
     this.iD = int.parse(criteria);
     this.elementType = int.parse(element);
     if (maxMark == null) {
+      this.tControl=TextEditingController();
       this.maxMarkI = -1.0;
       value = null;
     } //temp fix, although can be used to identify null boxes in future

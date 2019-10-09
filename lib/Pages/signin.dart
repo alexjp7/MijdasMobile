@@ -271,7 +271,7 @@ Widget _banner(BuildContext context) {
                 text: TextSpan(
                   text: ("Sign In"),
                   style: TextStyle(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontSize: 36,
                       fontWeight: FontWeight.w500),
                 ),

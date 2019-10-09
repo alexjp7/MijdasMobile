@@ -7,16 +7,16 @@ Purpose:
 import './Subject.dart';
 import 'dart:convert';
 
-class Universities {
+class University {
   String institution;
   List<Subject> subjects;
 
-  Universities({
+  University({
     this.institution,
     this.subjects,
   });
 
-  factory Universities.fromJson(Map<String, dynamic> json) => new Universities(
+  factory University.fromJson(Map<String, dynamic> json) => new University(
     institution: json["institution"],
     subjects: new List<Subject>.from(
         json["subjects"].map((x) => Subject.fromJson(x))),
@@ -28,6 +28,6 @@ class Universities {
   };
 }
 
-List<Universities> universitiesFromJson(String str) =>
-    new List<Universities>.from(
-        json.decode(str).map((x) => Universities.fromJson(x)));
+List<University> universitiesFromJson(String str) =>
+    new List<University>.from(
+        json.decode(str).map((x) => University.fromJson(x)));
