@@ -55,6 +55,7 @@ Future<String> displayDialogText(BuildContext context, String title, String msg,
   String _textField;
     await showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (context) {
           return AlertDialog(
             title: Text(title),
@@ -81,6 +82,7 @@ Future<String> displayDialogText(BuildContext context, String title, String msg,
 void onHoldSettings_HomeTile(BuildContext context, String selectedTitle, String sNum) async{
   await showModalBottomSheet(
       context: context,
+
       builder: (BuildContext bc) {
         return Container(
           child: Wrap(
@@ -95,7 +97,7 @@ void onHoldSettings_HomeTile(BuildContext context, String selectedTitle, String 
                   String _stuName= await displayDialogText(context,"Add Student","Student Identifier","Submit");
 
                   print(_stuName);
-                  await addStudent(_stuName, sNum);
+                  await addStudent(_stuName, sNum,context);
                   Navigator.pop(context);
                 },
               ),
@@ -107,9 +109,7 @@ void onHoldSettings_HomeTile(BuildContext context, String selectedTitle, String 
                   String tutName= await displayDialogText(context,"Add Tutor","Tutor Username","Submit");
                   print(tutName);
                   print("Displaybox done");
-                  //showDialog_3(context, "a", "b", "a");
-                  //ADD A DIALOG BOX FOR NAME ENTRY
-                  await addTutor(tutName,sNum);
+                  await addTutor(tutName,sNum,context);
                   Navigator.pop(context);
                 },
               ),
@@ -163,10 +163,10 @@ Future<bool> onHoldSettings_Assessments(BuildContext context, String selectedTit
                 title: Text("Toggle Activation For: " + selectedTitle),
                 onTap: () async {
                   print("TEST Toggle Activation Click for assignment: "+aNum);
-                  await showDialog_2(context,"", await toggleActivation(aNum),"Close");
+                  await toggleActivation(aNum, context);
                   print("afterActivate");
                   //definitely after activation
-                  await refreshAssList();
+                  //await refreshAssList();
                   Navigator.pop(context);
 
                 },
@@ -181,6 +181,7 @@ Future<bool> onHoldSettings_Assessments(BuildContext context, String selectedTit
   return true;
 }
 
+//change to a listview?
 List<Widget> sideBar(context,username){
   return [
     settingsHeader(context, username),
@@ -314,7 +315,7 @@ Widget settingsHeader(BuildContext context, String username) {
                   text: TextSpan(
                     text: (username),
                     style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontSize: 22,
                         fontWeight: FontWeight.w500),
                   ),

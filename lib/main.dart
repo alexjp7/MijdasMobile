@@ -46,6 +46,7 @@ class MyApp extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    Container(constraints:BoxConstraints(minHeight: 100,maxHeight: 180)),
                 Container(
                   margin: EdgeInsets.all(10.0),
                   alignment: Alignment.center,
@@ -160,6 +161,7 @@ Widget _banner(BuildContext context) {
           child: Material(color: Colors.transparent),
         ),
         Container(
+          margin: EdgeInsets.all(10.0),
           decoration: BoxDecoration(
             image: DecorationImage(
               image: AssetImage('assets/markItLogo.png'),
