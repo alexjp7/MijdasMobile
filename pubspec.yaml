@@ -27,11 +27,17 @@ dependencies:
   pie_chart: ^1.2.0
   #charts_flutter: ^0.2.0
   #image: ^2.1.4
+  flutter_launcher_icons: ^0.7.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/markItLogo.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
