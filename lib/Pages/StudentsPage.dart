@@ -7,6 +7,7 @@ Purpose:
 import 'package:flutter/material.dart';
 
 import '../Models/QueryManager.dart';
+import '../Models/Criterion.dart';
 
 import 'package:pie_chart/pie_chart.dart';
 
@@ -36,11 +37,11 @@ BuildContext _studentContext;
 String _assessmentID;
 String _selectedStudent;
 List<Student> _studentList;
-List<String> _studentIDList;
+//List<String> _studentIDList;
 //List<String> _recentSearchesList;
 
 Future<List<StudentDecode>> _studentDecodeList;
-var criteriaList;
+List<Criterion> _criteriaList;
 
 bool _isFetchDone;
 
@@ -56,6 +57,7 @@ class StudentsPage extends StatefulWidget {
   StudentsPage(context, id) {
     _studentContext = context; //assigning page context
     _assessmentID = id;
+
   }
 
   @override
@@ -123,14 +125,14 @@ class _StudentsPageState extends State<StudentsPage> {
 
                   _studentList = snapshot
                       .data[0].records; //studentList is the list of students
-                  List<TileObj> _parentListItems = new List<TileObj>();
-                  _studentIDList = new List<String>();
+                 // List<TileObj> _parentListItems = new List<TileObj>();
+                 // _studentIDList = new List<String>();
 
                   for (int i = 0; i < _studentList.length; i++) {
                     // print(_studentList[i].studentId);
-                    _studentIDList.add(_studentList[i].studentId);
-                    _parentListItems.add(new TileObj(
-                        _studentList[i].studentId, _studentList[i].result));
+                   // _studentIDList.add(_studentList[i].studentId);
+                   // _parentListItems.add(new TileObj(
+                    //    _studentList[i].studentId, _studentList[i].result));
                   }
                   _isFetchDone = true; //able to click button now
 
@@ -152,7 +154,7 @@ class _StudentsPageState extends State<StudentsPage> {
                                   children: [
                                     TextSpan(
                                       text: (" / " +
-                                          _studentIDList.length.toString() +
+                                          _studentList.length.toString() +
                                           ")"),
                                       style: TextStyle(color: Colors.grey),
                                     ),
@@ -189,7 +191,7 @@ class _StudentsPageState extends State<StudentsPage> {
     );
   }
 
-  Future<void> refreshStudentsList() async {
+  Future<void> _refreshStudentsList() async {
     print("Refreshing Students");
 
     await (_studentDecodeList = fetchStudents(_assessmentID, _studentContext));
@@ -198,6 +200,17 @@ class _StudentsPageState extends State<StudentsPage> {
 
     //REFRESH SEARCHED LIST HERE
   }
+}
+
+Future<void> refreshStudentsList() async {
+  print("Refreshing Students");
+  await (_studentDecodeList = fetchStudents(_assessmentID, _studentContext));
+  return;
+}
+
+void makeSearch(context){
+  showSearch(context: context, delegate: StudentSearch());
+  return;
 }
 
 Icon _getMarkedState(String s) {
@@ -227,7 +240,7 @@ Student _getStudent(String s) {
 }
 
 int _getIndexForStudent(String s) {
-  return _studentIDList.indexWhere((x) => x.startsWith(s));
+  return _studentList.indexWhere((x) => x.studentId.startsWith(s));
 }
 
 int _getMarkedCount() {
@@ -382,7 +395,7 @@ Widget _searchArea(BuildContext context) {
 Widget _studentsMarkedChart() {
   double markedCount = _getMarkedCount().toDouble();
   Map<String, double> dataMap = new Map();
-  dataMap.putIfAbsent("Unmarked", () => (_studentIDList.length - markedCount));
+  dataMap.putIfAbsent("Unmarked", () => (_studentList.length - markedCount));
   dataMap.putIfAbsent("Marked", () => markedCount);
 
   return Padding(
@@ -429,7 +442,7 @@ class StudentSearch extends SearchDelegate<String> {
   //   "alice",
   // ];
 
-  final studentsList = _studentIDList;
+
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -468,35 +481,33 @@ class StudentSearch extends SearchDelegate<String> {
   Widget buildSuggestions(BuildContext context) {
     //show when someone searches for something
     final suggestedItems = query.isEmpty
-        ? studentsList
-        : studentsList.where((x) => x.startsWith(query)).toList();
+        ? _studentList
+        : _studentList.where((x) => x.studentId.startsWith(query)).toList();
 
     return ListView.builder(
         itemBuilder: (context, index) => Container(
           decoration: BoxDecoration(
               color: _getMarkedStateBar(
-                  _getStudent(suggestedItems[index].toString()).result)),
+                  _getStudent(suggestedItems[index].studentId).result)),
           child: ListTile(
             onTap: () {
-              print(suggestedItems[index].toString());
-              print(_getIndexForStudent(suggestedItems[index].toString()));
-              _selectedStudent = suggestedItems[index].toString();
+              print(suggestedItems[index].studentId);
+              print(_getIndexForStudent(suggestedItems[index].studentId));
+              _selectedStudent = suggestedItems[index].studentId;
               Navigator.push(
                   context,
                   criteriaRoute(
                       _studentList[_getIndexForStudent(
-                          suggestedItems[index].toString())],
+                          suggestedItems[index].studentId)],
                       _assessmentID,
-                      QueryManager()
-                          .criteriaList[0]
-                          .criteria)); //Pass in a bool for isMarked to load the old marks
+                      _criteriaList)); //Pass in a bool for isMarked to load the old marks
               // close(context, route);
             },
             leading: _getMarkedState(
-                _getStudent(suggestedItems[index].toString()).result),
+                _getStudent(suggestedItems[index].studentId).result),
             trailing: RichText(
               text: TextSpan(
-                  text: _getStudent(suggestedItems[index].toString()).result,
+                  text: _getStudent(suggestedItems[index].studentId).result,
                   style: TextStyle(
                       color: Colors.grey[700], fontWeight: FontWeight.bold),
                   children: [
@@ -507,12 +518,12 @@ class StudentSearch extends SearchDelegate<String> {
             ),
             title: RichText(
               text: TextSpan(
-                  text: suggestedItems[index].substring(0, query.length),
+                  text: suggestedItems[index].studentId.substring(0, query.length),
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold),
                   children: [
                     TextSpan(
-                        text: suggestedItems[index].substring(query.length),
+                        text: suggestedItems[index].studentId.substring(query.length),
                         style: TextStyle(color: Colors.grey))
                   ]),
             ),
@@ -524,12 +535,12 @@ class StudentSearch extends SearchDelegate<String> {
   }
 }
 
-class TileObj {
-  String title;
-  String tileResult;
-
-  TileObj(this.title, this.tileResult);
-}
+//class TileObj {
+//  String title;
+//  String tileResult;
+//
+//  TileObj(this.title, this.tileResult);
+//}
 
 //class PopulateTiles extends StatelessWidget {
 //

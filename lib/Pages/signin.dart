@@ -73,6 +73,11 @@ class SignIn extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Container(
+              height: MediaQuery.of(context).padding.top,
+              color: Theme.of(context).primaryColor,
+            ),
+            Container(
+//              margin: MediaQuery.of(context).padding,
               width: 500,
               height: 250,
               child: _banner(context),
@@ -308,7 +313,7 @@ void signIn(context, usernameController){
 
 
   SystemChannels.textInput.invokeMethod('TextInput.hide');
-  //TURN THIS INTO A FUNCTION
+
   print("Searching: [" +
       usernameController.text +
       "].");
