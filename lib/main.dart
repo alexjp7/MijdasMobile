@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 //import 'package:flutter/semantics.dart';
 
 //import 'Pages/AssessmentPage.dart';
@@ -12,7 +13,12 @@ import 'Pages/signin.dart';
 
 void main() {
   // runApp(MyApp());
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: Color(0xff0069C0),
+    statusBarColor: Color(0xff0050A7)
+  ));
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
     home: MyApp(),
     theme: themeData,
   ));
@@ -20,6 +26,7 @@ void main() {
 
 final ThemeData themeData = ThemeData(
   // brightness: Brightness.dark,
+
   canvasColor: Color(0xffE1E2E1), //White Background
   accentColor: Color(0xff61747E), //dark grey
   primaryColor: Color(0xff0069C0), //darker blue
@@ -34,8 +41,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: null,
       body: Column(
         children: <Widget>[
+          Container(
+            height: MediaQuery.of(context).padding.top,
+            color: Theme.of(context).primaryColor,
+          ),
           Container(
             width: 500,
             height: 250,

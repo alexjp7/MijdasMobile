@@ -5,9 +5,11 @@ Group: Mijdas(kw01)
 Purpose:
 */
 
+import 'package:MarkIt/Models/QueryManager.dart';
 import 'package:flutter/material.dart';
 
 import '../Models/Criterion.dart';
+import '../Models/CriteriaDecode.dart';
 import '../Models/Student.dart';
 
 import '../Pages/AnnouncementsPage.dart';

@@ -212,12 +212,13 @@ class CriteriaPage extends State<CriteriaPageState> {
               Flexible(
                   flex: 10,
                   child: ListView.builder(
-                      itemCount: (_items.length),
+                      itemCount: (_items.length-1),
                       itemBuilder: (context, index) {
 
                         String criteriaValueText;
+                        index++;
 
-                        if (_items[index].maxMark == null) index++;//if its the overall comment then ignore it
+                       // if (_items[index].maxMark == null) return null;//if its the overall comment then ignore it
 
                         criteriaValueText = '${_items[index].value}' +
                               '/' +

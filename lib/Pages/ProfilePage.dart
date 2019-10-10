@@ -4,6 +4,7 @@ Date: 3/10/19
 Group: Mijdas(kw01)
 Purpose:
 */
+import 'package:MarkIt/Models/QueryManager.dart';
 import 'package:flutter/material.dart';
 
 //import 'package:pie_chart/pie_chart.dart';
@@ -24,11 +25,26 @@ import '../Widgets/global_widgets.dart';
 //
 //import 'package:http/http.dart' as http;
 
-class ProfilePage extends StatelessWidget {
+
+class ProfilePage extends StatefulWidget{
+
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final passwordController_2 = TextEditingController();
+
+  @override
+  void initState(){
+    super.initState();
+    usernameController.text=QueryManager().loggedInUser;//stored in singleton
+    emailController.text= QueryManager().loggedInEmail;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +56,7 @@ class ProfilePage extends StatelessWidget {
           child: IconButton(
             icon: Icon(Icons.arrow_back_ios),
             onPressed: () {
+              Navigator.pop(context);
               Navigator.pop(context);
               print("Back Arrow Clicked");
             },

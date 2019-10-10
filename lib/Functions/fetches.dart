@@ -36,7 +36,7 @@ Future<List<CriteriaDecode>> fetchCriteria(String i) async {
     // showDialog_1(_assessmentContext, "Error!", "Response Code: 404.\n\n\t\t\tNo Assessments Found.", "Close & Return");
     //navigate to an error page displaying lack of assessment error
     // return assessmentsFromJson(response.body);
-    return null;
+    return List<CriteriaDecode>();
   } else {
     print('response code: ' + response.statusCode.toString());
     print('response body: ' + response.body);

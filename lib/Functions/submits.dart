@@ -8,6 +8,7 @@ Purpose:
 import 'package:flutter/material.dart';
 
 import 'package:MarkIt/Pages/AssessmentPage.dart';
+import 'package:MarkIt/Pages/StudentsPage.dart';
 
 import '../Widgets/global_widgets.dart';
 
@@ -121,17 +122,25 @@ Future<bool> postMark(List<Criterion> _criteriaPost, String _student, String _a,
 
   var response = await http.post('https://markit.mijdas.com/api/assessment/',
       body: encodeJson);
-  Navigator.pop(context);
+
   if (response.statusCode == 200) {
     print('response code:  200\n');
     print('response body: ' + response.body);
-    showDialog_1(context, "Success!",
-        "Student Marks Submitted Successfully.", "Close", true);
+    await refreshStudentsList();
+    print("REFRESH FIN");
+    Navigator.pop(context);
+    await showDialog_2(context, "Success!",
+        "Student Marks Submitted Successfully.", "Close");
+    Navigator.pop(context);
+    Navigator.pop(context);
+    showSearch(context: context, delegate: StudentSearch());
     return true;
   } else if (response.statusCode == 404) {
     print('response code:  404\n');
+    Navigator.pop(context);
     return false;
   } else {
+    Navigator.pop(context);
     print('response code: ' + response.statusCode.toString());
     print('response body: ' + response.body);
     throw Exception(

@@ -269,7 +269,9 @@ Widget settingsTile(IconData icon, String label, Function onTap) {
 //headder widget used for drawers globally
 Widget settingsHeader(BuildContext context, String username) {
   return DrawerHeader(
+
     decoration: const BoxDecoration(
+
       gradient: LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
@@ -299,7 +301,7 @@ Widget settingsHeader(BuildContext context, String username) {
                 height: 30,
                 child: IconButton(
                   icon: Icon(Icons.keyboard_arrow_left),
-                  color: Colors.black87,
+                  color: Colors.white,
                   iconSize: 30,
                   onPressed: () {
                     Navigator.pop(context);
@@ -329,7 +331,7 @@ Widget settingsHeader(BuildContext context, String username) {
                 child: RichText(
                   text: TextSpan(
                     text: ("MarkIt"),
-                    style: TextStyle(color: Colors.black54, fontSize: 16),
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
               ),

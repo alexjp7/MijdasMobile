@@ -9,6 +9,8 @@ Purpose:
 
 import 'dart:ffi';
 
+import 'package:MarkIt/Models/CriteriaDecode.dart';
+import 'package:MarkIt/Models/QueryManager.dart';
 import 'package:flutter/material.dart';
 
 //local imports
@@ -34,12 +36,13 @@ String _assessmentID;
 String _assessmentName;
 String _assessmentMaxMark;
 Future<List<Assessment>> _assessmentList;
-
+List<List<CriteriaDecode>> _critDecodes ;
 
 
 class AssessmentPage extends StatefulWidget {
 
   AssessmentPage(context, s){
+    _critDecodes= List<List<CriteriaDecode>>();
     _assessmentContext = context; //assigning page buildcontext
     _assessmentID = s; //assigning page ID
   }
@@ -89,13 +92,8 @@ class _AssessmentPageState extends State<AssessmentPage> {
           if (snapshot.hasData) {
 //            List<TileObj> _parentListItems = new List<TileObj>();
 //
-//            for (int i = 0; i < snapshot.data.length; i++) {
-//              _parentListItems.add(new TileObj(
-//                  snapshot.data[i].name,
-//                  snapshot.data[i].id,
-//                  snapshot.data[i].a_number,
-//                  snapshot.data[i].isActive,
-//                  snapshot.data[i].maxMark));
+//            for (int i = 0; i < snapshot.data.length; i++)  {
+//
 //            }
             return RefreshIndicator(
                 onRefresh: _refreshAssList,
@@ -128,6 +126,7 @@ class _AssessmentPageState extends State<AssessmentPage> {
       ),*/
     );
   }
+
   Future<Null> _refreshAssList() async {
     //_assessmentList = null;
 
@@ -144,9 +143,14 @@ class _AssessmentPageState extends State<AssessmentPage> {
   Widget _buildList(Assessment t) {
     Color _accentColour = Color(0xffBFD4DF);
     // if (t.children.isEmpty)
+    //List<int>activeId = List<int>();
 
-    if (t.isActive == "0") {
+    if (t.isActive == "0")  {
       _accentColour = Color(0x11000000);
+      //activeId.add(-1);
+
+    }
+    else {
     }
 
     return new ListTile(
@@ -172,6 +176,7 @@ class _AssessmentPageState extends State<AssessmentPage> {
         onTap: () {
           _assessmentName = t.name;
           _assessmentMaxMark = t.maxMark;
+         // print(_critDecodes.elementAt(0).length);
           Navigator.push(context, studentsRoute(t.id));
         },
         // subtitle: new Text("Subtitle"),
