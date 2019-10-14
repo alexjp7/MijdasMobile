@@ -32,6 +32,8 @@ import 'package:http/http.dart' as http;
 String _subjectName;
 BuildContext _homeContext;
 Future<List<University>> _universitiesList;
+Future<List<University>> _universitiesListCoord;
+Future<List<University>> _universitiesListTutor;
 
 
 
@@ -51,7 +53,13 @@ class _HomePageState extends State<HomePage>{
   @override
   void initState() {
     super.initState();
-    _universitiesList = fetchUniversities(getUsername(),_homeContext, (getPriv() == 2));
+    _universitiesListTutor = fetchUniversities(getUsername(),_homeContext, false);
+    if((getPriv() == 2)){
+      //if is a coordinator
+      _universitiesListCoord = fetchUniversities(getUsername(),_homeContext, true);
+      _universitiesList = _universitiesListCoord;
+    }
+    else _universitiesList = _universitiesListTutor;
   }
 
   @override
