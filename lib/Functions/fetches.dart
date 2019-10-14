@@ -109,17 +109,11 @@ Future<List<Assessment>> fetchAssessments(String s, context,bool isPriv) async {
 Future<List<University>> fetchUniversities(String s, _homeContext, bool isCoord) async {
 
   String _request;
-  //print('test');
-//  if(QueryManager().universityList.isNotEmpty){
-//    return QueryManager().universityList;
-//  }
 
+  //IF IS COORD ONLY RETURN COORDINATOR SUBJECTS
   if(isCoord) _request= "VIEW_OWNED_SUBJECTS";
   else _request= "POPULATE_SUBJECTS";
 
-  //(getPriv() == 2)?request= "VIEW_SUBJECTS":request= "POPULATE_SUBJECTS";
-
-  //var now = DateTime.now();
 
   var response = await http.post(
       'https://markit.mijdas.com/api/requests/subject/',

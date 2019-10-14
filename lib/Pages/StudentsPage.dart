@@ -43,6 +43,7 @@ List<Student> _studentList;
 Future<List<StudentDecode>> _studentDecodeList;
 List<Criterion> _criteriaList;
 
+
 bool _isFetchDone;
 
 Icon _isMarked = new Icon(
@@ -57,7 +58,7 @@ class StudentsPage extends StatefulWidget {
   StudentsPage(context, id) {
     _studentContext = context; //assigning page context
     _assessmentID = id;
-
+    _criteriaList = QueryManager().criteriaList[0].criteria;
   }
 
   @override
@@ -493,14 +494,10 @@ class StudentSearch extends SearchDelegate<String> {
             onTap: () {
               print(suggestedItems[index].studentId);
               print(_getIndexForStudent(suggestedItems[index].studentId));
+              //print(_criteriaList[0].criteria);
               _selectedStudent = suggestedItems[index].studentId;
-              Navigator.push(
-                  context,
-                  criteriaRoute(
-                      _studentList[_getIndexForStudent(
-                          suggestedItems[index].studentId)],
-                      _assessmentID,
-                      _criteriaList)); //Pass in a bool for isMarked to load the old marks
+
+              Navigator.push(context,criteriaRoute(_studentList[_getIndexForStudent(suggestedItems[index].studentId)],_assessmentID,_criteriaList)); //Pass in a bool for isMarked to load the old marks
               // close(context, route);
             },
             leading: _getMarkedState(
