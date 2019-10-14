@@ -461,7 +461,7 @@ class filterSwitchPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(filterSwitchPainter old) {
-    print("shouldRepaint? "+ (old._isSelected != _isSelected).toString());
+    //print("shouldRepaint? "+ (old._isSelected != _isSelected).toString());
     return old._isSelected != _isSelected;
   }
 
