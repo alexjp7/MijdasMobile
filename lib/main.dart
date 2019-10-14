@@ -20,8 +20,9 @@ import 'Pages/signin.dart';
 void main() {
   // runApp(MyApp());
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: Color(0xff0069C0),
-      statusBarColor: Color(0xff0050A7)));
+    systemNavigationBarColor: Color(0xff0069C0),
+    statusBarColor: Color(0xff0050A7),
+  ));
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: MyApp(),

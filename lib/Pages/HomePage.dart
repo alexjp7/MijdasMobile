@@ -262,7 +262,7 @@ Widget _filterSwitch(BuildContext context) {
     borderRadius: BorderRadius.circular(25.0),
     onTap: () {
       print("InkWell Clicked");
-      //Use this to trigger reloads/state changes:
+      //TOGGLECLICK - Use this to trigger reloads/state changes:
       if(switchPainter.getSelected()){
         switchPainter.setSelected(false);
       } else if(!switchPainter.getSelected()){
