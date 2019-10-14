@@ -45,7 +45,6 @@ class SignIn extends StatelessWidget {
   final FocusNode _userFocus = FocusNode();
   final FocusNode _passFocus = FocusNode();
 
-
   ScrollController _scrollController = ScrollController();
 
   Future<String> getData(String s) async {
@@ -87,11 +86,13 @@ class SignIn extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  SizedBox(
+                    height: 50,
+                  ),
                   Container(
                     margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
                     alignment: Alignment.center,
                     child: TextField(
-
                       textInputAction: TextInputAction.next,
 
                       // autofocus: false,
@@ -110,10 +111,10 @@ class SignIn extends StatelessWidget {
                       ),
                       controller: usernameController,
                       onChanged: (v) {
-                        //_scrollToFields();
+                        _scrollToFields();
                       },
                       focusNode: _userFocus,
-                      onSubmitted: (_user){
+                      onSubmitted: (_user) {
                         _userFocus.unfocus();
                         FocusScope.of(context).requestFocus(_passFocus);
                       },
@@ -141,11 +142,9 @@ class SignIn extends StatelessWidget {
                       focusNode: _passFocus,
                       controller: passwordController,
 
-                      onSubmitted: (s){
+                      onSubmitted: (s) {
                         print(s);
                         signIn(context, usernameController);
-
-
                       },
 
                       obscureText: true,
@@ -165,11 +164,10 @@ class SignIn extends StatelessWidget {
                             height: 50.0,
                             child: RaisedButton(
                               onPressed: () {
-
-                                 _userFocus.unfocus();
-                                FocusScope.of(context).requestFocus(FocusNode());
+                                _userFocus.unfocus();
+                                FocusScope.of(context)
+                                    .requestFocus(FocusNode());
                                 signIn(context, usernameController);
-
                               },
                               child: RichText(
                                 text: TextSpan(
@@ -200,9 +198,8 @@ class SignIn extends StatelessWidget {
 ////
 //                              }
 
-                             // Navigator.push(context, signUpRoute());
+                              // Navigator.push(context, signUpRoute());
                             },
-
                             child: Text(
                               "Forgot your password?",
                               style: TextStyle(fontWeight: FontWeight.bold),
@@ -309,19 +306,15 @@ int getPriv() {
   return _userType;
 }
 
-void signIn(context, usernameController){
-
-
+void signIn(context, usernameController) {
   SystemChannels.textInput.invokeMethod('TextInput.hide');
 
-  print("Searching: [" +
-      usernameController.text +
-      "].");
+  print("Searching: [" + usernameController.text + "].");
   _searchedUser = usernameController.text;
-  if(_searchedUser == "st111")
-    _userType = 2;//for testing purposes, st111 is Coordinator
+  if (_searchedUser == "st111")
+    _userType = 2; //for testing purposes, st111 is Coordinator
   else
-    _userType = 1;//everyone else is tutor (eg aa111)
+    _userType = 1; //everyone else is tutor (eg aa111)
 
   // getData(searchedUser); //commented out while back end was down
 
