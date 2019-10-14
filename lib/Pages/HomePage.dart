@@ -62,19 +62,53 @@ class _HomePageState extends State<HomePage>{
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
-        leading:Container(),
-  //        leading: Padding(
-  //          padding: EdgeInsets.only(left: 12),
-  //          child: IconButton(
-  //            icon: Icon(Icons.arrow_back_ios),
-  //            onPressed: () {
-  //              Navigator.pop(context);
-  //              print("Back Arrow Clicked");
-  //            },
-  //          ),
-  //        ),
-        title: Text('Home'),
-        centerTitle: true,
+        // leading:Container(),
+        automaticallyImplyLeading: false,
+        //  leading: Padding(
+        //    padding: EdgeInsets.only(left: 12),
+        //    child: _filterSwitch(context),
+           /*IconButton(
+             icon: Icon(Icons.arrow_back_ios),
+             onPressed: () {
+              //  Navigator.pop(context);
+               print("Back Arrow Clicked");
+             },
+           ),*/
+        //  ),
+/*                  leading: Padding(
+           padding: EdgeInsets.only(left: 12),
+           child: IconButton(
+             icon: Icon(Icons.arrow_back_ios),
+             onPressed: () {
+               Navigator.pop(context);
+               print("Back Arrow Clicked");
+             },
+           ),
+         ),*/
+        // title: Text('Home'),
+        // title: _filterSwitch(context),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            // IconButton(
+            //   icon: Icon(Icons.arrow_back_ios),
+            //  onPressed: () {
+            //   //  Navigator.pop(context);
+            //    print("Back Arrow Clicked");
+            //  },
+            // ),
+            _filterSwitch(context),
+            // SizedBox(
+            //   width: 35,
+            // ),
+            Text("Home"),
+            SizedBox(
+              // width: 0,
+            ),
+          ],
+        ),
+        // centerTitle: true,
       ),
       endDrawer: Drawer(
         child: Container(
@@ -199,6 +233,57 @@ class _HomePageState extends State<HomePage>{
 //  TileObj(this.title, [this.children = const <TileObj>[]]);
 //  TileObj.subject(this.title, this.tileID, [this.children = const <TileObj>[]]);
 //}
+
+//Widget to handle the filtering
+Widget _filterSwitch(BuildContext context) {
+  Color _bkgCol = new Color(0xff00508F); //background colour (Old: 0060AC)
+  Color _selCol = new Color(0xffFFFFFF); //selected colour
+
+  filterSwitchPainter switchPainter = filterSwitchPainter("Coordinator", "Tutor", _bkgCol, _selCol);
+
+  Widget _nestedPainting = CustomPaint(
+    size: Size(130, 25),
+    painter: switchPainter,
+    // child: Center(
+    //   child: Text(
+    //     'Once Upon A Time...',
+    //     style: const TextStyle(
+    //     fontSize: 40.0,
+    //     fontWeight: FontWeight.w900,
+    //     color: Color(0xFFFFFFFF),
+    //   ),
+    // ),
+    // ),
+      
+  );
+
+  // return GestureDetector(
+  return InkWell(
+    borderRadius: BorderRadius.circular(25.0),
+    onTap: () {
+      print("InkWell Clicked");
+      //Use this to trigger reloads/state changes:
+      if(switchPainter.getSelected()){
+        switchPainter.setSelected(false);
+      } else if(!switchPainter.getSelected()){
+        switchPainter.setSelected(true);
+      }
+    },
+
+    child: FittedBox(
+      child: SizedBox(
+        width: 130,
+        height: 25,
+        child: _nestedPainting,
+      ),
+    ),
+    // Container(
+    //   // child: InkWell(
+    //     child: Icon(Icons.arrow_back_ios),
+    //     // ),
+    // ),
+  );
+}
 
 
 //fix for the other bit

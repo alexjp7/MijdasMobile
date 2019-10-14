@@ -1,3 +1,9 @@
+/*
+Authors: Joel and Mitch
+Date: 3/10/19
+Group: Mijdas(kw01)
+Purpose:
+*/
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 //import 'package:flutter/semantics.dart';
@@ -14,9 +20,8 @@ import 'Pages/signin.dart';
 void main() {
   // runApp(MyApp());
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    systemNavigationBarColor: Color(0xff0069C0),
-    statusBarColor: Color(0xff0050A7)
-  ));
+      systemNavigationBarColor: Color(0xff0069C0),
+      statusBarColor: Color(0xff0050A7)));
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: MyApp(),
@@ -58,7 +63,10 @@ class MyApp extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(constraints:BoxConstraints(minHeight: 100,maxHeight: 180)),
+                //Container(constraints:BoxConstraints(minHeight: 100,maxHeight: 150)),
+                SizedBox(
+                  height: 90,
+                ),
                 Container(
                   margin: EdgeInsets.all(10.0),
                   alignment: Alignment.center,
@@ -151,38 +159,37 @@ Widget _banner(BuildContext context) {
   // Color _mainBackdrop = new Color(0xff2196F3); //light blue
 
   return Container(
-    height: 50.0,
-    child: Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: <Color>[
-                Color(0xFF0069C0),
-                Color(0xFF026AC1),
-                Color(0xFF71ABDC),
-                // Color(0xFF0D47A1),
-                // Color(0xFF1976D2),
-                // Color(0xFF42A5F5),
-              ],
+      height: 50.0,
+      child: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[
+                  Color(0xFF0069C0),
+                  Color(0xFF026AC1),
+                  Color(0xFF71ABDC),
+                  // Color(0xFF0D47A1),
+                  // Color(0xFF1976D2),
+                  // Color(0xFF42A5F5),
+                ],
+              ),
             ),
+            child: Material(color: Colors.transparent),
           ),
-          child: Material(color: Colors.transparent),
-        ),
-        Container(
-          margin: EdgeInsets.all(10.0),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/markItLogo.png'),
+          Container(
+            margin: EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/markItLogo.png'),
+              ),
             ),
-          ),)
-      ],
-    )
-
-  );
+          )
+        ],
+      ));
 //  Stack(
 //    fit: StackFit.expand,
 //    children: <Widget>[

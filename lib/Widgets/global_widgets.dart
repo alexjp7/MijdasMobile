@@ -1,4 +1,7 @@
+import 'dart:ui' as prefix0;
+
 import 'package:flutter/material.dart';
+import 'dart:math';
 import '../Pages/AssessmentPage.dart';
 import '../Functions/submits.dart';
 import '../Functions/routes.dart';
@@ -360,3 +363,116 @@ Widget settingsHeader(BuildContext context, String username) {
     ),
   );
 }
+
+//CustomPainting class used to draw/redraw the custom filter switch.
+class filterSwitchPainter extends CustomPainter {
+  
+  bool _isSelected;
+  String _sliderOption1;
+  String _sliderOption2;
+  Color _backdropColour;
+  Color _highlightColour;
+  Color _textColour1;
+  Color _textColour2;
+
+  filterSwitchPainter(String option1, String option2, Color back, Color highlight){
+    this._sliderOption1 = option1;
+    this._sliderOption2 = option2;
+    this._backdropColour = back;
+    this._highlightColour = highlight;
+    this._isSelected = true;
+  }
+  
+  @override
+  void paint(Canvas canvas, Size size) {
+    final bkgPaint = Paint()..color = _backdropColour;
+    final selPaint = Paint()..color = _highlightColour;
+    final testPaint = Paint()..color = Color(0xffFF0000);
+
+    if(_isSelected){
+      //location1
+      _textColour1 = _backdropColour;
+      _textColour2 = _highlightColour;
+    } else {
+      //location2
+      _textColour1 = _highlightColour;
+      _textColour2 = _backdropColour;
+    }
+
+    final textToPaint_Left = TextPainter(
+      text: TextSpan(
+        text: _sliderOption1, //Focused    Other
+        style: TextStyle(
+          color: _textColour1,
+          fontSize: 13,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    );
+
+    final textToPaint_Right = TextPainter(
+      text: TextSpan(
+        text: _sliderOption2,
+        style: TextStyle(
+          color: _textColour2,
+          fontSize: 13,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      textDirection: TextDirection.rtl,
+    );
+
+    textToPaint_Left.layout(
+      minWidth: 0,
+      maxWidth: size.width,
+    );
+
+    textToPaint_Right.layout(
+      minWidth: 0,
+      maxWidth: size.width,
+    );
+
+    //draw background
+    canvas.drawCircle(Offset(size.width/10, size.height/2), 13, bkgPaint);
+    canvas.drawCircle(Offset(size.width/1.1-1, size.height/2), 13, bkgPaint);
+    canvas.drawRect(Rect.fromCenter(center: Offset(size.width/2, size.height/2), width: 105, height: 26), bkgPaint);
+
+    //draw selected
+
+    if(_isSelected){
+      //location1
+      canvas.drawCircle(Offset(size.width/10, size.height/2), 13, selPaint);
+      canvas.drawCircle(Offset(size.width/2, size.height/2), 13, selPaint);
+      canvas.drawRect(Rect.fromCenter(center: Offset(size.width/3.25, size.height/2), width: 50, height: 26), selPaint);
+    } else {
+      //location2
+      canvas.drawCircle(Offset(size.width/1.27, size.height/2), 13, selPaint);
+      canvas.drawCircle(Offset(size.width/1.1-1, size.height/2), 13, selPaint);
+      canvas.drawRect(Rect.fromCenter(center: Offset(size.width/1.175, size.height/2), width: 15, height: 26), selPaint);
+    }
+    
+    
+    //draw text labels
+    textToPaint_Left.paint(canvas, Offset(4, size.height/5));
+    textToPaint_Right.paint(canvas, Offset(size.width/1.4, size.height/5));
+
+  }
+
+  @override
+  bool shouldRepaint(filterSwitchPainter old) {
+    print("shouldRepaint? "+ (old._isSelected != _isSelected).toString());
+    return old._isSelected != _isSelected;
+  }
+
+  bool getSelected() {
+    return _isSelected;
+  }
+  void setSelected(bool b) {
+    _isSelected = b;
+  }
+
+}
+
+
+
