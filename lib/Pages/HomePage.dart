@@ -34,6 +34,8 @@ BuildContext _homeContext;
 Future<List<University>> _universitiesList;
 Future<List<University>> _universitiesListCoord;
 Future<List<University>> _universitiesListTutor;
+bool coordIsSelectedList;
+filterSwitchPainter switchPainter = filterSwitchPainter("Coordinator", "Tutor", Color(0xff00508F),Color(0xffFFFFFF));
 
 
 
@@ -55,11 +57,14 @@ class _HomePageState extends State<HomePage>{
     super.initState();
     _universitiesListTutor = fetchUniversities(getUsername(),_homeContext, false);
     if((getPriv() == 2)){
+
       //if is a coordinator
       _universitiesListCoord = fetchUniversities(getUsername(),_homeContext, true);
       _universitiesList = _universitiesListCoord;
+      coordIsSelectedList = true;
     }
     else _universitiesList = _universitiesListTutor;
+    coordIsSelectedList = false;
   }
 
   @override
@@ -95,25 +100,22 @@ class _HomePageState extends State<HomePage>{
          ),*/
         // title: Text('Home'),
         // title: _filterSwitch(context),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        title: Column(
+
           children: <Widget>[
-            // IconButton(
-            //   icon: Icon(Icons.arrow_back_ios),
-            //  onPressed: () {
-            //   //  Navigator.pop(context);
-            //    print("Back Arrow Clicked");
-            //  },
-            // ),
-            _filterSwitch(context),
+            Text("Home"),
+            SizedBox(),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[_filterSwitch(context),]
+            ),
+
             // SizedBox(
             //   width: 35,
             // ),
-            Text("Home"),
-            SizedBox(
-              // width: 0,
-            ),
+
+
           ],
         ),
         // centerTitle: true,
@@ -231,6 +233,51 @@ class _HomePageState extends State<HomePage>{
 
   }
 
+  Widget _filterSwitch(BuildContext context) {
+
+    Widget _nestedPainting = CustomPaint(
+      size: Size(130, 25),
+      painter: switchPainter,
+    );
+
+      return InkWell(
+        borderRadius: BorderRadius.circular(25.0),
+        onTap: () {
+          print("InkWell Clicked");
+          changeList();
+          switchPainter.setSelected(coordIsSelectedList);
+        },
+
+        child: FittedBox(
+          child: SizedBox(
+            width: 130,
+            height: 25,
+            child: _nestedPainting,
+          ),
+        ),
+        // Container(
+        //   // child: InkWell(
+        //     child: Icon(Icons.arrow_back_ios),
+        //     // ),
+        // ),
+      );
+
+
+  }
+  void changeList(){
+    if(coordIsSelectedList==true){
+      _universitiesList = _universitiesListTutor;
+      coordIsSelectedList=false;
+    }
+    else{
+      _universitiesList = _universitiesListCoord;
+
+      coordIsSelectedList=true;
+    }
+    setState(() {
+
+    });
+  }
 }
 
 //class structure for each tile object
@@ -243,60 +290,12 @@ class _HomePageState extends State<HomePage>{
 //}
 
 //Widget to handle the filtering
-Widget _filterSwitch(BuildContext context) {
-  Color _bkgCol = new Color(0xff00508F); //background colour (Old: 0060AC)
-  Color _selCol = new Color(0xffFFFFFF); //selected colour
-
-  filterSwitchPainter switchPainter = filterSwitchPainter("Coordinator", "Tutor", _bkgCol, _selCol);
-
-  Widget _nestedPainting = CustomPaint(
-    size: Size(130, 25),
-    painter: switchPainter,
-    // child: Center(
-    //   child: Text(
-    //     'Once Upon A Time...',
-    //     style: const TextStyle(
-    //     fontSize: 40.0,
-    //     fontWeight: FontWeight.w900,
-    //     color: Color(0xFFFFFFFF),
-    //   ),
-    // ),
-    // ),
-      
-  );
-
-  // return GestureDetector(
-  return InkWell(
-    borderRadius: BorderRadius.circular(25.0),
-    onTap: () {
-      print("InkWell Clicked");
-      //TOGGLECLICK - Use this to trigger reloads/state changes:
-      if(switchPainter.getSelected()){
-        switchPainter.setSelected(false);
-      } else if(!switchPainter.getSelected()){
-        switchPainter.setSelected(true);
-      }
-    },
-
-    child: FittedBox(
-      child: SizedBox(
-        width: 130,
-        height: 25,
-        child: _nestedPainting,
-      ),
-    ),
-    // Container(
-    //   // child: InkWell(
-    //     child: Icon(Icons.arrow_back_ios),
-    //     // ),
-    // ),
-  );
-}
 
 
 //fix for the other bit
 Future<void> _refreshAssessmentsList() async {
-  await (_universitiesList = fetchUniversities(getUsername(),_homeContext, (getPriv() == 2)));
+  await (_universitiesListCoord = fetchUniversities(getUsername(),_homeContext, (getPriv() == 2)));
+  _universitiesList=_universitiesListCoord;
   return;
 }
 
