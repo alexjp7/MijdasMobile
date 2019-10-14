@@ -484,7 +484,9 @@ class StudentSearch extends SearchDelegate<String> {
         ? _studentList
         : _studentList.where((x) => x.studentId.startsWith(query)).toList();
 
-    return ListView.builder(
+    return RefreshIndicator(
+      onRefresh: refreshStudentsList,
+      child: ListView.builder(
         itemBuilder: (context, index) => Container(
           decoration: BoxDecoration(
               color: _getMarkedStateBar(
@@ -530,7 +532,7 @@ class StudentSearch extends SearchDelegate<String> {
           ),
         ),
         itemCount: suggestedItems.length,
-
+      ),
     );
   }
 }
