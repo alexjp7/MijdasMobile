@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 //local imports
 //import '../main.dart';
 import 'signin.dart';
-//import 'AssessmentPage.dart';
 
 import '../Functions/routes.dart';
 import '../Functions/fetches.dart';
@@ -20,13 +19,9 @@ import '../Widgets/global_widgets.dart';
 import '../Models/University.dart';
 import '../Models/Subject.dart';
 import '../Models/QueryManager.dart';
-// import './criteria_manager.dart';
 
 //data handling/processing imports
 import 'dart:async';
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
 
 String _subjectName;
 BuildContext _homeContext;
@@ -132,9 +127,6 @@ class _HomePageState extends State<HomePage> {
             Text(
           t.institution /*, style: TextStyle(color: Colors.green)*/,
         ),
-        // alignment: Alignment.center,
-        // ),
-        // trailing: Text(""),
         children: t.subjects.map(_buildChildren).toList(),
       ),
     );
@@ -226,17 +218,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 }
-
-//class structure for each tile object
-//class TileObj {
-//  String title;
-//  String tileID;
-//  List<TileObj> children;
-//  TileObj(this.title, [this.children = const <TileObj>[]]);
-//  TileObj.subject(this.title, this.tileID, [this.children = const <TileObj>[]]);
-//}
-
-//Widget to handle the filtering
 
 //fix for the other bit
 Future<void> _refreshAssessmentsList() async {

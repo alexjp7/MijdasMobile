@@ -12,7 +12,6 @@ import '../Models/Criterion.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 //local imports
-//import 'CriteriaPage.dart';
 import 'AssessmentPage.dart';
 import 'signin.dart';
 import 'HomePage.dart';
@@ -28,20 +27,13 @@ import '../Functions/routes.dart';
 //data handling/processing imports
 import 'dart:async';
 
-//import 'dart:convert';
-//
-//import 'package:http/http.dart' as http;
-
 //Private variables
 BuildContext _studentContext;
 String _assessmentID;
 String _selectedStudent;
 List<Student> _studentList;
-//List<String> _studentIDList;
-//List<String> _recentSearchesList;
 
 Future<List<StudentDecode>> _studentDecodeList;
-List<Criterion> _criteriaList;
 
 
 bool _isFetchDone;
@@ -58,7 +50,6 @@ class StudentsPage extends StatefulWidget {
   StudentsPage(context, id) {
     _studentContext = context; //assigning page context
     _assessmentID = id;
-    _criteriaList = QueryManager().criteriaList[0].criteria;
   }
 
   @override
@@ -93,7 +84,6 @@ class _StudentsPageState extends State<StudentsPage> {
       endDrawer: Drawer(
         child: Container(
           child: ListView(
-            // padding: EdgeInsets.all(10.0),
             children: sideBar(context, getUsername()),
           ),
         ),
@@ -112,21 +102,8 @@ class _StudentsPageState extends State<StudentsPage> {
               future: _studentDecodeList,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  // print(snapshot.data[0].records[0].studentId);
-
-                  _studentList = snapshot
-                      .data[0].records; //studentList is the list of students
-                 // List<TileObj> _parentListItems = new List<TileObj>();
-                 // _studentIDList = new List<String>();
-
-                  for (int i = 0; i < _studentList.length; i++) {
-                    // print(_studentList[i].studentId);
-                   // _studentIDList.add(_studentList[i].studentId);
-                   // _parentListItems.add(new TileObj(
-                    //    _studentList[i].studentId, _studentList[i].result));
-                  }
+                  _studentList = snapshot.data[0].records;
                   _isFetchDone = true; //able to click button now
-
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -154,20 +131,12 @@ class _StudentsPageState extends State<StudentsPage> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 18.0,
-                          // fontFamily: 'Karla',
                         ),
                       ),
                       // Text("Marking Progress"),
                       _studentsMarkedChart(),
                     ],
                   );
-                  /*ListView.builder(
-                    itemBuilder: (BuildContext context, int index) {
-                      return new PopulateTiles(
-                          _parentListItems[index], context);
-                    },
-                    itemCount: _parentListItems.length,
-                  );*/
                 } else if (snapshot.hasError) {
                   _isFetchDone = false;
                   return Text("${snapshot.error}");
@@ -246,22 +215,10 @@ int _getMarkedCount() {
   return count;
 }
 
-//int _getTotalCount() {
-//  var count = 0;
-//  try {
-//    _studentList.forEach((x) {
-//      count++;
-//    });
-//  } catch (e) {
-//    return -1;
-//  }
-//  return count;
-//}
+
 
 Widget _searchArea(BuildContext context) {
   Color _mainBackdrop = new Color(0xff54b3ff); //lighter blue
-  // Color _mainBackdrop = new Color(0xff2196F3); //light blue
-  //final studentSearchController = TextEditingController();
   _isFetchDone = false;
 
   return Stack(
@@ -297,9 +254,6 @@ Widget _searchArea(BuildContext context) {
               child: RichText(
                 text: TextSpan(
                   text: (""),
-                  /*_getMarkedCount().toString() +
-                      "/" +
-                      _getTotalCount().toString()),*/
                   style: TextStyle(color: Colors.black, fontSize: 16),
                 ),
               ),
@@ -335,9 +289,6 @@ Widget _searchArea(BuildContext context) {
                         colors: <Color>[
                           Color(0xff2C96EA),
                           Color(0xffA2C8EF),
-                          // Color(0xFF0D47A1),
-                          // Color(0xFF1976D2),
-                          // Color(0xFF42A5F5),
                         ],
                       ),
                       borderRadius: BorderRadius.all(Radius.circular(80.0))),
@@ -353,28 +304,6 @@ Widget _searchArea(BuildContext context) {
                   ),
                 ),
               ),
-
-              /*TextField(
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.drag_handle),
-                    onPressed: () {
-                      print("Filter Search Button Pressed");
-                      String searchResults = showSearch(
-                              context: context, delegate: StudentSearch())
-                          .toString();
-                      print(searchResults);
-                    },
-                  ),
-                  hintStyle: new TextStyle(fontSize: 12),
-                  labelStyle: new TextStyle(color: Colors.black),
-                  hintText: "Enter A Username To Query...",
-                  labelText: "Search Students",
-                  border: OutlineInputBorder(),
-                ),
-                controller: studentSearchController,
-              ),*/
             ),
           ],
         ),
@@ -424,16 +353,6 @@ Color isMarkedCol(String s) {
 }
 
 class StudentSearch extends SearchDelegate<String> {
-  //hardcoded searched items
-  // final recentSearches = [
-  //   "ab123",
-  //   "cd456",
-  //   "ef789",
-  //   "gh000",
-  //   "alice",
-  // ];
-
-
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -465,7 +384,8 @@ class StudentSearch extends SearchDelegate<String> {
   Widget buildResults(BuildContext context) {
     //show some results based on the selection
     return Center(
-        child: Text("Please Select A Student From The Autofill Options."));
+        child: Text("Please Select A Student From The Autofill Options.")
+    );
   }
 
   @override
@@ -489,8 +409,7 @@ class StudentSearch extends SearchDelegate<String> {
               //print(_criteriaList[0].criteria);
               _selectedStudent = suggestedItems[index].studentId;
 
-              Navigator.push(context,criteriaRoute(_studentList[_getIndexForStudent(suggestedItems[index].studentId)],_assessmentID,_criteriaList)); //Pass in a bool for isMarked to load the old marks
-              // close(context, route);
+              Navigator.push(context,criteriaRoute(_studentList[_getIndexForStudent(suggestedItems[index].studentId)],_assessmentID,QueryManager().criteriaList[0].criteria)); //Pass in a bool for isMarked to load the old marks
             },
             leading: _getMarkedState(
                 _getStudent(suggestedItems[index].studentId).result),
@@ -523,55 +442,3 @@ class StudentSearch extends SearchDelegate<String> {
     );
   }
 }
-
-//class TileObj {
-//  String title;
-//  String tileResult;
-//
-//  TileObj(this.title, this.tileResult);
-//}
-
-//class PopulateTiles extends StatelessWidget {
-//
-//
-//  final TileObj fTile;
-//  BuildContext contextT;
-//  PopulateTiles(this.fTile, [this.contextT]);
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    //return _buildList(fTile);
-//  }
-//
-////widget to load tile list
-////  Widget _buildList(TileObj t) {
-////    Color _accentColour = Color(0xffBFD4DF);
-////    return new ListTile(
-////        dense: true,
-////        enabled: true,
-////        isThreeLine: false,
-////        onLongPress: () => print("Long Press: [" + t.title + "]."),
-////        onTap: () {
-////          // Navigator.push(contextT, criteriaRoute(t.tileID));
-////          print("Tap: [" + t.title + "].");
-////        },
-////        // subtitle: new Text("Subtitle"),
-////        // leading: new Text("Leading"),
-////        selected: true,
-////        // trailing: new Text("Trailing"),
-////        title: new Card(
-////          color: _accentColour,
-////          child: Column(
-////            children: <Widget>[
-////              Container(
-////                height: 85.0,
-////                alignment: Alignment(0.0, 0.0),
-////                child: Text(t.title),
-////              )
-////            ],
-////          ),
-////        ));
-////  }
-//}
-
-//class structure for each tile object

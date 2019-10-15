@@ -7,7 +7,6 @@ import '../Functions/submits.dart';
 import '../Functions/routes.dart';
 //dialog_1 = custom popup prompt with passable title, message and button text. returns a screen upon closure.
 
-
 void showDialog_1(BuildContext bctx, String title, String msg, String option,
     bool isDismissable) {
   showDialog(
@@ -31,7 +30,8 @@ void showDialog_1(BuildContext bctx, String title, String msg, String option,
 }
 
 //dialog_2 = same as dialog_1 but doesnt go back a screen, only closes dialog box upon closure.
-Future<void> showDialog_2 (BuildContext bctx, String title, String msg, String option) async {
+Future<void> showDialog_2(
+    BuildContext bctx, String title, String msg, String option) async {
   await showDialog(
       context: bctx,
       barrierDismissible: true, //user can close however they want
@@ -51,41 +51,39 @@ Future<void> showDialog_2 (BuildContext bctx, String title, String msg, String o
       });
 }
 
-
-
-Future<String> displayDialogText(BuildContext context, String title, String msg, String option) async {
+Future<String> displayDialogText(
+    BuildContext context, String title, String msg, String option) async {
   TextEditingController _textFieldController = TextEditingController();
   String _textField;
-    await showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(title),
-            content: TextField(
-              controller: _textFieldController,
-              decoration: InputDecoration(hintText: msg),
-            ),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text(option),
-                onPressed: () {
-                  _textField = _textFieldController.value.text;
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          );
-        });
-    return _textField;
+  await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: TextField(
+            controller: _textFieldController,
+            decoration: InputDecoration(hintText: msg),
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text(option),
+              onPressed: () {
+                _textField = _textFieldController.value.text;
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      });
+  return _textField;
 }
 
-
 //global settings prompts
-void onHoldSettings_HomeTile(BuildContext context, String selectedTitle, String sNum) async{
+void onHoldSettings_HomeTile(
+    BuildContext context, String selectedTitle, String sNum) async {
   await showModalBottomSheet(
       context: context,
-
       builder: (BuildContext bc) {
         return Container(
           child: Wrap(
@@ -97,10 +95,11 @@ void onHoldSettings_HomeTile(BuildContext context, String selectedTitle, String 
                   print("Add Student Click.");
                   //ADD A DIALOG BOX FOR NAME ENTRY
 
-                  String _stuName= await displayDialogText(context,"Add Student","Student Identifier","Submit");
+                  String _stuName = await displayDialogText(
+                      context, "Add Student", "Student Identifier", "Submit");
 
                   print(_stuName);
-                  await addStudent(_stuName, sNum,context);
+                  await addStudent(_stuName, sNum, context);
                   Navigator.pop(context);
                 },
               ),
@@ -109,10 +108,11 @@ void onHoldSettings_HomeTile(BuildContext context, String selectedTitle, String 
                 title: Text("Add Tutor to Subject: " + selectedTitle),
                 onTap: () async {
                   print("Add Tutor Click.");
-                  String tutName= await displayDialogText(context,"Add Tutor","Tutor Username","Submit");
+                  String tutName = await displayDialogText(
+                      context, "Add Tutor", "Tutor Username", "Submit");
                   print(tutName);
                   print("Displaybox done");
-                  await addTutor(tutName,sNum,context);
+                  await addTutor(tutName, sNum, context);
                   Navigator.pop(context);
                 },
               ),
@@ -143,35 +143,21 @@ void onHoldSettings_HomeHead(BuildContext context, String selectedTitle) {
       });
 }
 
-Future<bool> onHoldSettings_Assessments(BuildContext context, String selectedTitle, String aNum) async {
-
-
+Future<bool> onHoldSettings_Assessments(
+    BuildContext context, String selectedTitle, String aNum) async {
   await showModalBottomSheet(
       context: context,
-      builder: (BuildContext bc)   {
-         return Container(
+      builder: (BuildContext bc) {
+        return Container(
           child: Wrap(
             children: <Widget>[
-//              ListTile(
-//                leading: Icon(Icons.add_comment),
-//                title: Text("Create Criteria For: " + selectedTitle),
-//                onTap: () {
-//                  print("Create Criteria Click.");
-//                  Navigator.pop(context);
-//
-//                },
-//              ),
               ListTile(
                 leading: Icon(Icons.visibility),
                 title: Text("Toggle Activation For: " + selectedTitle),
                 onTap: () async {
-                  print("TEST Toggle Activation Click for assignment: "+aNum);
                   await toggleActivation(aNum, context);
-                  print("afterActivate");
                   //definitely after activation
-                  //await refreshAssList();
                   Navigator.pop(context);
-
                 },
               ),
             ],
@@ -184,37 +170,29 @@ Future<bool> onHoldSettings_Assessments(BuildContext context, String selectedTit
   return true;
 }
 
-//change to a listview?
-List<Widget> sideBar(context,username){
+
+List<Widget> sideBar(context, username) {
   return [
     settingsHeader(context, username),
     settingsTile(Icons.person, "Profile", () {
       Navigator.push(context, profileRoute());
-    print("Profile Clicked.");
+      print("Profile Clicked.");
     }),
-    settingsTile(Icons.person, "Announcements", () {
-      Navigator.push(context, announcementRoute());
-    print("Announcements Clicked.");
-    }),
-//    settingsTile(Icons.person, "Calendar", () {
+//    settingsTile(Icons.person, "Announcements", () {
+//      Navigator.push(context, announcementRoute());
+//      print("Announcements Clicked.");
+//    }),
+//    settingsTile(Icons.person, "Settings", () {
 //      Navigator.push(context, settingsRoute());
-//    print("Calendar Clicked.");
+//      print("Settings Clicked.");
 //    }),
-//    settingsTile(Icons.person, "Board", () {
-//    print("Job Board Clicked.");
-//    }),
-    settingsTile(Icons.person, "Settings", () {
-      Navigator.push(context, settingsRoute());
-    print("Settings Clicked.");
-    }),
     settingsTile(Icons.person, "Sign Out", () {
-      Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
-    print("Sign Out Clicked.");
+      Navigator.popUntil(
+          context, ModalRoute.withName(Navigator.defaultRouteName));
+      print("Sign Out Clicked.");
     }),
   ];
-
 }
-
 
 //settings tile styling used globally
 Widget settingsTile(IconData icon, String label, Function onTap) {
@@ -226,18 +204,6 @@ Widget settingsTile(IconData icon, String label, Function onTap) {
   else
     _labelStyle = TextStyle(fontSize: 20.0);
 
-//  return Center(
-//    child:InkWell(
-//      onTap: onTap,
-//      child:Padding(
-//        padding:EdgeInsets.fromLTRB(8.0, 0, 8.0, 0) ,
-//        child: Container(
-//          height: 60,
-//          child:Text(label, style: _labelStyle,),
-//        ),
-//      )
-//    ),
-//  );
 
   return Padding(
     padding: EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
@@ -253,14 +219,10 @@ Widget settingsTile(IconData icon, String label, Function onTap) {
             SizedBox(width: 0), //temporary to keep padding
             Row(
               children: <Widget>[
-                // Icon(icon),
-               // SizedBox(width: 24),
-               // SizedBox(width: 10),
                 Text(label, style: _labelStyle),
-                // SizedBox(width: 105),
               ],
             ),
-          //  SizedBox(width: 0),
+            //  SizedBox(width: 0),
             SizedBox(width: 0),
           ],
         ),
@@ -272,9 +234,7 @@ Widget settingsTile(IconData icon, String label, Function onTap) {
 //headder widget used for drawers globally
 Widget settingsHeader(BuildContext context, String username) {
   return DrawerHeader(
-
     decoration: const BoxDecoration(
-
       gradient: LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
@@ -291,12 +251,11 @@ Widget settingsHeader(BuildContext context, String username) {
         Positioned(
           top: 0,
           left: 0,
-          width: 280, //272 for width of area
-          height: 140, //138 for height of area
+          width: 280,
+          height: 140,
           child: Stack(
             fit: StackFit.expand,
             children: <Widget>[
-              // Material(color: Colors.redAccent),
               Positioned(
                 top: 0,
                 left: 0,
@@ -338,24 +297,6 @@ Widget settingsHeader(BuildContext context, String username) {
                   ),
                 ),
               ),
-              /*Positioned(
-                            top: 20,
-                            left: 85,
-                            width: 100,
-                            height: 100,
-                            child: Material(
-                              elevation: 10,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              child: Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Image.asset(
-                                    'assets/mijdasLogo.png',
-                                    width: 100,
-                                    height: 100,
-                                  )),
-                            ),
-                          ),*/
             ],
           ),
         ),
@@ -366,7 +307,6 @@ Widget settingsHeader(BuildContext context, String username) {
 
 //CustomPainting class used to draw/redraw the custom filter switch.
 class filterSwitchPainter extends CustomPainter {
-  
   bool _isSelected;
   String _sliderOption1;
   String _sliderOption2;
@@ -375,21 +315,22 @@ class filterSwitchPainter extends CustomPainter {
   Color _textColour1;
   Color _textColour2;
 
-  filterSwitchPainter(String option1, String option2, Color back, Color highlight){
+  filterSwitchPainter(
+      String option1, String option2, Color back, Color highlight) {
     this._sliderOption1 = option1;
     this._sliderOption2 = option2;
     this._backdropColour = back;
     this._highlightColour = highlight;
     this._isSelected = true;
   }
-  
+
   @override
   void paint(Canvas canvas, Size size) {
     final bkgPaint = Paint()..color = _backdropColour;
     final selPaint = Paint()..color = _highlightColour;
     final testPaint = Paint()..color = Color(0xffFF0000);
 
-    if(_isSelected){
+    if (_isSelected) {
       //location1
       _textColour1 = _backdropColour;
       _textColour2 = _highlightColour;
@@ -434,29 +375,45 @@ class filterSwitchPainter extends CustomPainter {
     );
 
     //draw background
-    canvas.drawCircle(Offset(size.width/10, size.height/2), 13, bkgPaint);
-    canvas.drawCircle(Offset(size.width/1.1-1, size.height/2), 13, bkgPaint);
-    canvas.drawRect(Rect.fromCenter(center: Offset(size.width/2, size.height/2), width: 105, height: 26), bkgPaint);
+    canvas.drawCircle(Offset(size.width / 10, size.height / 2), 13, bkgPaint);
+    canvas.drawCircle(
+        Offset(size.width / 1.1 - 1, size.height / 2), 13, bkgPaint);
+    canvas.drawRect(
+        Rect.fromCenter(
+            center: Offset(size.width / 2, size.height / 2),
+            width: 105,
+            height: 26),
+        bkgPaint);
 
     //draw selected
 
-    if(_isSelected){
+    if (_isSelected) {
       //location1
-      canvas.drawCircle(Offset(size.width/10, size.height/2), 13, selPaint);
-      canvas.drawCircle(Offset(size.width/2, size.height/2), 13, selPaint);
-      canvas.drawRect(Rect.fromCenter(center: Offset(size.width/3.25, size.height/2), width: 50, height: 26), selPaint);
+      canvas.drawCircle(Offset(size.width / 10, size.height / 2), 13, selPaint);
+      canvas.drawCircle(Offset(size.width / 2, size.height / 2), 13, selPaint);
+      canvas.drawRect(
+          Rect.fromCenter(
+              center: Offset(size.width / 3.25, size.height / 2),
+              width: 50,
+              height: 26),
+          selPaint);
     } else {
       //location2
-      canvas.drawCircle(Offset(size.width/1.27, size.height/2), 13, selPaint);
-      canvas.drawCircle(Offset(size.width/1.1-1, size.height/2), 13, selPaint);
-      canvas.drawRect(Rect.fromCenter(center: Offset(size.width/1.175, size.height/2), width: 15, height: 26), selPaint);
+      canvas.drawCircle(
+          Offset(size.width / 1.27, size.height / 2), 13, selPaint);
+      canvas.drawCircle(
+          Offset(size.width / 1.1 - 1, size.height / 2), 13, selPaint);
+      canvas.drawRect(
+          Rect.fromCenter(
+              center: Offset(size.width / 1.175, size.height / 2),
+              width: 15,
+              height: 26),
+          selPaint);
     }
-    
-    
-    //draw text labels
-    textToPaint_Left.paint(canvas, Offset(4, size.height/5));
-    textToPaint_Right.paint(canvas, Offset(size.width/1.4, size.height/5));
 
+    //draw text labels
+    textToPaint_Left.paint(canvas, Offset(4, size.height / 5));
+    textToPaint_Right.paint(canvas, Offset(size.width / 1.4, size.height / 5));
   }
 
   @override
@@ -468,11 +425,8 @@ class filterSwitchPainter extends CustomPainter {
   bool getSelected() {
     return _isSelected;
   }
+
   void setSelected(bool b) {
     _isSelected = b;
   }
-
 }
-
-
-

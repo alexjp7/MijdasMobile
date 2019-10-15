@@ -15,16 +15,6 @@ import 'signin.dart';
 //import 'HomePage.dart';
 import '../Widgets/global_widgets.dart';
 
-//import '../Models/Assessment.dart';
-
-//data handling/processing imports
-//import 'dart:async';
-//import 'dart:convert';
-
-//import 'package:http/http.dart' as http;
-
-//bool _allowNotifications;
-//bool _allow;
 
 class SettingsPage extends StatelessWidget {
   @override

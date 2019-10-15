@@ -19,10 +19,6 @@ import 'package:http/http.dart' as http;
 
 Color _buttonColour = new Color(0xff0069C0);
 String _searchedUser;
-int _userType;
-final String jsonURL =
-    "https://markit.mijdas.com/api/requests/subject/read.php?username=";
-//for storing json results globally
 Map<String, dynamic> fetchedData;
 
 Route signInRoute() {
@@ -48,14 +44,6 @@ class SignIn extends StatelessWidget {
 
   ScrollController _scrollController = ScrollController();
 
-  Future<String> getData(String s) async {
-    var response = await http.get(Uri.encodeFull(jsonURL + s),
-        headers: {"Accept": "application/json"});
-
-    // Map<String, dynamic> fetchedData = json.decode(response.body);
-    fetchedData = json.decode(response.body);
-    print(fetchedData);
-  }
 
   //jump the screen down - the animation looked smoother but was buggy, decided to use Jump for prototype demo
   _scrollToFields() {
@@ -191,15 +179,6 @@ class SignIn extends StatelessWidget {
                           child: InkWell(
                             onTap: () async {
                               print("Forgotten Password Clicked.");
-//                              for(int i =0;i<1000;i++){
-//                                await Future.delayed(Duration(milliseconds: 10));
-//                                print(i);
-//                                fetchUniversities("aa111");
-////
-////
-//                              }
-
-                              // Navigator.push(context, signUpRoute());
                             },
                             child: Text(
                               "Forgot your password?",
@@ -310,17 +289,14 @@ void signIn(context, usernameController) {
   print("Searching: [" + usernameController.text + "].");
   _searchedUser = usernameController.text;
 
-  if (_searchedUser == "st111") {//USER IS COORDINATOR??????????????????????????????????????????????????????????????????????????????
+  if (_searchedUser == "st111") {
+    //TODO CHANGE ^^^^^^^^^^^^^^ TO IS SCOPE COORDINATOR WHEN oAUTH
     QueryManager().isCoordinator = true;
     QueryManager().isCoordinatorView = true;
-    print("11111111111111111");
-    print(QueryManager().isCoordinator.toString());
   }
   else {
     QueryManager().isCoordinator = false;
     QueryManager().isCoordinatorView = false;
-    print("000000000000000000");
-    print(QueryManager().isCoordinator.toString());
   }
 
   // getData(searchedUser); //commented out while back end was down

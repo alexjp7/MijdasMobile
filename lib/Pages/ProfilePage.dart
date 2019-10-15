@@ -10,21 +10,8 @@ import 'package:flutter/material.dart';
 //import 'package:pie_chart/pie_chart.dart';
 
 //local imports
-//import 'CriteriaPage.dart';
-//import 'AssessmentPage.dart';
 import 'signin.dart';
-
-//import 'HomePage.dart';
 import '../Widgets/global_widgets.dart';
-
-//import '../Models/Assessment.dart';
-
-//data handling/processing imports
-//import 'dart:async';
-//import 'dart:convert';
-//
-//import 'package:http/http.dart' as http;
-
 
 class ProfilePage extends StatefulWidget{
 
@@ -32,6 +19,7 @@ class ProfilePage extends StatefulWidget{
   _ProfilePageState createState() => _ProfilePageState();
 }
 
+//TODO VVVVVVVV make this take data from the singleton and load user profile info
 class _ProfilePageState extends State<ProfilePage> {
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
@@ -64,16 +52,6 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         title: Text('Profile'),
         centerTitle: true,
-        // actions: <Widget>[
-        //   IconButton(
-        //     icon: Icon(Icons.dehaze),
-        //     onPressed: () {
-        //       // Navigator.push(context, PageThree());
-        //       // ScaffoldState.openEndDrawer();
-        //       print("Hamburger Menu Clicked");
-        //     },
-        //   )
-        // ],
       ),
       endDrawer: Drawer(
         child: Container(
@@ -176,15 +154,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 50.0,
                     child: RaisedButton(
                       onPressed: () {
-//    if (passwordController.text == passwordController_2.text) {
-////    _username = usernameController.text;
-////    _password = passwordController.text;
-////    _email = emailController.text;
-//    // getData(searchedUser); //commented out while back end was down
-//    showDialog_1(context, "Success!", "Signup Was a success!\nHead back to the home screen and try signing in with your new details!", "Close and Return", false);
-//    } else {
-//    showDialog_2(context, "Error", "There was a problem with the information entered, make sure all fields are correct.", "Close");
-//    }
                       },
                       child: RichText(
                         text: TextSpan(

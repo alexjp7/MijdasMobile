@@ -176,13 +176,9 @@ class _AssessmentPageState extends State<AssessmentPage> {
         onTap: () {
           _assessmentName = t.name;
           _assessmentMaxMark = t.maxMark;
-         // print(_critDecodes.elementAt(0).length);
           Navigator.push(context, studentsRoute(t.id));
         },
-        // subtitle: new Text("Subtitle"),
-        // leading: new Text("Leading"),
         selected: true,
-        // trailing: new Text("Trailing"),
         title: new Card(
           color: _accentColour,
           child: Column(
@@ -195,96 +191,10 @@ class _AssessmentPageState extends State<AssessmentPage> {
             ],
           ),
         ));
-//    // title: new Text(t.title));
-//
-//    // return new ExpansionTile(
-//    //   key: new PageStorageKey<int>(3),
-//    //   title: new Text(t.title),
-//    //   // title: new Text(t.title, style: TextStyle(color: Colors.black),),
-//    //   children: t.children.map(_buildList).toList(),
-//    // );
   }
 }
 
-//class PopulateTiles extends StatelessWidget {
-//  Color _accentColour = Color(0xffBFD4DF);
-//
-//  final TileObj fTile;
-//  BuildContext contextT;
-//  PopulateTiles(this.fTile, [this.contextT]);
-//
-//
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return _buildList(fTile);
-//  }
-//
-////widget to load tile list
-//  Widget _buildList(TileObj t) {
-//    // if (t.children.isEmpty)
-//
-//    if(t.isActive=="0"){
-//      _accentColour = Color(0x11000000);
-//    }
-//
-//    return new ListTile(
-//        dense: true,
-//        enabled: true,
-//        isThreeLine: false,
-//        onLongPress: () async {
-//            print("Long Press: [" + t.title + "]. UserPriv: ["+getPriv().toString()+"].");
-//            if(getPriv() == 2) {
-//              _assessmentList=null;
-//             await onHoldSettings_Assessments(_assessmentContext, t.title,t.tileID);//pass assessment here once rewritten
-//              //refreshAssList();
-//            }
-//
-//
-//          },
-//        onTap: () {
-//          _assessmentName = t.title;
-//          _assessmentMaxMark = t.tileMaxMark;
-//          Navigator.push(contextT, studentsRoute(t.tileID));
-//        },
-//        // subtitle: new Text("Subtitle"),
-//        // leading: new Text("Leading"),
-//        selected: true,
-//        // trailing: new Text("Trailing"),
-//        title: new Card(
-//          color: _accentColour,
-//          child: Column(
-//            children: <Widget>[
-//              Container(
-//                height: 85.0,
-//                alignment: Alignment(0.0, 0.0),
-//                child: Text(t.title),
-//              )
-//            ],
-//          ),
-//        ));
-//    // title: new Text(t.title));
-//
-//    // return new ExpansionTile(
-//    //   key: new PageStorageKey<int>(3),
-//    //   title: new Text(t.title),
-//    //   // title: new Text(t.title, style: TextStyle(color: Colors.black),),
-//    //   children: t.children.map(_buildList).toList(),
-//    // );
-//  }
-//}
 
-//class structure for each tile object
-//class TileObj {
-//  String title;
-//  String tileID;
-//  String tileANum;
-//  String isActive;
-//  String tileMaxMark;
-//
-//  TileObj(
-//      this.title, this.tileID, this.tileANum, this.isActive, this.tileMaxMark);
-//}
 
 String getAssessmentName() {
   return _assessmentName;
@@ -295,9 +205,7 @@ String getAssessmentMaxMark() {
 }
 
 Future<bool> refreshAssList() async {
-  //_assessmentList = null;
   print("REFRESHING");
-  //DO SOMETHING HERE
   await(_assessmentList = fetchAssessments(_assessmentID,_assessmentContext, QueryManager().isCoordinatorView));
   print("REFRESHED");
   return true;

@@ -21,11 +21,11 @@ import 'signin.dart';
 import 'StudentsPage.dart';
 
 import '../Models/Criterion.dart';
+
 //import '../Models/CriteriaDecode.dart';
 import '../Models/Student.dart';
 
 import '../Functions/submits.dart';
-
 
 //data handling/processing imports
 
@@ -39,11 +39,8 @@ List<Criterion> _items;
 String _assID;
 //bool _isFetchDone; //boolean check to see if API request is finished before populating certain fields
 
-
-
 class CriteriaPageState extends StatefulWidget {
-  //List<Criterion> items = List<Criterion>.generate(10, (i) => new Criterion("Criterea $i",i,i%3,(((i%3)*5)+5),1.0));
-  CriteriaPageState(s,assID,criteria){
+  CriteriaPageState(s, assID, criteria) {
     _selectedStudent = s; //assigning page ID
     _assID = assID;
     _assCrit = criteria;
@@ -86,7 +83,6 @@ class CriteriaPage extends State<CriteriaPageState> {
                     });
                   })));
     } else if (_items[index].element == "1") {
-      //items[index].value = 0;
       return Flexible(
           flex: 1,
           child: SliderTheme(
@@ -116,61 +112,46 @@ class CriteriaPage extends State<CriteriaPageState> {
           ));
     } else if (_items[index].element == "2") {
       return Flexible(
-
           flex: 10,
           child: Padding(
-            padding: EdgeInsets.fromLTRB(100, 0, 100, 0),
-              child:Row(
-
-            //crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-            Flexible(
-            flex: 1,
-                child: TextField(
-                    keyboardType: TextInputType.number,
-                    controller: _items[index].tControl,
-
-                    //textAlign: TextAlign.right, //what a stupid bug this is
-                    onChanged: (text) {
-                      if (isNumeric(text)) {
-                        double _enteredMark = double.parse(text);
-                        if (_enteredMark >= _items[index].maxMarkI) {
-                          _items[index].value = _items[index].maxMarkI;
+              padding: EdgeInsets.fromLTRB(100, 0, 100, 0),
+              child: Row(children: <Widget>[
+                Flexible(
+                    flex: 1,
+                    child: TextField(
+                      keyboardType: TextInputType.number,
+                      controller: _items[index].tControl,
+                      onChanged: (text) {
+                        if (isNumeric(text)) {
+                          double _enteredMark = double.parse(text);
+                          if (_enteredMark >= _items[index].maxMarkI) {
+                            _items[index].value = _items[index].maxMarkI;
+                          } else
+                            _items[index].value = _enteredMark;
+                          print(text);
                         }
-                        else
-                          _items[index].value = _enteredMark;
-                        print(text);
-                      }
-                    },
-                    onSubmitted :(text){
-                      if (isNumeric(text)){
-                        double _enteredMark = double.parse(text);
-                        if(_enteredMark>=_items[index].maxMarkI) {
-                          _items[index].tControl.text = _items[index].maxMark;
+                      },
+                      onSubmitted: (text) {
+                        if (isNumeric(text)) {
+                          double _enteredMark = double.parse(text);
+                          if (_enteredMark >= _items[index].maxMarkI) {
+                            _items[index].tControl.text = _items[index].maxMark;
+                          }
+                          print(text);
                         }
-                        print(text);
-                        }
-                    },
-
-    )),
-    Expanded(child: Text('/${_items[index].maxMark}')),
-    ])));
+                      },
+                    )),
+                Expanded(child: Text('/${_items[index].maxMark}')),
+              ])));
     } else
-    return Flexible(child
-    :
-    TextField
-    (
-    )
-    );
+      return Flexible(child: TextField());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme
-              .of(context)
-              .primaryColor,
+          backgroundColor: Theme.of(context).primaryColor,
           leading: Padding(
             padding: EdgeInsets.only(left: 12),
             child: IconButton(
@@ -183,20 +164,10 @@ class CriteriaPage extends State<CriteriaPageState> {
           ),
           title: Text('Marking'),
           centerTitle: true,
-          // actions: <Widget>[
-          //   IconButton(
-          //     icon: Icon(Icons.dehaze),
-          //     onPressed: () {
-          //       Navigator.push(context, homeRoute());
-          //       print("Hamburger Menu Clicked");
-          //     },
-          //   )
-          // ],
         ),
         endDrawer: Drawer(
           child: Container(
             child: ListView(
-              // padding: EdgeInsets.all(10.0),
               children: sideBar(context, getUsername()),
             ),
           ),
@@ -212,17 +183,13 @@ class CriteriaPage extends State<CriteriaPageState> {
               Flexible(
                   flex: 10,
                   child: ListView.builder(
-                      itemCount: (_items.length-1),
+                      itemCount: (_items.length - 1),
                       itemBuilder: (context, index) {
-
                         String criteriaValueText;
                         index++;
-
-                       // if (_items[index].maxMark == null) return null;//if its the overall comment then ignore it
-
                         criteriaValueText = '${_items[index].value}' +
-                              '/' +
-                              '${_items[index].maxMark}';
+                            '/' +
+                            '${_items[index].maxMark}';
 
                         _critContext = context;
 
@@ -231,22 +198,22 @@ class CriteriaPage extends State<CriteriaPageState> {
                           enabled: true,
                           isThreeLine: false,
                           title: new Card(
-                            //MAKE BUILD CARDS
+                              //MAKE BUILD CARDS
                               color: _accentColour,
                               child: Center(
                                   child: Column(children: <Widget>[
-                                    Text(
-                                      '${_items[index].displayText}',
-                                      style: TextStyle(fontSize: 18.0),
-                                    ),
-                                    Text(
-                                      criteriaValueText,
-                                      style: TextStyle(fontSize: 15.0),
-                                    ),
-                                    Row(children: <Widget>[
-                                      _buildTiles(index),
-                                    ]),
-                                  ]))),
+                                Text(
+                                  '${_items[index].displayText}',
+                                  style: TextStyle(fontSize: 18.0),
+                                ),
+                                Text(
+                                  criteriaValueText,
+                                  style: TextStyle(fontSize: 15.0),
+                                ),
+                                Row(children: <Widget>[
+                                  _buildTiles(index),
+                                ]),
+                              ]))),
                         );
                       })),
               //   new Container(height: 20, alignment:Alignment.bottomLeft,child: Text('Comments:')),//MAYBE CHANGE THIS TO A labelText???????
@@ -272,8 +239,8 @@ class CriteriaPage extends State<CriteriaPageState> {
                                   filled: true,
                                   contentPadding: const EdgeInsets.all(20.0),
                                 ),
-                                onChanged: (s){
-                                  _items[0].comment=_items[0].tControl.text;
+                                onChanged: (s) {
+                                  _items[0].comment = _items[0].tControl.text;
                                   print(_items[0].comment);
                                 },
                               ))))),
@@ -289,7 +256,6 @@ class CriteriaPage extends State<CriteriaPageState> {
 Widget _markingTitleArea() {
   Color _mainBackdrop = new Color(0xff54b3ff); //lighter blue
   // Color _mainBackdrop = new Color(0xff2196F3); //light blue
-  // _isFetchDone = false;
   _mainBackdrop = isMarkedCol(getStudent());
 
   return Stack(
@@ -406,7 +372,8 @@ Widget _markingFooterArea() {
             child: RaisedButton(
               onPressed: () async {
                 print("Submit Button pressed.");
-                postMark(_items,_selectedStudent.studentId,_assID,_critContext);
+                postMark(
+                    _items, _selectedStudent.studentId, _assID, _critContext);
               },
               child: RichText(
                 text: TextSpan(
@@ -424,14 +391,6 @@ Widget _markingFooterArea() {
             ),
           ),
         ),
-
-        /*RichText(
-          text: TextSpan(
-            text: ("7.5/10"),
-            style: TextStyle(
-                color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ),*/
       ),
     ],
   );
@@ -467,4 +426,3 @@ bool isNumeric(String s) {
   }
   return double.parse(s) != null;
 }
-
