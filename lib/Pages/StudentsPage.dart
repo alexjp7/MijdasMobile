@@ -13,7 +13,7 @@ import 'package:pie_chart/pie_chart.dart';
 
 //local imports
 import 'AssessmentPage.dart';
-import 'signin.dart';
+import 'SignInPage.dart';
 import 'HomePage.dart';
 
 import '../Models/Student.dart';

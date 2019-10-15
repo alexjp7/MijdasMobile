@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 //import 'package:pie_chart/pie_chart.dart';
 
 //local imports
-import 'signin.dart';
+import 'SignInPage.dart';
 import '../Widgets/global_widgets.dart';
 
 class ProfilePage extends StatefulWidget{

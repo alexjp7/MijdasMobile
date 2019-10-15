@@ -162,8 +162,7 @@ class SignUp extends StatelessWidget {
                             height: 50.0,
                             child: RaisedButton(
                               onPressed: () {
-                                if (passwordController.text ==
-                                    passwordController_2.text) {
+                                if (passwordController.text == passwordController_2.text) {
                                   _username = usernameController.text;
                                   _password = passwordController.text;
                                   _email = emailController.text;

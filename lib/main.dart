@@ -10,8 +10,8 @@ import 'package:flutter/services.dart';
 
 //import 'Pages/AssessmentPage.dart';
 //import 'Pages/HomePage.dart';
-import 'Pages/signup.dart';
-import 'Pages/signin.dart';
+import 'Pages/SignUpPage.dart';
+import 'Pages/SignInPage.dart';
 
 //import 'dart:async';
 //import 'dart:convert';

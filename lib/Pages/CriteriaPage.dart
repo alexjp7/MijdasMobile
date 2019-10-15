@@ -17,7 +17,7 @@ import 'package:flutter/material.dart';
 import '../Widgets/global_widgets.dart';
 
 //local imports
-import 'signin.dart';
+import 'SignInPage.dart';
 import 'StudentsPage.dart';
 
 import '../Models/Criterion.dart';

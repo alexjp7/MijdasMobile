@@ -14,7 +14,7 @@ import 'package:MarkIt/Models/QueryManager.dart';
 import 'package:flutter/material.dart';
 
 //local imports
-import 'signin.dart';
+import 'SignInPage.dart';
 //import 'StudentsPage.dart';
 
 
