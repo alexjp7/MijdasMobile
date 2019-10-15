@@ -56,7 +56,7 @@ class _AssessmentPageState extends State<AssessmentPage> {
   @override
   void initState() {
     super.initState();
-    _assessmentList = fetchAssessments(_assessmentID,_assessmentContext, (getPriv()==2));
+    _assessmentList = fetchAssessments(_assessmentID,_assessmentContext, QueryManager().isCoordinatorView);
   }
 
   @override
@@ -132,7 +132,7 @@ class _AssessmentPageState extends State<AssessmentPage> {
 
     print("REFRESHING");
     //DO SOMETHING HERE
-    await(_assessmentList = fetchAssessments(_assessmentID,_assessmentContext, (getPriv()==2)));
+    await(_assessmentList = fetchAssessments(_assessmentID,_assessmentContext,QueryManager().isCoordinatorView));
     print("REFRESHED");
 
     setState(() {
@@ -161,9 +161,9 @@ class _AssessmentPageState extends State<AssessmentPage> {
           print("Long Press: [" +
               t.name +
               "]. UserPriv: [" +
-              getPriv().toString() +
+              QueryManager().isCoordinatorView.toString() +
               "].");
-          if (getPriv() == 2) {
+          if (QueryManager().isCoordinatorView) {
             //_assessmentList=null;
             print(t.name+t.id);
             await onHoldSettings_Assessments(_assessmentContext, t.name, t.id);//pass assessment here once rewritten
@@ -298,7 +298,7 @@ Future<bool> refreshAssList() async {
   //_assessmentList = null;
   print("REFRESHING");
   //DO SOMETHING HERE
-  await(_assessmentList = fetchAssessments(_assessmentID,_assessmentContext, (getPriv()==2)));
+  await(_assessmentList = fetchAssessments(_assessmentID,_assessmentContext, QueryManager().isCoordinatorView));
   print("REFRESHED");
   return true;
 }

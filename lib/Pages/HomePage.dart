@@ -19,9 +19,8 @@ import '../Widgets/global_widgets.dart';
 
 import '../Models/University.dart';
 import '../Models/Subject.dart';
+import '../Models/QueryManager.dart';
 // import './criteria_manager.dart';
-
-
 
 //data handling/processing imports
 import 'dart:async';
@@ -35,156 +34,102 @@ Future<List<University>> _universitiesList;
 Future<List<University>> _universitiesListCoord;
 Future<List<University>> _universitiesListTutor;
 bool coordIsSelectedList;
-filterSwitchPainter switchPainter = filterSwitchPainter("Coordinator", "Tutor", Color(0xff00508F),Color(0xffFFFFFF));
-
-
+filterSwitchPainter switchPainter = filterSwitchPainter(
+    "Coordinator", "Tutor", Color(0xff00508F), Color(0xffFFFFFF));
 
 class HomePage extends StatefulWidget {
-
-  HomePage(context){
+  HomePage(context) {
     _homeContext = context; //assigning buildcontext
   }
 
   @override
   _HomePageState createState() => _HomePageState();
-
 }
 
-class _HomePageState extends State<HomePage>{
-
+class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _universitiesListTutor = fetchUniversities(getUsername(),_homeContext, false);
-    if((getPriv() == 2)){
 
+    _universitiesListTutor = null;
+    _universitiesListTutor =
+        fetchUniversities(getUsername(), _homeContext, false);
+    if (QueryManager().isCoordinator) {
       //if is a coordinator
-      _universitiesListCoord = fetchUniversities(getUsername(),_homeContext, true);
+      _universitiesListCoord = null;
+      _universitiesListCoord =
+          fetchUniversities(getUsername(), _homeContext, true);
       _universitiesList = _universitiesListCoord;
       coordIsSelectedList = true;
+    } else {
+      _universitiesList = _universitiesListTutor;
+      coordIsSelectedList = false;
     }
-    else _universitiesList = _universitiesListTutor;
-    coordIsSelectedList = false;
+    switchPainter.setSelected(coordIsSelectedList);
   }
 
   @override
   Widget build(BuildContext context) {
-
-
-
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        // leading:Container(),
-        automaticallyImplyLeading: false,
-        //  leading: Padding(
-        //    padding: EdgeInsets.only(left: 12),
-        //    child: _filterSwitch(context),
-           /*IconButton(
-             icon: Icon(Icons.arrow_back_ios),
-             onPressed: () {
-              //  Navigator.pop(context);
-               print("Back Arrow Clicked");
-             },
-           ),*/
-        //  ),
-/*                  leading: Padding(
-           padding: EdgeInsets.only(left: 12),
-           child: IconButton(
-             icon: Icon(Icons.arrow_back_ios),
-             onPressed: () {
-               Navigator.pop(context);
-               print("Back Arrow Clicked");
-             },
-           ),
-         ),*/
-        // title: Text('Home'),
-        // title: _filterSwitch(context),
-        title: Column(
-
-          children: <Widget>[
-            Text("Home"),
-            SizedBox(),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[_filterSwitch(context),]
-            ),
-
-            // SizedBox(
-            //   width: 35,
-            // ),
-
-
-          ],
+        appBar: AppBar(
+          elevation: 0.0,
+          backgroundColor: Theme.of(context).primaryColor,
+          automaticallyImplyLeading: false,
+          title: Text("Home"),
+          centerTitle: true,
         ),
-        // centerTitle: true,
-      ),
-      endDrawer: Drawer(
-        child: Container(
-          child: ListView(
-            // padding: EdgeInsets.all(10.0),
-            children:sideBar(context, getUsername()),
+        endDrawer: Drawer(
+          child: Container(
+            child: ListView(
+              // padding: EdgeInsets.all(10.0),
+              children: sideBar(context, getUsername()),
+            ),
           ),
         ),
-      ),
-      body: FutureBuilder<List<University>>(
-        future: _universitiesList,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            //_universitiesList = snapshot.data;
-
-            //QueryManager().universityList=snapshot.data;
-//
-//            List<TileObj> _parentListItems = new List<TileObj>();
-//
-//            for (int i = 0; i < snapshot.data.length; i++) {
-//              List<TileObj> _childrenListItems = new List<TileObj>();
-//              for (int i2 = 0; i2 < snapshot.data[i].subjects.length; i2++) {
-//                _childrenListItems.add(new TileObj.subject(
-//                    snapshot.data[i].subjects[i2].subjectCode,
-//                    snapshot.data[i].subjects[i2].id));
-//              }
-//              _parentListItems.add(new TileObj(
-//                  snapshot.data[i].institution, _childrenListItems));
-//            }
-            return RefreshIndicator(
-                onRefresh: _refreshAssessmentsList,
-                child: ListView.builder(
-              itemBuilder: (BuildContext context, int index) {
-                // homepageContext = context; //pass and store the page context globally instead of carrying it with each tile.
-                return  _buildUniversities(snapshot.data[index]);
+        body: Column(
+          children: <Widget>[
+            _filterSwitch(context),
+            Expanded(
+                child: FutureBuilder<List<University>>(
+              future: _universitiesList,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return RefreshIndicator(
+                      onRefresh: _refreshAssessmentsList,
+                      child: ListView.builder(
+                        itemBuilder: (BuildContext context, int index) {
+                          return _buildUniversities(snapshot.data[index]);
+                        },
+                        itemCount: snapshot.data.length,
+                      ));
+                } else if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                }
+                return Center(
+                    child: CircularProgressIndicator()); //LOADING CIRCLE
               },
-              itemCount: snapshot.data.length,
-            ));
-
-
-
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
-          }
-          return Center(child: CircularProgressIndicator()); //LOADING CIRCLE
-        },
-      ),
-    );
+            )),
+          ],
+        ));
   }
 
   //widget to load tile list
-  Widget _buildUniversities(University  t) {
+  Widget _buildUniversities(University t) {
     return new GestureDetector(
       onLongPress: () {
         print("Long Press: [" +
             t.institution +
             "]. UserPriv: [" +
-            getPriv().toString() +
+            QueryManager().isCoordinatorView.toString() +
             "].");
-        if (getPriv() == 2) onHoldSettings_HomeHead(_homeContext, t.institution);
+        if (QueryManager().isCoordinatorView)
+          onHoldSettings_HomeHead(_homeContext, t.institution);
       },
       child: ExpansionTile(
         key: new PageStorageKey<int>(3),
         title: /*Container(
         child: */
-        Text(
+            Text(
           t.institution /*, style: TextStyle(color: Colors.green)*/,
         ),
         // alignment: Alignment.center,
@@ -195,7 +140,7 @@ class _HomePageState extends State<HomePage>{
     );
   }
 
-  Widget _buildChildren(Subject t){
+  Widget _buildChildren(Subject t) {
     Color _accentColour = Color(0xffBFD4DF);
     return new ListTile(
         dense: true,
@@ -205,9 +150,10 @@ class _HomePageState extends State<HomePage>{
           print("Long Press: [" +
               t.subjectCode +
               "]. UserPriv: [" +
-              getPriv().toString() +
+              QueryManager().isCoordinatorView.toString() +
               "].");
-          if (getPriv() == 2) onHoldSettings_HomeTile(_homeContext, t.subjectCode,t.id);
+          if (QueryManager().isCoordinatorView)
+            onHoldSettings_HomeTile(_homeContext, t.subjectCode, t.id);
         },
         onTap: () {
           _subjectName = t.subjectCode;
@@ -230,53 +176,54 @@ class _HomePageState extends State<HomePage>{
           ),
         ));
     // title: new Text(t.title));
-
   }
 
   Widget _filterSwitch(BuildContext context) {
-
     Widget _nestedPainting = CustomPaint(
       size: Size(130, 25),
       painter: switchPainter,
     );
+    if (QueryManager().isCoordinator == true) {
+      return Container(
+        height: 32,
+        width: MediaQuery.of(context).size.width,
+        child: Stack(fit: StackFit.expand, children: <Widget>[
+          Material(color: Theme.of(context).primaryColor),
+          Padding(
+              padding: EdgeInsets.fromLTRB(0, 2, 0, 5),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(25.0),
+                onTap: () {
+                  print("InkWell Clicked");
+                  changeList();
+                  switchPainter.setSelected(coordIsSelectedList);
+                },
 
-      return InkWell(
-        borderRadius: BorderRadius.circular(25.0),
-        onTap: () {
-          print("InkWell Clicked");
-          changeList();
-          switchPainter.setSelected(coordIsSelectedList);
-        },
+                child: FittedBox(
+                  child: SizedBox(
+                    width: 130,
+                    height: 25,
+                    child: _nestedPainting,
+                  ),
+                ),
 
-        child: FittedBox(
-          child: SizedBox(
-            width: 130,
-            height: 25,
-            child: _nestedPainting,
-          ),
-        ),
-        // Container(
-        //   // child: InkWell(
-        //     child: Icon(Icons.arrow_back_ios),
-        //     // ),
-        // ),
+              ))
+        ]),
       );
-
-
+    } else return Container();
   }
-  void changeList(){
-    if(coordIsSelectedList==true){
+
+  void changeList() {
+    if (coordIsSelectedList == true) {
       _universitiesList = _universitiesListTutor;
-      coordIsSelectedList=false;
-    }
-    else{
+      coordIsSelectedList = false;
+      QueryManager().isCoordinatorView=false;
+    } else {
       _universitiesList = _universitiesListCoord;
-
-      coordIsSelectedList=true;
+      coordIsSelectedList = true;
+      QueryManager().isCoordinatorView=true;
     }
-    setState(() {
-
-    });
+    setState(() {});
   }
 }
 
@@ -291,11 +238,11 @@ class _HomePageState extends State<HomePage>{
 
 //Widget to handle the filtering
 
-
 //fix for the other bit
 Future<void> _refreshAssessmentsList() async {
-  await (_universitiesListCoord = fetchUniversities(getUsername(),_homeContext, (getPriv() == 2)));
-  _universitiesList=_universitiesListCoord;
+  await (_universitiesListCoord = fetchUniversities(
+      getUsername(), _homeContext, QueryManager().isCoordinator));
+  _universitiesList = _universitiesListCoord;
   return;
 }
 

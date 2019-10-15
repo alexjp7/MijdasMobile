@@ -6,6 +6,7 @@ Purpose:
 */
 //import 'dart:io';
 
+import 'package:MarkIt/Models/QueryManager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 //import 'package:mijdas_app/Functions/submits.dart';
@@ -302,19 +303,25 @@ String getUsername() {
   return _searchedUser;
 }
 
-int getPriv() {
-  return _userType;
-}
 
 void signIn(context, usernameController) {
   SystemChannels.textInput.invokeMethod('TextInput.hide');
 
   print("Searching: [" + usernameController.text + "].");
   _searchedUser = usernameController.text;
-  if (_searchedUser == "st111")
-    _userType = 2; //for testing purposes, st111 is Coordinator
-  else
-    _userType = 1; //everyone else is tutor (eg aa111)
+
+  if (_searchedUser == "st111") {//USER IS COORDINATOR??????????????????????????????????????????????????????????????????????????????
+    QueryManager().isCoordinator = true;
+    QueryManager().isCoordinatorView = true;
+    print("11111111111111111");
+    print(QueryManager().isCoordinator.toString());
+  }
+  else {
+    QueryManager().isCoordinator = false;
+    QueryManager().isCoordinatorView = false;
+    print("000000000000000000");
+    print(QueryManager().isCoordinator.toString());
+  }
 
   // getData(searchedUser); //commented out while back end was down
 

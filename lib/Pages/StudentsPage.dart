@@ -89,16 +89,6 @@ class _StudentsPageState extends State<StudentsPage> {
         ),
         title: Text('Students'),
         centerTitle: true,
-        // actions: <Widget>[
-        //   IconButton(
-        //     icon: Icon(Icons.dehaze),
-        //     onPressed: () {
-        //       // Navigator.push(context, PageThree());
-        //       // ScaffoldState.openEndDrawer();
-        //       print("Hamburger Menu Clicked");
-        //     },
-        //   )
-        // ],
       ),
       endDrawer: Drawer(
         child: Container(

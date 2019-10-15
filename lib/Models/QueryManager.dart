@@ -21,6 +21,7 @@ class QueryManager{
   static final QueryManager _queryManager = new QueryManager._internal();//singleton stuff
 
  // List<Universities> universityList;
+  bool isCoordinator,isCoordinatorView;
   List<CriteriaDecode> criteriaList;
   List<Assessment> assessmentList;
   String loggedInUser, loggedInEmail;
