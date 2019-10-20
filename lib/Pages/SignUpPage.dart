@@ -167,7 +167,8 @@ class SignUp extends StatelessWidget {
                                   _password = passwordController.text;
                                   _email = emailController.text;
                                   // getData(searchedUser); //commented out while back end was down
-                                  showDialog_1(context, "Success!", "Signup Was a success!\nHead back to the home screen and try signing in with your new details!", "Close and Return", false);
+                                  // showDialog_1(context, "Success!", "Signup Was a success!\nHead back to the home screen and try signing in with your new details!", "Close and Return", false);
+                                  showDialog_1(context, "Sorry!", "Signup is currently unavailable via the app.\nHead back to the home screen and try signing up using the webpage link.", "Close and Return", false);
                                 } else {
                                   showDialog_2(context, "Error", "There was a problem with the information entered, make sure all fields are correct.", "Close");
                                 }
