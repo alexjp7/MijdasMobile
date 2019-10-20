@@ -60,12 +60,26 @@ class CriteriaPage extends State<CriteriaPageState> {
     _items = _assCrit;
 
     //check individual marks
-    if(_individualMarks[1].result != null){
-      print("=================");
-      print("STUDENT HAS MARKS");
-      print("STUDENT HAS MARKS");
-      print("STUDENT HAS MARKS");
-      print("=================");
+    if(_individualMarks[1].result != null){//if student has marks, show them
+      // print("=================");
+      // print("STUDENT HAS MARKS:");
+      // for(int i = 0; i < _individualMarks.length; i++){
+      //   if(_individualMarks[i].result != null)
+      //     print(_individualMarks[i].result);
+      //   else
+      //     print(_individualMarks[i].comment);
+      // }
+
+      // print("=================");
+
+      _items[0].tControl.text = _individualMarks[0].comment;
+      _items[0].comment = _individualMarks[0].comment;
+      for(int i = 1; i < _individualMarks.length; i++)
+        _items[i].value = double.parse(_individualMarks[i].result);
+
+
+    } else{//otherwise, populate marks with the maximum for easier deduction-based marking.
+
     }
 
   }
@@ -200,7 +214,7 @@ class CriteriaPage extends State<CriteriaPageState> {
                       itemBuilder: (context, index) {
                         String criteriaValueText;
                         index++;
-                        criteriaValueText = '${_items[index].value}' +
+                        criteriaValueText = '${_items[index].value.toStringAsFixed(2)}' +
                             '/' +
                             '${_items[index].maxMark}';
 
