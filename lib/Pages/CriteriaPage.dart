@@ -74,12 +74,22 @@ class CriteriaPage extends State<CriteriaPageState> {
 
       _items[0].tControl.text = _individualMarks[0].comment;
       _items[0].comment = _individualMarks[0].comment;
-      for(int i = 1; i < _individualMarks.length; i++)
+      for(int i = 1; i < _individualMarks.length; i++){
         _items[i].value = double.parse(_individualMarks[i].result);
+        if(_items[i].element == "2")
+          _items[i].tControl.text = _individualMarks[i].result;
+      }
 
 
     } else{//otherwise, populate marks with the maximum for easier deduction-based marking.
-
+      _items[0].tControl.text = "";
+      _items[0].comment = "";
+      
+      for(int i = 1; i < _assCrit.length; i++){
+        _items[i].value = _assCrit[i].maxMarkI;
+        if(_items[i].element == "2")
+          _items[i].tControl.text = _assCrit[i].maxMark;
+      }
     }
 
   }
@@ -148,6 +158,7 @@ class CriteriaPage extends State<CriteriaPageState> {
                     child: TextField(
                       keyboardType: TextInputType.number,
                       controller: _items[index].tControl,
+                      textAlign: TextAlign.end,
                       onChanged: (text) {
                         if (isNumeric(text)) {
                           double _enteredMark = double.parse(text);

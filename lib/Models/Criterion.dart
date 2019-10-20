@@ -21,6 +21,7 @@ class Criterion {
       _isChecked = true;
     } else if (element == "2") {
       tControl = TextEditingController();
+      tControl.text = maxMark;
     }
     if (maxMark != null) {
       value = double.parse(maxMark);
