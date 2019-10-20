@@ -21,4 +21,6 @@ class StudentDecode {
 
 List<StudentDecode> studentDecodeFromJson(String str) =>
     new List<StudentDecode>.from(
-        json.decode(str).map((x) => StudentDecode.fromJson(x)));
+        json.decode(str).map((x) => StudentDecode.fromJson(x))); 
+
+        

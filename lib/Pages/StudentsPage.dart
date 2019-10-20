@@ -135,6 +135,7 @@ class _StudentsPageState extends State<StudentsPage> {
                       ),
                       // Text("Marking Progress"),
                       _studentsMarkedChart(),
+                      // Text(_studentList[0].criteria[0].comment),
                     ],
                   );
                 } else if (snapshot.hasError) {
