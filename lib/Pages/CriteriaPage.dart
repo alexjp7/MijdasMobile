@@ -13,6 +13,7 @@ TODO----------
 
 
  */
+import 'package:MarkIt/Models/IndividualCriteria.dart';
 import 'package:flutter/material.dart';
 import '../Widgets/global_widgets.dart';
 
@@ -35,15 +36,17 @@ BuildContext _critContext;
 Color _activeColour = new Color(0xff0069C0);
 Color _inactiveColour = new Color(0xffA0C8E3);
 List<Criterion> _assCrit;
+List<IndividualCriteria> _individualMarks;
 List<Criterion> _items;
 String _assID;
 //bool _isFetchDone; //boolean check to see if API request is finished before populating certain fields
 
 class CriteriaPageState extends StatefulWidget {
-  CriteriaPageState(s, assID, criteria) {
+  CriteriaPageState(s, assID, criteria, marks) {
     _selectedStudent = s; //assigning page ID
     _assID = assID;
     _assCrit = criteria;
+    _individualMarks = marks;
   }
 
   @override
@@ -55,6 +58,30 @@ class CriteriaPage extends State<CriteriaPageState> {
 
   CriteriaPage() {
     _items = _assCrit;
+
+    //check individual marks
+    if(_individualMarks[1].result != null){//if student has marks, show them
+      // print("=================");
+      // print("STUDENT HAS MARKS:");
+      // for(int i = 0; i < _individualMarks.length; i++){
+      //   if(_individualMarks[i].result != null)
+      //     print(_individualMarks[i].result);
+      //   else
+      //     print(_individualMarks[i].comment);
+      // }
+
+      // print("=================");
+
+      _items[0].tControl.text = _individualMarks[0].comment;
+      _items[0].comment = _individualMarks[0].comment;
+      for(int i = 1; i < _individualMarks.length; i++)
+        _items[i].value = double.parse(_individualMarks[i].result);
+
+
+    } else{//otherwise, populate marks with the maximum for easier deduction-based marking.
+
+    }
+
   }
 
   /*
@@ -187,7 +214,7 @@ class CriteriaPage extends State<CriteriaPageState> {
                       itemBuilder: (context, index) {
                         String criteriaValueText;
                         index++;
-                        criteriaValueText = '${_items[index].value}' +
+                        criteriaValueText = '${_items[index].value.toStringAsFixed(2)}' +
                             '/' +
                             '${_items[index].maxMark}';
 
@@ -234,7 +261,8 @@ class CriteriaPage extends State<CriteriaPageState> {
                                 maxLines: null,
                                 decoration: InputDecoration(
                                   //hintText: "Comments",
-                                  labelText: "Comments",
+                                  labelText: "Comment",
+                                  // labelText: _individualMarks[0].comment,
                                   fillColor: Colors.white70,
                                   filled: true,
                                   contentPadding: const EdgeInsets.all(20.0),
@@ -411,7 +439,7 @@ double getMaximumMark() {
 double getTotalGivenMark() {
   var count = 0.00;
   try {
-    _assCrit.forEach((x) {
+    _items.forEach((x) {
       if (x.value != null) count += x.value;
     });
   } catch (e) {
