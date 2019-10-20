@@ -217,7 +217,7 @@ int _getMarkedCount() {
   var count = 0;
   try {
     _studentList.forEach((x) {
-      if (x.result != null) count++;
+      if (x.criteria[1].result != null) count++;
     });
   } catch (e) {
     return -1;
