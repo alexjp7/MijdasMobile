@@ -176,13 +176,22 @@ void makeSearch(context){
 
 Icon _getMarkedState(String s) {
   try {
-    if (double.parse(s) >= 0)
+    if (s != null)
       return _isMarked;
     else
-      return Icon(Icons.error_outline);
+      return _isNotMarked;
   } catch (e) {
-    return _isNotMarked; //trying to mark null produces error
+    return Icon(Icons.error_outline); //trying to mark null produces error
   }
+  
+  // try {
+  //   if (double.parse(s) >= 0)
+  //     return _isMarked;
+  //   else
+  //     return Icon(Icons.error_outline);
+  // } catch (e) {
+  //   return _isNotMarked; //trying to mark null produces error
+  // }
 }
 
 Color _getMarkedStateBar(String s) {
@@ -402,7 +411,9 @@ class StudentSearch extends SearchDelegate<String> {
         itemBuilder: (context, index) => Container(
           decoration: BoxDecoration(
               color: _getMarkedStateBar(
-                  _getStudent(suggestedItems[index].studentId).result)),
+                  _getStudent(suggestedItems[index].studentId).criteria[1].result)),
+                  // _getMarkedStateBar(
+                  // _getStudent(suggestedItems[index].studentId).result)),
           child: ListTile(
             onTap: () {
               print(suggestedItems[index].studentId);
@@ -410,10 +421,12 @@ class StudentSearch extends SearchDelegate<String> {
               //print(_criteriaList[0].criteria);
               _selectedStudent = suggestedItems[index].studentId;
 
-              Navigator.push(context,criteriaRoute(_studentList[_getIndexForStudent(suggestedItems[index].studentId)],_assessmentID,QueryManager().criteriaList[0].criteria)); //Pass in a bool for isMarked to load the old marks
+              Navigator.push(context,criteriaRoute(_studentList[_getIndexForStudent(suggestedItems[index].studentId)],_assessmentID,QueryManager().criteriaList[0].criteria, _studentList[_getIndexForStudent(suggestedItems[index].studentId)].criteria)); //Pass in a bool for isMarked to load the old marks
             },
             leading: _getMarkedState(
-                _getStudent(suggestedItems[index].studentId).result),
+                _getStudent(suggestedItems[index].studentId).criteria[1].result),
+                // _getMarkedState(
+                // _getStudent(suggestedItems[index].studentId).result),
             trailing: RichText(
               text: TextSpan(
                   text: _getStudent(suggestedItems[index].studentId).result,

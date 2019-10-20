@@ -13,6 +13,7 @@ TODO----------
 
 
  */
+import 'package:MarkIt/Models/IndividualCriteria.dart';
 import 'package:flutter/material.dart';
 import '../Widgets/global_widgets.dart';
 
@@ -35,15 +36,17 @@ BuildContext _critContext;
 Color _activeColour = new Color(0xff0069C0);
 Color _inactiveColour = new Color(0xffA0C8E3);
 List<Criterion> _assCrit;
+List<IndividualCriteria> _individualMarks;
 List<Criterion> _items;
 String _assID;
 //bool _isFetchDone; //boolean check to see if API request is finished before populating certain fields
 
 class CriteriaPageState extends StatefulWidget {
-  CriteriaPageState(s, assID, criteria) {
+  CriteriaPageState(s, assID, criteria, marks) {
     _selectedStudent = s; //assigning page ID
     _assID = assID;
     _assCrit = criteria;
+    _individualMarks = marks;
   }
 
   @override
@@ -55,6 +58,16 @@ class CriteriaPage extends State<CriteriaPageState> {
 
   CriteriaPage() {
     _items = _assCrit;
+
+    //check individual marks
+    if(_individualMarks[1].result != null){
+      print("=================");
+      print("STUDENT HAS MARKS");
+      print("STUDENT HAS MARKS");
+      print("STUDENT HAS MARKS");
+      print("=================");
+    }
+
   }
 
   /*
@@ -234,7 +247,8 @@ class CriteriaPage extends State<CriteriaPageState> {
                                 maxLines: null,
                                 decoration: InputDecoration(
                                   //hintText: "Comments",
-                                  labelText: "Comments",
+                                  labelText: "Comment",
+                                  // labelText: _individualMarks[0].comment,
                                   fillColor: Colors.white70,
                                   filled: true,
                                   contentPadding: const EdgeInsets.all(20.0),
@@ -411,7 +425,7 @@ double getMaximumMark() {
 double getTotalGivenMark() {
   var count = 0.00;
   try {
-    _assCrit.forEach((x) {
+    _items.forEach((x) {
       if (x.value != null) count += x.value;
     });
   } catch (e) {

@@ -9,6 +9,7 @@ import 'package:MarkIt/Models/QueryManager.dart';
 import 'package:flutter/material.dart';
 
 import '../Models/Criterion.dart';
+import '../Models/IndividualCriteria.dart';
 import '../Models/CriteriaDecode.dart';
 import '../Models/Student.dart';
 
@@ -95,10 +96,10 @@ Route assessmentRoute(String s) {
   );
 }
 
-Route criteriaRoute(Student s, String assID, List<Criterion> criteria) {
+Route criteriaRoute(Student s, String assID, List<Criterion> criteria, List<IndividualCriteria> marks) {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) =>
-        CriteriaPageState(s,assID,criteria),
+        CriteriaPageState(s,assID,criteria, marks),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(
         opacity: animation,
