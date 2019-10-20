@@ -35,9 +35,9 @@ dev_dependencies:
 
 
 flutter_icons:
+  image_path: "assets/markItLogo.png"
   android: true
   ios: true
-  image_path: "assets/markItLogo.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
