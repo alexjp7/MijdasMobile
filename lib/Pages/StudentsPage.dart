@@ -353,12 +353,12 @@ String getStudent() {
 
 Color isMarkedCol(String s) {
   try {
-    if (double.parse(_getStudent(s).result) >= 0)
+    if (_getStudent(s).criteria[1].result != null)
       return Colors.green[200];
     else
-      return Colors.redAccent[100];
+      return Color(0xff54b3ff);
   } catch (e) {
-    return Color(0xff54b3ff); //trying to mark null produces error
+    return Colors.redAccent[100]; //catch error and alert
   }
 }
 
