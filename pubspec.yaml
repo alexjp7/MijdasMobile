@@ -25,6 +25,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   http: ^0.12.0
   pie_chart: ^1.2.0
+  url_launcher: ^5.2.3
   #charts_flutter: ^0.2.0
   #image: ^2.1.4
   flutter_launcher_icons: ^0.7.3

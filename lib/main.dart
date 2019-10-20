@@ -6,10 +6,12 @@ Purpose:
 */
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 //import 'package:flutter/semantics.dart';
 
 //import 'Pages/AssessmentPage.dart';
 //import 'Pages/HomePage.dart';
+import 'Widgets/global_widgets.dart';
 import 'Pages/SignUpPage.dart';
 import 'Pages/SignInPage.dart';
 
@@ -118,20 +120,33 @@ class MyApp extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
+                            // IconButton(
+                            //   icon: Icon(Icons.language, size: 35.0),
+                            //   //or public
+                            //   onPressed: () {
+                            //     launchURL("https://il.ink/Mijdas");
+                            //   },
+                            // ),
                             IconButton(
                               icon: Icon(Icons.language, size: 35.0),
                               //or public
-                              onPressed: () {},
+                              onPressed: () {
+                                launchURL("https://markit.mijdas.com/");
+                              },
                             ),
                             SizedBox(width: 10),
                             IconButton(
                               icon: Icon(Icons.home, size: 35.0),
-                              onPressed: () {},
+                              onPressed: () {
+                                launchURL("https://mijdas.com");
+                              },
                             ),
                             SizedBox(width: 10),
                             IconButton(
                               icon: Icon(Icons.people, size: 35.0),
-                              onPressed: () {},
+                              onPressed: () {
+                                launchURL("https://fb.me/Mijdas");
+                              },
                             ),
                           ],
                         ),
@@ -154,6 +169,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 
 Widget _banner(BuildContext context) {
   Color _mainBackdrop = new Color(0xff54b3ff); //lighter blue
