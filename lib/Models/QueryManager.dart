@@ -24,7 +24,7 @@ class QueryManager{
   bool isCoordinator,isCoordinatorView;
   List<CriteriaDecode> criteriaList;
   List<Assessment> assessmentList;
-  String loggedInUser, loggedInEmail;
+  String loggedInUser, loggedInEmail, token;
 
 
   factory QueryManager(){

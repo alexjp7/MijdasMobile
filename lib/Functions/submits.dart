@@ -5,6 +5,10 @@ Group: Mijdas(kw01)
 Purpose:
 */
 
+import 'dart:io';
+
+import '../Models/QueryManager.dart';
+
 import 'package:flutter/material.dart';
 
 import 'package:MarkIt/Pages/AssessmentPage.dart';
@@ -28,7 +32,7 @@ Future<bool> toggleActivation(String assID, context) async{
       });
   var now = DateTime.now();
   var response = await http.post('https://markit.mijdas.com/api/assessment/',
-      body: jsonEncode({"request": "TOGGLE_ACTIVATION", "assessment_id":  assID}));
+      body: jsonEncode({"request": "TOGGLE_ACTIVATION", "assessment_id":  assID, "token":QueryManager().token}));
   Navigator.pop(context);
 
   refreshAssList();
@@ -62,7 +66,7 @@ Future<bool> addTutor(String tutorName, String subjectId, context) async{
       });
 
   var response = await http.post('https://markit.mijdas.com/api/subject/',
-      body: jsonEncode({"request": "ADD_TUTOR", "tutors":  [tutorName],"subject_id":subjectId}));
+      body: jsonEncode({"request": "ADD_TUTOR", "tutors":  [tutorName],"subject_id":subjectId, "token":QueryManager().token}));
   Navigator.pop(context);
 
   if (response.statusCode == 200) {
@@ -86,7 +90,7 @@ Future<bool> addStudent(String sName, String subjectId, context) async{
       });
 
   var response = await http.post('https://markit.mijdas.com/api/subject/',
-      body: jsonEncode({"request": "ADD_STUDENTS", "subject_id":  subjectId,"students":[sName]}));
+      body: jsonEncode({"request": "ADD_STUDENTS", "subject_id":  subjectId,"students":[sName], "token":QueryManager().token}));
 
   Navigator.pop(context);
 
@@ -118,6 +122,7 @@ Future<bool> postMark(List<Criterion> _criteriaPost, String _student, String _a,
     "student": _student,
     "assessment_id": _a,
     "results": List<dynamic>.from(_criteriaPost.map((x) => x.toJson())),
+    "token":QueryManager().token
   });
 
   var response = await http.post('https://markit.mijdas.com/api/assessment/',
@@ -146,4 +151,41 @@ Future<bool> postMark(List<Criterion> _criteriaPost, String _student, String _a,
     throw Exception(
         'Failed to load post, error code: ' + response.statusCode.toString());
   }
+}
+
+
+Future<bool> loginAttempt(String user, String password, context) async {
+
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Center(child: CircularProgressIndicator(),);
+      });
+
+
+  var response = await http.post(
+      'https://accounts.mijdas.com/api/login/',
+      body:jsonEncode({"password":password, "username":user}),
+      headers: {HttpHeaders.contentTypeHeader : "application/json"}
+  );
+  Navigator.pop(context);
+  if(response.statusCode ==200){
+    //print(response.body);
+    var decode = json.decode(response.body);
+    var decode2 = decode["success"];
+    QueryManager().token = decode2["token"];
+    print(decode2);
+    return true;
+  }
+  else if(response.statusCode == 401){
+    print(response.body);
+    await showDialog_2(context,"","Error: Unauthorized request" ,"Close");
+    return false;
+  }
+  else{
+    print(response.body);
+    await showDialog_2(context,response.statusCode.toString(),"Error in logging in, please wait and try again or contact a system administrator" ,"Close");
+    return false;
+  }
+
 }

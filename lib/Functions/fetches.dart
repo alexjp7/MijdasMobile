@@ -5,6 +5,8 @@ Group: Mijdas(kw01)
 Purpose:
 */
 
+import 'dart:io';
+
 import '../Models/QueryManager.dart';
 
 import '../Models/CriteriaDecode.dart';
@@ -22,7 +24,7 @@ import 'package:http/http.dart' as http;
 Future<List<CriteriaDecode>> fetchCriteria(String i) async {
   print('aaaaaaaaaaaaaa');
   var response = await http.post('https://markit.mijdas.com/api/criteria/',
-      body: jsonEncode({"request": "VIEW_CRITERIA", "assessment_id": i}));
+      body: jsonEncode({"request": "VIEW_CRITERIA", "assessment_id": i, "token":QueryManager().token}));
   if (response.statusCode == 200) {
     print('response code:  200\n');
     print('response body: ' + response.body);
@@ -46,7 +48,7 @@ Future<List<CriteriaDecode>> fetchCriteria(String i) async {
 
 Future<List<StudentDecode>> fetchStudents(String s, _studentContext) async {
   var response = await http.post('https://markit.mijdas.com/api/assessment/',
-      body: jsonEncode({"request": "POPULATE_STUDENTS", "assessment_id": s}));
+      body: jsonEncode({"request": "POPULATE_STUDENTS", "assessment_id": s, "token":QueryManager().token}));
 
   if (response.statusCode == 200) {
     QueryManager().criteriaList = await fetchCriteria(s);
@@ -72,7 +74,8 @@ Future<List<Assessment>> fetchAssessments(
       body: jsonEncode({
         "request": "VIEW_ASSESSMENT",
         "subject_id": s,
-        "is_coordinator": (isPriv)
+        "is_coordinator": (isPriv),
+        "token":QueryManager().token
       }));
 
   if (response.statusCode == 200) {
@@ -105,7 +108,7 @@ Future<List<University>> fetchUniversities(
 
   var response = await http.post(
       'https://markit.mijdas.com/api/requests/subject/',
-      body: jsonEncode({"request": _request, "username": s}));
+      body: jsonEncode({"request": _request, "username": s, "token":QueryManager().token}));
 
   if (response.statusCode == 200) {
     return universitiesFromJson(response.body);
