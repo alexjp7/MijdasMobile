@@ -21,9 +21,11 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+String apiURL = QueryManager().apiURL;
+
 Future<List<CriteriaDecode>> fetchCriteria(String i) async {
   print('aaaaaaaaaaaaaa');
-  var response = await http.post('https://markit.mijdas.com/api/criteria/',
+  var response = await http.post(apiURL+'/criteria/',
       body: jsonEncode({"request": "VIEW_CRITERIA", "assessment_id": i, "token":QueryManager().token}));
   if (response.statusCode == 200) {
     print('response code:  200\n');
@@ -47,7 +49,7 @@ Future<List<CriteriaDecode>> fetchCriteria(String i) async {
 }
 
 Future<List<StudentDecode>> fetchStudents(String s, _studentContext) async {
-  var response = await http.post('https://markit.mijdas.com/api/assessment/',
+  var response = await http.post(apiURL+'/assessment/',
       body: jsonEncode({"request": "POPULATE_STUDENTS", "assessment_id": s, "token":QueryManager().token}));
 
   if (response.statusCode == 200) {
@@ -70,7 +72,7 @@ Future<List<StudentDecode>> fetchStudents(String s, _studentContext) async {
 
 Future<List<Assessment>> fetchAssessments(
     String s, context, bool isPriv) async {
-  var response = await http.post('https://markit.mijdas.com/api/assessment/',
+  var response = await http.post(apiURL+'/assessment/',
       body: jsonEncode({
         "request": "VIEW_ASSESSMENT",
         "subject_id": s,
@@ -107,19 +109,22 @@ Future<List<University>> fetchUniversities(
     _request = "POPULATE_SUBJECTS";
 
   var response = await http.post(
-      'https://markit.mijdas.com/api/requests/subject/',
+      apiURL+'/requests/subject/',
       body: jsonEncode({"request": _request, "username": s, "token":QueryManager().token}));
 
   if (response.statusCode == 200) {
     return universitiesFromJson(response.body);
   } else if (response.statusCode == 404) {
+    if(!isCoord){
+        showDialog_1(
+            _homeContext,
+            "No subjects",
+            "Sorry, it looks like you aren't enrolled to tutor any subjects, please contact an coordinator to get started.",
+            "Close & Return",
+            false);
+    }
     print('response code:  404\n');
-    showDialog_1(
-        _homeContext,
-        "No subjects",
-        "Sorry, it looks like you aren't enrolled to tutor any subjects, please contact your coordinator to get started.",
-        "Close & Return",
-        false);
+
     return null;
   } else {
     print('response code: ' + response.statusCode.toString());

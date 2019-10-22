@@ -25,6 +25,8 @@ class QueryManager{
   List<CriteriaDecode> criteriaList;
   List<Assessment> assessmentList;
   String loggedInUser, loggedInEmail, token;
+  String apiURL = 'https://markit.mijdas.com/api';
+  String oAuthapiURL = 'https://accounts.mijdas.com/api';
 
 
   factory QueryManager(){

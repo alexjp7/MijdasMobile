@@ -292,15 +292,14 @@ void signIn(context, usernameController, passwordController) async {
 
   bool success = await loginAttempt(usernameController.text, passwordController.text, context);
 
-  if (_searchedUser == "st111") {
-    //TODO CHANGE ^^^^^^^^^^^^^^ TO IS SCOPE COORDINATOR WHEN oAUTH
-    QueryManager().isCoordinator = true;
-    QueryManager().isCoordinatorView = true;
-  }
-  else {
-    QueryManager().isCoordinator = false;
-    QueryManager().isCoordinatorView = false;
-  }
+//  if (_searchedUser == "st111") {
+//    QueryManager().isCoordinator = true;
+//    QueryManager().isCoordinatorView = true;
+//  }
+//  else {
+//    QueryManager().isCoordinator = false;
+//    QueryManager().isCoordinatorView = false;
+//  }
 
 
   //FocusScope.of(context).requestFocus(FocusNode());

@@ -7,6 +7,8 @@ Purpose:
 import 'package:flutter/material.dart';
 import '../Widgets/global_widgets.dart';
 
+import '../Functions/submits.dart';
+
 // import './AssessmentPage.dart';
 // import './HomePage.dart';
 // import './signup.dart';
@@ -17,9 +19,6 @@ import '../Widgets/global_widgets.dart';
 //import 'package:http/http.dart' as http;
 
 Color _buttonColour = new Color(0xff0069C0);
-String _username;
-String _email;
-String _password;
 
 Route signUpRoute() {
   return PageRouteBuilder(
@@ -40,6 +39,7 @@ Route signUpRoute() {
 
 class SignUp extends StatelessWidget {
   final usernameController = TextEditingController();
+  final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final passwordController_2 = TextEditingController();
@@ -60,6 +60,10 @@ class SignUp extends StatelessWidget {
         controller: _scrollController,
         child: Column(
           children: <Widget>[
+            Container(
+              height: MediaQuery.of(context).padding.top,
+              color: Theme.of(context).primaryColor,
+            ),
             Container(
               width: 500,
               height: 270,
@@ -86,6 +90,27 @@ class SignUp extends StatelessWidget {
                             borderSide: BorderSide(color: Colors.white70)),
                       ),
                       controller: usernameController,
+                      onChanged: (v) {
+                        _scrollToFields();
+                      },
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(120, 10, 120, 10),
+                    alignment: Alignment.center,
+                    child: TextField(
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.person),
+                        labelText: "Name",
+                        fillColor: Colors.white70,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7.0)),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(7.0),
+                            borderSide: BorderSide(color: Colors.white70)),
+                      ),
+                      controller: nameController,
                       onChanged: (v) {
                         _scrollToFields();
                       },
@@ -161,15 +186,16 @@ class SignUp extends StatelessWidget {
                             minWidth: 130.0,
                             height: 50.0,
                             child: RaisedButton(
-                              onPressed: () {
-                                if (passwordController.text == passwordController_2.text) {
-                                  _username = usernameController.text;
-                                  _password = passwordController.text;
-                                  _email = emailController.text;
+                              onPressed: () async {
+                                if (passwordController.text == passwordController_2.text)  {
+//                                  _username = usernameController.text;
+//                                  _password = passwordController.text;
+//                                  _email = emailController.text;
+                                  await createProfile(nameController.text,  emailController.text, usernameController.text, passwordController.text, passwordController_2.text, context);
                                   // getData(searchedUser); //commented out while back end was down
-                                  showDialog_1(context, "Success!", "Signup Was a success!\nHead back to the home screen and try signing in with your new details!", "Close and Return", false);
+                                 // showDialog_1(context, "Success!", "Signup Was a success!\nHead back to the home screen and try signing in with your new details!", "Close and Return", false);
                                 } else {
-                                  showDialog_2(context, "Error", "There was a problem with the information entered, make sure all fields are correct.", "Close");
+                                  //showDialog_2(context, "Error", "There was a problem with the information entered, make sure all fields are correct.", "Close");
                                 }
                               },
                               child: RichText(
@@ -206,6 +232,7 @@ Widget _banner(BuildContext context) {
   return Stack(
     fit: StackFit.expand,
     children: <Widget>[
+
       Positioned(
         top: 0,
         left: 0,
@@ -214,6 +241,7 @@ Widget _banner(BuildContext context) {
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
+
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
