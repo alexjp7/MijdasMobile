@@ -6,10 +6,11 @@ Purpose:
 */
 //import 'dart:io';
 
+import 'package:MarkIt/Functions/fetches.dart';
 import 'package:MarkIt/Models/QueryManager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-//import 'package:mijdas_app/Functions/submits.dart';
+import 'package:MarkIt/Functions/submits.dart';
 
 //import 'AssessmentPage.dart';
 import '../Functions/routes.dart';
@@ -133,7 +134,7 @@ class SignIn extends StatelessWidget {
 
                       onSubmitted: (s) {
                         print(s);
-                        signIn(context, usernameController);
+                        signIn(context, usernameController, passwordController);
                       },
 
                       obscureText: true,
@@ -156,7 +157,7 @@ class SignIn extends StatelessWidget {
                                 _userFocus.unfocus();
                                 FocusScope.of(context)
                                     .requestFocus(FocusNode());
-                                signIn(context, usernameController);
+                                signIn(context, usernameController, passwordController);
                               },
                               child: RichText(
                                 text: TextSpan(
@@ -283,25 +284,27 @@ String getUsername() {
 }
 
 
-void signIn(context, usernameController) {
+void signIn(context, usernameController, passwordController) async {
   SystemChannels.textInput.invokeMethod('TextInput.hide');
 
   print("Searching: [" + usernameController.text + "].");
   _searchedUser = usernameController.text;
 
-  if (_searchedUser == "st111") {
-    //TODO CHANGE ^^^^^^^^^^^^^^ TO IS SCOPE COORDINATOR WHEN oAUTH
-    QueryManager().isCoordinator = true;
-    QueryManager().isCoordinatorView = true;
-  }
-  else {
-    QueryManager().isCoordinator = false;
-    QueryManager().isCoordinatorView = false;
-  }
+  bool success = await loginAttempt(usernameController.text, passwordController.text, context);
 
-  // getData(searchedUser); //commented out while back end was down
+//  if (_searchedUser == "st111") {
+//    QueryManager().isCoordinator = true;
+//    QueryManager().isCoordinatorView = true;
+//  }
+//  else {
+//    QueryManager().isCoordinator = false;
+//    QueryManager().isCoordinatorView = false;
+//  }
+
 
   //FocusScope.of(context).requestFocus(FocusNode());
-  print("S1");
-  Navigator.push(context, homeRoute());
+  if(success==true){
+    Navigator.push(context, homeRoute());
+  }
+
 }
