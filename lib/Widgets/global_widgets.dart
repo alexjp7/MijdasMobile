@@ -1,6 +1,7 @@
 import 'dart:ui' as prefix0;
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:math';
 import '../Pages/AssessmentPage.dart';
 import '../Functions/submits.dart';
@@ -78,6 +79,16 @@ Future<String> displayDialogText(
       });
   return _textField;
 }
+
+void launchURL(String url) async {
+  // const newURL = 'https://flutter.io';
+  if(await canLaunch(url)){
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
+  }
+}
+
 
 //global settings prompts
 void onHoldSettings_HomeTile(
@@ -193,6 +204,7 @@ List<Widget> sideBar(context, username) {
     }),
   ];
 }
+
 
 //settings tile styling used globally
 Widget settingsTile(IconData icon, String label, Function onTap) {
