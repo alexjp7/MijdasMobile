@@ -19,6 +19,7 @@ import '../Functions/submits.dart';
 //import 'package:http/http.dart' as http;
 
 Color _buttonColour = new Color(0xff0069C0);
+bool _accountCreation;
 
 Route signUpRoute() {
   return PageRouteBuilder(
@@ -44,6 +45,8 @@ class SignUp extends StatelessWidget {
   final passwordController = TextEditingController();
   final passwordController_2 = TextEditingController();
   ScrollController _scrollController = ScrollController();
+
+
 
   //jump the screen down - the animation looked smoother but was buggy, decided to use Jump for prototype demo
   _scrollToFields() {
@@ -187,16 +190,26 @@ class SignUp extends StatelessWidget {
                             height: 50.0,
                             child: RaisedButton(
                               onPressed: () async {
-                                if (passwordController.text == passwordController_2.text)  {
+                                if (passwordController.text ==
+                                    passwordController_2.text) {
 //                                  _username = usernameController.text;
 //                                  _password = passwordController.text;
 //                                  _email = emailController.text;
-                                  await createProfile(nameController.text,  emailController.text, usernameController.text, passwordController.text, passwordController_2.text, context);
+                                  _accountCreation =  await createProfile(
+                                      nameController.text,
+                                      emailController.text,
+                                      usernameController.text,
+                                      passwordController.text,
+                                      passwordController_2.text,
+                                      context);
+                                      if(_accountCreation == true){
+                                        showDialog_1(context, "Success!", "Signup Was a success!\nHead back to the home screen and try signing in with your new details!", "Close and Return", false);
+                                      }
                                   // getData(searchedUser); //commented out while back end was down
-                                 // showDialog_1(context, "Success!", "Signup Was a success!\nHead back to the home screen and try signing in with your new details!", "Close and Return", false);
+                                  // showDialog_1(context, "Success!", "Signup Was a success!\nHead back to the home screen and try signing in with your new details!", "Close and Return", false);
 
                                 } else {
-                                  //showDialog_2(context, "Error", "There was a problem with the information entered, make sure all fields are correct.", "Close");
+                                  showDialog_2(context, "Error", "There was a problem with the information entered, make sure all fields are correct.", "Close");
                                 }
                               },
                               child: RichText(
@@ -233,7 +246,6 @@ Widget _banner(BuildContext context) {
   return Stack(
     fit: StackFit.expand,
     children: <Widget>[
-
       Positioned(
         top: 0,
         left: 0,
@@ -242,7 +254,6 @@ Widget _banner(BuildContext context) {
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(

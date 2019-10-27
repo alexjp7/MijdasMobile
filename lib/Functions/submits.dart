@@ -203,6 +203,16 @@ Future<bool> loginAttempt(String user, String password, context) async {
     await showDialog_2(context,"","Error: Unauthorized request" ,"Close");
     return false;
   }
+  else if(response.body.contains("username") && response.statusCode == 417){
+    print(response.body);
+    await showDialog_2(context,"Error: Username","The username field is required." ,"Close");
+    return false;
+  }
+  else if(response.body.contains("password") && response.statusCode == 417){
+    print(response.body);
+    await showDialog_2(context,"Error: Password","The password field is required." ,"Close");
+    return false;
+  }
   else{
     print(response.body);
     await showDialog_2(context,response.statusCode.toString(),"Error in logging in, please wait and try again or contact a system administrator" ,"Close");
@@ -241,8 +251,14 @@ Future<bool> createProfile(String name, String email, String username, String pa
     await showDialog_2(context,"","Error: Unauthorized request" ,"Close");
     return false;
   }
+  else if(response.body.contains("email") && response.statusCode == 417){
+    print(response.body);
+    await showDialog_2(context,"Error","The email must be a valid email address." ,"Close");
+    return false;
+  }
   else{
     print(response.body);
+    //print(response.statusCode);
     await showDialog_2(context,response.statusCode.toString(),"Error in logging in, please wait and try again or contact a system administrator" ,"Close");
     return false;
   }
