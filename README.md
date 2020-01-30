@@ -3,7 +3,7 @@
 * The MarkIt mobile application serves as one of the front end user applications for the MarkIt student assessment managment system that was developed as apart of a final year software developmment project.
 
 Other MarkIt repos:
-  * (Markit Web)[https://github.com/alexjp7/MijdasWeb].
+  * [Markit Web](https://github.com/alexjp7/MijdasWeb).
   * [Markit Server](https://github.com/alexjp7/MijdasServer).
 
 * Links to MarkIt's Documentation:
